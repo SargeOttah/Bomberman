@@ -6,7 +6,13 @@ namespace Bomberman
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            GameApplication game = GameApplication.GetInstance();
+
+            Console.WriteLine("Starting game...");
+
+            game.Run();
+
+            Console.WriteLine("Game closed!");
         }
     }
 }
