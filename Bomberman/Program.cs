@@ -2,14 +2,13 @@
 
 namespace Bomberman
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
-            GameApplication game = GameApplication.GetInstance();
-
             Console.WriteLine("Starting game...");
 
+            var game = GameApplication.GetInstance();
             game.Run();
 
             Console.WriteLine("Game closed!");

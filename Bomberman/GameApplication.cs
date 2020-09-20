@@ -1,78 +1,85 @@
-﻿using System;
-using System.Reflection;
-using System.IO;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Runtime.InteropServices.ComTypes;
-using SFML.Audio;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Xml.Schema;
+using System;
+using System.IO;
 
 namespace Bomberman
 {
-    class GameApplication
+    internal class GameApplication
     {
-        private static readonly GameApplication _instance = new GameApplication();
+        private static readonly GameApplication Instance = new GameApplication();
 
-        RenderWindow window;
-        Texture backgroundTexture;
+        private static RenderWindow _renderWindow;
+        private static Texture _backgroundTexture;
+
         // TODO: Sprite arrays/lists to load
-        Sprite backgroundSprite;
-        Sprite Player;
-        private uint[] videoResolution = { 800, 600 };
+        private static Sprite _backgroundSprite;
+        private static Sprite _playerSprite;
+        private static readonly uint[] VideoResolution = { 800, 600 };
+        private const string WindowTitle = "Bomberman v0.01";
+
+        private static HubConnection _userHubConnection;
 
         public static GameApplication GetInstance()
         {
-            return _instance;
+            return Instance;
+        }
+
+        private static void ConfigureHubConnections()
+        {
+            _userHubConnection = new HubConnectionBuilder()
+                    .WithUrl("https://localhost:5001/user-hub")
+                    .Build();
+
+            _userHubConnection.StartAsync().Wait();
+
+            _userHubConnection.On("ReceiveMessage", (string user, string message) => Console.WriteLine($"{user}: {message}")); // Demo listener.
         }
 
         public void Run()
         {
-            string windowTitle = "Bomberman v0.01";
+            ConfigureHubConnections();
             // TODO: Selector
-            // videoResolution = new uint[] { 500, 500 };   // Graphics resolution
-            // videoResolution = new uint[] { 800, 600 };   // Graphics resolution
-            // videoResolution = new uint[] { 1366, 768 };  // Graphics resolution
-            // videoResolution = new uint[] { 1280, 720 };  // Graphics resolution
-            // videoResolution = new uint[] { 1920, 1080 }; // Graphics resolution
+            // VideoResolution = new uint[] { 500, 500 };   // Graphics resolution
+            // VideoResolution = new uint[] { 800, 600 };   // Graphics resolution
+            // VideoResolution = new uint[] { 1366, 768 };  // Graphics resolution
+            // VideoResolution = new uint[] { 1280, 720 };  // Graphics resolution
+            // VideoResolution = new uint[] { 1920, 1080 }; // Graphics resolution
 
-            window = CreateRenderWindow(Styles.Default, windowTitle, videoResolution);
-
+            _renderWindow = CreateRenderWindow(Styles.Default);
             LoadGround();
-            window.SetActive();
+            _renderWindow.SetActive();
 
             // Fetching sprites
             // TODO: autonomic loading
-            Player = LoadSprite("Sprites\\Player\\Red\\redfront.png", new IntRect(0, 0, 19, 32));
-            Player.Position = new Vector2f((int)videoResolution[0] / 2, (int)videoResolution[1] / 2);
-            Player.Scale = new Vector2f(3, 3);
+            _playerSprite = LoadSprite("Sprites\\Player\\Red\\redfront.png", new IntRect(0, 0, 19, 32));
+            _playerSprite.Position = new Vector2f((float)VideoResolution[0] / 2, (float)VideoResolution[1] / 2);
+            _playerSprite.Scale = new Vector2f(3, 3);
 
-            while (window.IsOpen)
+            while (_renderWindow.IsOpen)
             {
-                window.DispatchEvents(); // event handler to processes keystrokes/mouse movements
-                window.Clear();
-                window.Draw(backgroundSprite);
-                window.Draw(Player);
-                window.Display(); // update screen
+                _renderWindow.DispatchEvents(); // event handler to processes keystrokes/mouse movements
+                _renderWindow.Clear();
+                _renderWindow.Draw(_backgroundSprite);
+                _renderWindow.Draw(_playerSprite);
+                _renderWindow.Display(); // update screen
 
-                InputControll();
+                InputControl();
             }
         }
-        public void InputControll() // TODO: improve movement overlap, etc
+        public void InputControl() // TODO: improve movement overlap, etc
         {
-            Vector2f totalMovement = new Vector2f(0, 0);
+            var totalMovement = new Vector2f(0, 0);
 
-            var tempPos = Player.Position;
-            int speed = 4;
+            var tempPos = _playerSprite.Position;
+            const int speed = 4;
 
             if (Keyboard.IsKeyPressed(Keyboard.Key.W))
             {
                 totalMovement.Y -= speed;
+                _userHubConnection.InvokeAsync("SendMessage", "Asd", "asd").Wait(); // Demo sender - "SendMessage" maps to hub's function name.
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.A))
             {
@@ -87,81 +94,79 @@ namespace Bomberman
                 totalMovement.X += speed;
             }
 
-            Player.Position = new Vector2f(tempPos.X + totalMovement.X, tempPos.Y + totalMovement.Y);
+            _playerSprite.Position = new Vector2f(tempPos.X + totalMovement.X, tempPos.Y + totalMovement.Y);
         }
-        static void OnClose(object sender, EventArgs e)
+        private static void OnClose(object sender, EventArgs e)
         {
-            // Close the window when OnClose event is received
-            RenderWindow window = (RenderWindow)sender;
-            window.Close();
+            var renderWindow = (RenderWindow)sender;
+            renderWindow.Close();
         }
 
-        public RenderWindow CreateRenderWindow(Styles windowStyle, string windowTitle, uint[] videoResolution)
+        private static RenderWindow CreateRenderWindow(Styles windowStyle)
         {
-            VideoMode videoMode = new VideoMode(videoResolution[0], videoResolution[1]);
-            RenderWindow window = new RenderWindow(videoMode, windowTitle, windowStyle);
-            window.Closed += new EventHandler(OnClose); // close window
+            var videoMode = new VideoMode(VideoResolution[0], VideoResolution[1]);
+            var renderWindow = new RenderWindow(videoMode, WindowTitle, windowStyle);
 
-            window.SetMouseCursorVisible(true);
-            window.SetFramerateLimit(60);
+            renderWindow.Closed += OnClose;
+            renderWindow.SetMouseCursorVisible(true);
+            renderWindow.SetFramerateLimit(60);
 
-            Console.WriteLine("Resoultion: [ {0}x{1} ]", videoMode.Width, videoMode.Height);
-            return window;
+            Console.WriteLine($"Resolution: {videoMode.Width}x{videoMode.Height}");
+            return renderWindow;
         }
-        private Sprite LoadSprite(string path, IntRect square) // TODO: improve
+        private static Sprite LoadSprite(string path, IntRect square) // TODO: improve
         {
-            Texture tmpTexture;
-            Sprite tmpSprite = new Sprite();
+            var tmpSprite = new Sprite();
 
-            IntRect tmpRect = square;
+            var tmpRect = square;
 
             try
             {
                 //tmpTexture
-                tmpTexture = new Texture(getRelativePath(path)) { /*Repeated = false */};
+                var tmpTexture = new Texture(GetRelativePath(path)) { /*Repeated = false */};
                 tmpSprite = new Sprite(tmpTexture, tmpRect);
             }
             catch (Exception e)
             {
-                Console.WriteLine("Sprite load error:\n{0}", e.ToString());
+                Console.WriteLine($"Sprite load error:\n{e}");
             }
 
             return tmpSprite; // unsafe?
         }
-        private void LoadGround()
+        private static void LoadGround()
         {
             try
             {
-                backgroundTexture = new Texture(getRelativePath("Sprites\\Ground\\Title_Image.png")) { Repeated = true };
-                Console.WriteLine(getRelativePath());
+                _backgroundTexture = new Texture(GetRelativePath("Sprites\\Ground\\Title_Image.png")) { Repeated = true };
+                Console.WriteLine(GetRelativePath());
             }
             catch (Exception e)
             {
-                Console.WriteLine("Sprite load error:\n{0}", e.ToString());
+                Console.WriteLine($"Sprite load error:\n{e}");
             }
 
             // left, top, width, length
-            IntRect square = new IntRect(0, 0, (int)videoResolution[0], (int)videoResolution[1]);
-            backgroundSprite = new Sprite(backgroundTexture, square);
+            var square = new IntRect(0, 0, (int)VideoResolution[0], (int)VideoResolution[1]);
+            _backgroundSprite = new Sprite(_backgroundTexture, square);
         }
         /// <summary>
         /// Get relative path from executable dir ~\Bomberman\
         /// </summary>
         /// <param name="myPath"></param>
         /// <returns></returns>
-        private string getRelativePath(string myPath = "")
+        private static string GetRelativePath(string myPath = "")
         {
-            string curPath, fullPath = "";
-            string relPath = myPath;
+            var fullPath = "";
+            var relPath = myPath;
 
             try
             {
-                curPath = Directory.GetCurrentDirectory();
+                var curPath = Directory.GetCurrentDirectory();
                 fullPath = Path.GetFullPath(Path.Combine(curPath, @"..\..\..\", relPath));
             }
             catch (Exception e)
             {
-                Console.WriteLine("Current directory load error: {0}", e.ToString());
+                Console.WriteLine($"Current directory load error: {e}");
             }
 
             return fullPath;
