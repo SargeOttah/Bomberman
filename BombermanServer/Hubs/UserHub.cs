@@ -1,27 +1,13 @@
-﻿using System;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 
 namespace BombermanServer.Hubs
 {
     public class UserHub : Hub
     {
-        public async Task SendMessage(string user, string message)
+        public async Task SendMessage(string user, string message) // 'SendMessage' is a name that ClientSide sends requests to.
         {
-            Console.Write("Got message");
-            await Clients.All.SendAsync("SendMessage", user, message);
-        }
-
-        public override async Task OnConnectedAsync()
-        {
-            Console.WriteLine(Context.ConnectionId);
-            await base.OnConnectedAsync();
-        }
-
-        public override async Task OnDisconnectedAsync(Exception ex)
-        {
-            Console.WriteLine(Context.ConnectionId);
-            await base.OnDisconnectedAsync(ex);
+            await Clients.Others.SendAsync("ReceiveMessage", user, message); // 'ReceiveMessage' is a name that ClientSide listens to.
         }
     }
 }

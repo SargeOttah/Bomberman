@@ -1,4 +1,4 @@
-using BombermanServer.Hubs;
+using BombermanServer.Configurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,11 +24,7 @@ namespace BombermanServer
             }
 
             app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapHub<UserHub>("/user-hub");
-            });
+            app.ConfigureHubs(); // Implementation in Configurations / HubConfiguration.cs
         }
     }
 }

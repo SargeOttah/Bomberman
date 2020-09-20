@@ -27,7 +27,7 @@ namespace Bomberman
             return Instance;
         }
 
-        private static void ConfigureHubConnection()
+        private static void ConfigureHubConnections()
         {
             _userHubConnection = new HubConnectionBuilder()
                     .WithUrl("https://localhost:5001/user-hub")
@@ -38,7 +38,7 @@ namespace Bomberman
 
         public void Run()
         {
-            ConfigureHubConnection();
+            ConfigureHubConnections();
             // TODO: Selector
             // VideoResolution = new uint[] { 500, 500 };   // Graphics resolution
             // VideoResolution = new uint[] { 800, 600 };   // Graphics resolution
@@ -112,7 +112,7 @@ namespace Bomberman
             Console.WriteLine($"Resolution: {videoMode.Width}x{videoMode.Height}");
             return renderWindow;
         }
-        private Sprite LoadSprite(string path, IntRect square) // TODO: improve
+        private static Sprite LoadSprite(string path, IntRect square) // TODO: improve
         {
             var tmpSprite = new Sprite();
 
@@ -121,7 +121,7 @@ namespace Bomberman
             try
             {
                 //tmpTexture
-                var tmpTexture = new Texture(getRelativePath(path)) { /*Repeated = false */};
+                var tmpTexture = new Texture(GetRelativePath(path)) { /*Repeated = false */};
                 tmpSprite = new Sprite(tmpTexture, tmpRect);
             }
             catch (Exception e)
@@ -131,12 +131,12 @@ namespace Bomberman
 
             return tmpSprite; // unsafe?
         }
-        private void LoadGround()
+        private static void LoadGround()
         {
             try
             {
-                _backgroundTexture = new Texture(getRelativePath("Sprites\\Ground\\Title_Image.png")) { Repeated = true };
-                Console.WriteLine(getRelativePath());
+                _backgroundTexture = new Texture(GetRelativePath("Sprites\\Ground\\Title_Image.png")) { Repeated = true };
+                Console.WriteLine(GetRelativePath());
             }
             catch (Exception e)
             {
@@ -152,7 +152,7 @@ namespace Bomberman
         /// </summary>
         /// <param name="myPath"></param>
         /// <returns></returns>
-        private string getRelativePath(string myPath = "")
+        private static string GetRelativePath(string myPath = "")
         {
             var fullPath = "";
             var relPath = myPath;
