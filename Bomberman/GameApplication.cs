@@ -34,6 +34,8 @@ namespace Bomberman
                     .Build();
 
             _userHubConnection.StartAsync().Wait();
+
+            _userHubConnection.On("ReceiveMessage", (string user, string message) => Console.WriteLine($"{user}: {message}")); // Demo listener.
         }
 
         public void Run()
@@ -77,7 +79,7 @@ namespace Bomberman
             if (Keyboard.IsKeyPressed(Keyboard.Key.W))
             {
                 totalMovement.Y -= speed;
-                _userHubConnection.InvokeAsync("SendMessage", "Asd", "asd").Wait();
+                _userHubConnection.InvokeAsync("SendMessage", "Asd", "asd").Wait(); // Demo sender - "SendMessage" maps to hub's function name.
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.A))
             {
