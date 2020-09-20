@@ -1,17 +1,9 @@
-﻿using System;
-using System.Reflection;
-using System.IO;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Runtime.InteropServices.ComTypes;
-using SFML.Audio;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Xml.Schema;
+using System;
+using System.IO;
 
 namespace Bomberman
 {
@@ -26,9 +18,20 @@ namespace Bomberman
         Sprite Player;
         private uint[] videoResolution = { 800, 600 };
 
+        private HubConnection _hubConnection;
+
         public static GameApplication GetInstance()
         {
             return _instance;
+        }
+
+        private void ConfigureHubConnection()
+        {
+            _hubConnection = new HubConnectionBuilder()
+                    .WithUrl("https://localhost:5001/user-hub")
+                    .Build();
+
+            _hubConnection.StartAsync().Wait();
         }
 
         public void Run()
@@ -40,6 +43,8 @@ namespace Bomberman
             // videoResolution = new uint[] { 1366, 768 };  // Graphics resolution
             // videoResolution = new uint[] { 1280, 720 };  // Graphics resolution
             // videoResolution = new uint[] { 1920, 1080 }; // Graphics resolution
+
+            ConfigureHubConnection();
 
             window = CreateRenderWindow(Styles.Default, windowTitle, videoResolution);
 
@@ -73,6 +78,7 @@ namespace Bomberman
             if (Keyboard.IsKeyPressed(Keyboard.Key.W))
             {
                 totalMovement.Y -= speed;
+                _hubConnection.InvokeAsync("SendMessage", "Asd", "asd").Wait();
             }
             if (Keyboard.IsKeyPressed(Keyboard.Key.A))
             {

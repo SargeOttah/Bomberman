@@ -27,10 +27,7 @@ namespace BombermanServer
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    endpoints.MapHub<UserHub>("/user-hub");
-                });
+                endpoints.MapHub<UserHub>("/user-hub");
             });
         }
     }
