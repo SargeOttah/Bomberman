@@ -49,12 +49,12 @@ namespace Bomberman
             // VideoResolution = new uint[] { 1920, 1080 }; // Graphics resolution
 
             _renderWindow = CreateRenderWindow(Styles.Default);
-            LoadGround();
+            LoadGround(Properties.Resources.Title_Image);
             _renderWindow.SetActive();
 
             // Fetching sprites
             // TODO: autonomic loading
-            _playerSprite = LoadSprite("Sprites\\Player\\Red\\redfront.png", new IntRect(0, 0, 19, 32));
+            _playerSprite = LoadSprite(Properties.Resources.redfront, new IntRect(0, 0, 19, 32)); //"Sprites\\Player\\Red\\redfront.png"
             _playerSprite.Position = new Vector2f((float)VideoResolution[0] / 2, (float)VideoResolution[1] / 2);
             _playerSprite.Scale = new Vector2f(3, 3);
 
@@ -114,7 +114,7 @@ namespace Bomberman
             Console.WriteLine($"Resolution: {videoMode.Width}x{videoMode.Height}");
             return renderWindow;
         }
-        private static Sprite LoadSprite(string path, IntRect square) // TODO: improve
+        private static Sprite LoadSprite(byte[] imageBitmap, IntRect square, bool repeated = false) // TODO: improve
         {
             var tmpSprite = new Sprite();
 
@@ -123,7 +123,7 @@ namespace Bomberman
             try
             {
                 //tmpTexture
-                var tmpTexture = new Texture(GetRelativePath(path)) { /*Repeated = false */};
+                var tmpTexture = new Texture(imageBitmap) { Repeated = repeated };
                 tmpSprite = new Sprite(tmpTexture, tmpRect);
             }
             catch (Exception e)
@@ -133,21 +133,24 @@ namespace Bomberman
 
             return tmpSprite; // unsafe?
         }
-        private static void LoadGround()
+        private static void LoadGround(byte[] imageBitmap) // kindof useless method tbh
         {
+            var square = new IntRect(0, 0, (int)VideoResolution[0], (int)VideoResolution[1]);
+            Sprite backgroundSprite;
             try
             {
-                _backgroundTexture = new Texture(GetRelativePath("Sprites\\Ground\\Title_Image.png")) { Repeated = true };
-                Console.WriteLine(GetRelativePath());
+                backgroundSprite = LoadSprite(imageBitmap, square, true);
+                
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Sprite load error:\n{e}");
+                backgroundSprite = LoadSprite(Properties.Resources.Title_Image, square, true); // loading a default background
             }
 
             // left, top, width, length
-            var square = new IntRect(0, 0, (int)VideoResolution[0], (int)VideoResolution[1]);
-            _backgroundSprite = new Sprite(_backgroundTexture, square);
+            
+            _backgroundSprite = backgroundSprite;
         }
         /// <summary>
         /// Get relative path from executable dir ~\Bomberman\
@@ -163,6 +166,7 @@ namespace Bomberman
             {
                 var curPath = Directory.GetCurrentDirectory();
                 fullPath = Path.GetFullPath(Path.Combine(curPath, @"..\..\..\", relPath));
+                Console.WriteLine(fullPath.ToString());
             }
             catch (Exception e)
             {
