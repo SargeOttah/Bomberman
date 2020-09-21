@@ -2,8 +2,10 @@
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using System.Threading.Tasks;
 using System;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace Bomberman
 {
@@ -16,9 +18,13 @@ namespace Bomberman
 
         // TODO: Sprite arrays/lists to load
         private static Sprite _backgroundSprite;
-        private static Sprite _playerSprite;
+        private static Sprite _boxWall;
         private static readonly uint[] VideoResolution = { 800, 600 };
         private const string WindowTitle = "Bomberman v0.01";
+
+        //player init
+        Player mainPlayer = new Player();
+        IntRect playerTexture = new IntRect(0, 0, 19, 32);
 
         private static HubConnection _userHubConnection;
 
@@ -36,11 +42,13 @@ namespace Bomberman
             _userHubConnection.StartAsync().Wait();
 
             _userHubConnection.On("ReceiveMessage", (string user, string message) => Console.WriteLine($"{user}: {message}")); // Demo listener.
+
         }
 
         public void Run()
         {
             ConfigureHubConnections();
+            //ConfigureHubConnections();
             // TODO: Selector
             // VideoResolution = new uint[] { 500, 500 };   // Graphics resolution
             // VideoResolution = new uint[] { 800, 600 };   // Graphics resolution
@@ -49,52 +57,105 @@ namespace Bomberman
             // VideoResolution = new uint[] { 1920, 1080 }; // Graphics resolution
 
             _renderWindow = CreateRenderWindow(Styles.Default);
+<<<<<<< HEAD
             LoadGround(Properties.Resources.Title_Image);
-            _renderWindow.SetActive();
+            //_renderWindow.SetActive();
+=======
+            LoadGround();
 
-            // Fetching sprites
-            // TODO: autonomic loading
-            _playerSprite = LoadSprite(Properties.Resources.redfront, new IntRect(0, 0, 19, 32)); //"Sprites\\Player\\Red\\redfront.png"
-            _playerSprite.Position = new Vector2f((float)VideoResolution[0] / 2, (float)VideoResolution[1] / 2);
-            _playerSprite.Scale = new Vector2f(3, 3);
+            // Load Player
+            mainPlayer.Position = new Vector2f(_renderWindow.Size.X / 2, _renderWindow.Size.Y / 2);
+            mainPlayer.Scale = new Vector2f(3, 3);
+
+            var texture = new Texture(GetRelativePath("Sprites\\Player\\Red\\redfront.png"));
+            mainPlayer.Texture = texture;
+
+            // Wall box
+            _boxWall = LoadSprite("Sprites\\DesolatedHut.png", new IntRect(0, 0, 100, 100));
+            _boxWall.Position = new Vector2f(250, 250);
+            _boxWall.Scale = new Vector2f(0.5f, 0.5f);
+
+            // Player postion from left, top (x, y)
+            var coordText = new Text("", new Font(GetRelativePath("Fonts\\arial.ttf")));
+            coordText.CharacterSize = 20;
+            coordText.Position = new Vector2f(10, 10);
+>>>>>>> tomast
 
             while (_renderWindow.IsOpen)
             {
                 _renderWindow.DispatchEvents(); // event handler to processes keystrokes/mouse movements
                 _renderWindow.Clear();
                 _renderWindow.Draw(_backgroundSprite);
-                _renderWindow.Draw(_playerSprite);
-                _renderWindow.Display(); // update screen
+                _renderWindow.Draw(_boxWall);
+                _renderWindow.Draw(mainPlayer);
 
-                InputControl();
+                // Print player coordinates left, top (x, y)
+                coordText.DisplayedString = $"x {mainPlayer.Position.X} y {mainPlayer.Position.Y}";
+                _renderWindow.Draw(coordText);
+
+                if (_renderWindow.HasFocus()) // if window is focused
+                {
+                    InputControl();
+                }
+
+                _renderWindow.Display(); // update screen
             }
         }
-        public void InputControl() // TODO: improve movement overlap, etc
+        public void InputControl()
         {
-            var totalMovement = new Vector2f(0, 0);
+                float movementSpeed = 5;
+                float moveDistance = movementSpeed;
+                float movementX = 0;
+                float movementY = 0;
 
-            var tempPos = _playerSprite.Position;
-            const int speed = 4;
+                if (Keyboard.IsKeyPressed(Keyboard.Key.W))
+                {
+                    if (mainPlayer.CheckMovementCollision(0, -moveDistance, _boxWall))
+                    {
+                        //Console.WriteLine("Player collided with a wall");
+                    }
+                    else
+                    {
+                        movementY -= moveDistance;
+                    }
+                }
 
-            if (Keyboard.IsKeyPressed(Keyboard.Key.W))
-            {
-                totalMovement.Y -= speed;
-                _userHubConnection.InvokeAsync("SendMessage", "Asd", "asd").Wait(); // Demo sender - "SendMessage" maps to hub's function name.
-            }
-            if (Keyboard.IsKeyPressed(Keyboard.Key.A))
-            {
-                totalMovement.X -= speed;
-            }
-            if (Keyboard.IsKeyPressed(Keyboard.Key.S))
-            {
-                totalMovement.Y += speed;
-            }
-            if (Keyboard.IsKeyPressed(Keyboard.Key.D))
-            {
-                totalMovement.X += speed;
-            }
+                if (Keyboard.IsKeyPressed(Keyboard.Key.S))
+                {
+                    if (mainPlayer.CheckMovementCollision(0, moveDistance, _boxWall))
+                    {
+                        //Console.WriteLine("Player collided with a wall");
+                    }
+                    else
+                    {
+                        movementY += moveDistance;
+                    }
+                }
+                if (Keyboard.IsKeyPressed(Keyboard.Key.D))
+                {
+                    if (mainPlayer.CheckMovementCollision(moveDistance, 0, _boxWall))
+                    {
+                        //Console.WriteLine("Player collided with a wall");
+                    }
+                    else
+                    {
+                        movementX += moveDistance;
+                    }
 
-            _playerSprite.Position = new Vector2f(tempPos.X + totalMovement.X, tempPos.Y + totalMovement.Y);
+                }
+                if (Keyboard.IsKeyPressed(Keyboard.Key.A))
+                {
+                    if (mainPlayer.CheckMovementCollision(-moveDistance, 0, _boxWall))
+                    {
+                        //Console.WriteLine("Player collided with a wall");
+                    }
+                    else
+                    {
+                        movementX -= moveDistance;
+                    }
+
+                }
+                mainPlayer.Translate(movementX, movementY); // move?
         }
         private static void OnClose(object sender, EventArgs e)
         {
@@ -114,7 +175,12 @@ namespace Bomberman
             Console.WriteLine($"Resolution: {videoMode.Width}x{videoMode.Height}");
             return renderWindow;
         }
+<<<<<<< HEAD
         private static Sprite LoadSprite(byte[] imageBitmap, IntRect square, bool repeated = false) // TODO: improve
+=======
+
+        private static Sprite LoadSprite(string path, IntRect square) // TODO: improve
+>>>>>>> tomast
         {
             var tmpSprite = new Sprite();
 
