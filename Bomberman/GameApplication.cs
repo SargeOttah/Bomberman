@@ -47,7 +47,6 @@ namespace Bomberman
 
         public void Run()
         {
-            ConfigureHubConnections();
             //ConfigureHubConnections();
             // TODO: Selector
             // VideoResolution = new uint[] { 500, 500 };   // Graphics resolution
@@ -65,6 +64,7 @@ namespace Bomberman
 
             // Load Player
             mainPlayer.Position = new Vector2f(_renderWindow.Size.X / 2, _renderWindow.Size.Y / 2);
+            mainPlayer.TextureRect = playerTexture;
             mainPlayer.Scale = new Vector2f(3, 3);
 
             var texture = new Texture(GetRelativePath("Sprites\\Player\\Red\\redfront.png"));
