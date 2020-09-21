@@ -56,11 +56,7 @@ namespace Bomberman
             // VideoResolution = new uint[] { 1920, 1080 }; // Graphics resolution
 
             _renderWindow = CreateRenderWindow(Styles.Default);
-<<<<<<< HEAD
             LoadGround(Properties.Resources.Title_Image);
-            //_renderWindow.SetActive();
-=======
-            LoadGround();
 
             // Load Player
             mainPlayer.Position = new Vector2f(_renderWindow.Size.X / 2, _renderWindow.Size.Y / 2);
@@ -71,7 +67,10 @@ namespace Bomberman
             mainPlayer.Texture = texture;
 
             // Wall box
-            _boxWall = LoadSprite("Sprites\\DesolatedHut.png", new IntRect(0, 0, 100, 100));
+            //_boxWall = LoadSprite("Sprites\\DesolatedHut.png", new IntRect(0, 0, 100, 100));
+            _boxWall = LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
+
+
             _boxWall.Position = new Vector2f(250, 250);
             _boxWall.Scale = new Vector2f(0.5f, 0.5f);
 
@@ -79,7 +78,6 @@ namespace Bomberman
             var coordText = new Text("", new Font(GetRelativePath("Fonts\\arial.ttf")));
             coordText.CharacterSize = 20;
             coordText.Position = new Vector2f(10, 10);
->>>>>>> tomast
 
             while (_renderWindow.IsOpen)
             {
@@ -175,12 +173,7 @@ namespace Bomberman
             Console.WriteLine($"Resolution: {videoMode.Width}x{videoMode.Height}");
             return renderWindow;
         }
-<<<<<<< HEAD
-        private static Sprite LoadSprite(byte[] imageBitmap, IntRect square, bool repeated = false) // TODO: improve
-=======
-
-        private static Sprite LoadSprite(string path, IntRect square) // TODO: improve
->>>>>>> tomast
+        private static Sprite LoadSprite(byte[] imageBitmap, IntRect square, bool repeated = false)
         {
             var tmpSprite = new Sprite();
 

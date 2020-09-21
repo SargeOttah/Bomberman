@@ -183,6 +183,16 @@ namespace Bomberman.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] DesolatedHut {
+            get {
+                object obj = ResourceManager.GetObject("DesolatedHut", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] greenback {
             get {
                 object obj = ResourceManager.GetObject("greenback", resourceCulture);
