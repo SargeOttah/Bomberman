@@ -2,19 +2,17 @@
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using System.Threading.Tasks;
 using System;
 using System.IO;
-using System.Xml.Serialization;
 
 namespace Bomberman
 {
     internal class GameApplication
     {
+        private bool _serverBool = true;
         private static readonly GameApplication Instance = new GameApplication();
 
         private static RenderWindow _renderWindow;
-        private static Texture _backgroundTexture;
 
         // TODO: Sprite arrays/lists to load
         private static Sprite _backgroundSprite;
@@ -47,7 +45,9 @@ namespace Bomberman
 
         public void Run()
         {
-            //ConfigureHubConnections();
+            //if (_serverBool) { ConfigureHubConnections(); }
+            ConfigureHubConnections();
+
             // TODO: Selector
             // VideoResolution = new uint[] { 500, 500 };   // Graphics resolution
             // VideoResolution = new uint[] { 800, 600 };   // Graphics resolution
@@ -57,6 +57,7 @@ namespace Bomberman
 
             _renderWindow = CreateRenderWindow(Styles.Default);
             LoadGround(Properties.Resources.Title_Image);
+            _renderWindow.SetActive();
 
             // Load Player
             mainPlayer.Position = new Vector2f(_renderWindow.Size.X / 2, _renderWindow.Size.Y / 2);
@@ -67,7 +68,6 @@ namespace Bomberman
             mainPlayer.Texture = texture;
 
             // Wall box
-            //_boxWall = LoadSprite("Sprites\\DesolatedHut.png", new IntRect(0, 0, 100, 100));
             _boxWall = LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
 
 
@@ -108,9 +108,14 @@ namespace Bomberman
 
                 if (Keyboard.IsKeyPressed(Keyboard.Key.W))
                 {
-                    if (mainPlayer.CheckMovementCollision(0, -moveDistance, _boxWall))
+                    if (_serverBool) { 
+                    _userHubConnection.InvokeAsync("SendMessage", "Asd", "asd").Wait();
+                    // Demo sender - "SendMessage" maps to hub's function name.
+                }
+
+                if (mainPlayer.CheckMovementCollision(0, -moveDistance, _boxWall))
                     {
-                        //Console.WriteLine("Player collided with a wall");
+                        // Console.WriteLine("Player collided with a wall");
                     }
                     else
                     {
