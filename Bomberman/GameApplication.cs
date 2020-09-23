@@ -43,13 +43,13 @@ namespace Bomberman
                     .Build();
 
 
-            _userHubConnection.On<PlayerDTO>("ClientConnected", ClientConnected);
+            _userHubConnection.On<PlayerDTO>("ClientConnected", ClientConnected); // Listens for our own PlayerDTO created by the server
 
             _userHubConnection.StartAsync().Wait();
 
             _userHubConnection.On("ReceiveMessage", (string user, string message) => Console.WriteLine($"{user}: {message}")); // Demo listener.
-            _userHubConnection.On<PlayerDTO>("ReceiveNewClient", OnNewClientConnect);
-            _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers);
+            _userHubConnection.On<PlayerDTO>("ReceiveNewClient", OnNewClientConnect); // Listens for new clients that connect to the server
+            _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers); // Refreshes data for all players connected to the server ( currenty only position )
 
         }
 
@@ -84,7 +84,7 @@ namespace Bomberman
 
             while (_renderWindow.IsOpen)
             {
-                _userHubConnection.InvokeAsync("Refresh", mainPlayer.GetPointPosition()).Wait();
+                _userHubConnection.InvokeAsync("Refresh", mainPlayer.GetPointPosition()).Wait(); // Requesting refresh data from server at every new frame
                 _renderWindow.DispatchEvents(); // event handler to processes keystrokes/mouse movements
                 _renderWindow.Clear();
                 _renderWindow.Draw(_backgroundSprite);
@@ -228,7 +228,7 @@ namespace Bomberman
         // Called when this client connects to the server, receives the player information
         private static void ClientConnected(PlayerDTO playerDTO)
         {
-            Console.WriteLine("we have connected");
+            Console.WriteLine("We have connected");
             Console.WriteLine(playerDTO.ToString());
             mainPlayer = new Player(playerDTO);
         }
@@ -245,18 +245,17 @@ namespace Bomberman
         {
             PlayerDTO main = players.Where(p => p.connectionId.Equals(mainPlayer.connectionId)).First();
             List<PlayerDTO> others = players.Where(p => !p.connectionId.Equals(mainPlayer.connectionId)).ToList();
-            Console.WriteLine("refreshing players");
 
             mainPlayer.UpdateStats(main);
-            foreach (PlayerDTO pNew in others) // galima ir geriau, bet kolkas del saugumo
+            foreach (PlayerDTO pNew in others)
             {
-                foreach (Player p in otherPlayers)
+                Player p = otherPlayers.Find(p => p.connectionId.Equals(pNew.connectionId));
+                if (p != null)
                 {
-                    if (p.connectionId.Equals(pNew.connectionId))
-                    {
-                        p.UpdateStats(pNew);
-                        break;
-                    }
+                    p.UpdateStats(pNew);
+                } else
+                {
+                    otherPlayers.Add(new Player(pNew));
                 }
             }
         }

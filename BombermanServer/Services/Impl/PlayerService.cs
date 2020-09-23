@@ -41,5 +41,23 @@ namespace BombermanServer.Services.Impl
         {
             return players.Remove(player);
         }
+        // Returns the smallest not taken id
+        public int GetFirstEmptyId()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                bool success = true;
+                for (int j = 0; j < players.Count; j++)
+                {
+                    if (players[j].id == i)
+                    {
+                        success = false;
+                        break;
+                    }
+                }
+                if (success) { return i; }
+            }
+            return -1;
+        }
     }
 }

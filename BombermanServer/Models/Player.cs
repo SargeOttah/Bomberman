@@ -12,13 +12,10 @@ namespace BombermanServer.Models
         public string connectionId { get; set; }
         public PointF position { get; set; }
         public int speedMultiplier { get; set; }
-        private PlayerSprite sprite { get; set; }
+        public PlayerSprite sprite { get; set; }
 
         public Player()
         {
-            // set the position and sprite based on connection id
-            this.position = new PointF(0, 0);
-            this.sprite = PlayerSprite.BLUE;
             this.speedMultiplier = 1;
         }
         
@@ -27,6 +24,38 @@ namespace BombermanServer.Models
         {
             this.id = id;
             this.connectionId = connectionId;
+            ConfigurePlayer();
+        }
+
+        private void ConfigurePlayer()
+        {
+            switch (this.id)
+            {
+                case 0:
+                    this.position = new PointF(0, 0);
+                    this.sprite = PlayerSprite.BLUE;
+                    break;
+                case 1:
+                    this.position = new PointF(100, 0);
+                    this.sprite = PlayerSprite.RED;
+                    break;
+                case 2:
+                    this.position = new PointF(0, 100);
+                    this.sprite = PlayerSprite.GREEN;
+                    break;
+                case 3:
+                    this.position = new PointF(100, 100);
+                    this.sprite = PlayerSprite.BLUE; // need 4th sprite
+                    break;
+                default:
+                    Console.WriteLine("this should never appear in console:)");
+                    break;
+            }
+        }
+
+        public override string ToString()
+        {
+            return id.ToString() + " " + connectionId + " " + position.X + "|" + position.Y + " " + this.sprite;
         }
     }
 

@@ -16,5 +16,7 @@ namespace BombermanServer.Services
         public bool AddPlayer(Player player);
 
         public bool RemovePlayer(Player player);
+
+        public int GetFirstEmptyId();
     }
 }

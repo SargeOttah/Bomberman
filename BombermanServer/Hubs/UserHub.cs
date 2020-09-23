@@ -26,8 +26,8 @@ namespace BombermanServer.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            Console.WriteLine("Client Connected:" + this.Context.ConnectionId);
-            Player newPlayer = new Player(_playerService.GetCount(), this.Context.ConnectionId);
+            Console.WriteLine("Client Connected:" + this.Context.ConnectionId + " " + _playerService.GetFirstEmptyId());
+            Player newPlayer = new Player(_playerService.GetFirstEmptyId(), this.Context.ConnectionId);
 
             if (!_playerService.AddPlayer(newPlayer))
             {
@@ -36,6 +36,7 @@ namespace BombermanServer.Hubs
             }
 
             await Clients.Caller.SendAsync("ClientConnected", newPlayer); // Sends back the newly created player to the owner
+            Console.WriteLine(newPlayer.ToString());
 
             Console.WriteLine("Clients Count:" + _playerService.GetCount());
             

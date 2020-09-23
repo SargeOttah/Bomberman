@@ -27,6 +27,7 @@ namespace Bomberman
 
         public Player(PlayerDTO playerDTO)
         {
+            // TODO: scale player position based on current resolution
             this.Position = new Vector2f(playerDTO.position.X, playerDTO.position.Y); //new Vector2f(_renderWindow.Size.X / 2, _renderWindow.Size.Y / 2)
             this.TextureRect = new IntRect(0, 0, 19, 32);
             this.Scale = new Vector2f(3, 3);
