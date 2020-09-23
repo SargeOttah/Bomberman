@@ -1,4 +1,7 @@
 using BombermanServer.Configurations;
+using BombermanServer.Models;
+using BombermanServer.Services;
+using BombermanServer.Services.Impl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +16,8 @@ namespace BombermanServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSignalR();
+
+            services.AddSingleton<IPlayerService, PlayerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
