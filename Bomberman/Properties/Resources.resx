@@ -160,6 +160,9 @@
   <data name="DesolatedHut" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\DesolatedHut.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Ghost" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Enemies\Ghost.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="greenback" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\sprites\player\green\greenback.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -232,7 +235,13 @@
   <data name="redrightwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\sprites\player\red\redrightwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="skeleton_front" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Enemies\skeleton_front.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Title_Image" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\sprites\ground\title_image.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="zombie_front" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Enemies\zombie_front.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

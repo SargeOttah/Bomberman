@@ -203,6 +203,16 @@ namespace Bomberman.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] Ghost {
+            get {
+                object obj = ResourceManager.GetObject("Ghost", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] greenback {
             get {
                 object obj = ResourceManager.GetObject("greenback", resourceCulture);
@@ -443,9 +453,29 @@ namespace Bomberman.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] skeleton_front {
+            get {
+                object obj = ResourceManager.GetObject("skeleton_front", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] Title_Image {
             get {
                 object obj = ResourceManager.GetObject("Title_Image", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] zombie_front {
+            get {
+                object obj = ResourceManager.GetObject("zombie_front", resourceCulture);
                 return ((byte[])(obj));
             }
         }

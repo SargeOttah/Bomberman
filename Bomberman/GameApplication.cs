@@ -1,4 +1,5 @@
 ﻿using Bomberman.Dto;
+using Bomberman.Enemies;
 using Microsoft.AspNetCore.SignalR.Client;
 using SFML.Graphics;
 using SFML.System;
@@ -72,6 +73,8 @@ namespace Bomberman
 
             // Wall box
             _boxWall = LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
+            // Enemy create
+            Enemy enemy = SpawnEnemy("Ghost");
 
 
             _boxWall.Position = new Vector2f(250, 250);
@@ -90,6 +93,7 @@ namespace Bomberman
                 _renderWindow.Draw(_backgroundSprite);
                 _renderWindow.Draw(_boxWall);
                 _renderWindow.Draw(mainPlayer);
+                _renderWindow.Draw(enemy.getSprite());
 
                 foreach (Player p in otherPlayers)
                 {
@@ -281,6 +285,16 @@ namespace Bomberman
             }
 
             return fullPath;
+        }
+
+        private Enemy SpawnEnemy(string name)
+        {
+            EnemyFactory enemyFactory = new EnemyFactory();
+            Enemy enemy = enemyFactory.createEnemy(name);
+            enemy.Position(50, 100);
+            enemy.Scale(0.2f, 0.2f);
+
+            return enemy;
         }
     }
 }
