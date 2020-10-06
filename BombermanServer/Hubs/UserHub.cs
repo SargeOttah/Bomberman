@@ -20,7 +20,6 @@ namespace BombermanServer.Hubs
 
         public async Task SendMessage(string user, string message) // 'SendMessage' is a name that ClientSide sends requests to.
         {
-            // Anything other than '.All' does not work because ClientSide doesn't focus on a single window - pressing keyboard key triggers all active windows simultaneously.
             await Clients.Caller.SendAsync("ReceiveMessage", user, message); // 'ReceiveMessage' is a name that ClientSide listens to.
         }
 
