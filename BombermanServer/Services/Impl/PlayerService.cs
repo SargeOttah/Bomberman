@@ -1,7 +1,5 @@
 ﻿using BombermanServer.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace BombermanServer.Services.Impl
 {
@@ -24,7 +22,7 @@ namespace BombermanServer.Services.Impl
 
         public Player GetPlayer(string connectionId)
         {
-            return players.Find(x => x.connectionId.Equals(connectionId));
+            return players.Find(x => x.ConnectionId.Equals(connectionId));
         }
 
         public int GetCount()
@@ -49,7 +47,7 @@ namespace BombermanServer.Services.Impl
                 bool success = true;
                 for (int j = 0; j < players.Count; j++)
                 {
-                    if (players[j].id == i)
+                    if (players[j].Id == i)
                     {
                         success = false;
                         break;

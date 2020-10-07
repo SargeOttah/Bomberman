@@ -1,10 +1,10 @@
-﻿using BombermanServer.Models;
+﻿using BombermanServer.Builders.PlayerBuilder;
+using BombermanServer.Models;
 using BombermanServer.Services;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BombermanServer.Hubs
@@ -25,8 +25,9 @@ namespace BombermanServer.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            Console.WriteLine("Client Connected:" + this.Context.ConnectionId + " " + _playerService.GetFirstEmptyId());
-            Player newPlayer = new Player(_playerService.GetFirstEmptyId(), this.Context.ConnectionId);
+            int playerId = _playerService.GetFirstEmptyId();
+            Console.WriteLine("Client Connected:" + this.Context.ConnectionId + " " + playerId);
+            var newPlayer = PlayerDirector.Build(playerId, Context.ConnectionId);
 
             if (!_playerService.AddPlayer(newPlayer))
             {
@@ -66,7 +67,7 @@ namespace BombermanServer.Hubs
 
         public async Task Refresh(PointF playerPosition)
         {
-            _playerService.GetPlayer(this.Context.ConnectionId).position = playerPosition;
+            _playerService.GetPlayer(this.Context.ConnectionId).Position = playerPosition;
             List<Player> players = _playerService.GetPlayers();
 
             await Clients.Caller.SendAsync("RefreshPlayers", players);
