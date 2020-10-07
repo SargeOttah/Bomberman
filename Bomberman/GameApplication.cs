@@ -1,5 +1,7 @@
 ﻿using Bomberman.Dto;
 using Bomberman.Enemies;
+using Bomberman.Spawnables.Obstacles;
+using Bomberman.Spawnables.Obstacles.DestructableObstacles;
 using Microsoft.AspNetCore.SignalR.Client;
 using SFML.Graphics;
 using SFML.System;
@@ -74,8 +76,10 @@ namespace Bomberman
             // Wall box
             _boxWall = LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
             // Enemy create
-            Enemy enemy = SpawnEnemy("Ghost");
-
+            Enemy enemy = SpawnEnemy("Zombie");
+            // Spawn obstacle
+            Sprite obs = SpawnObstacle();
+            obs.Position = new Vector2f(100, 100);
 
             _boxWall.Position = new Vector2f(250, 250);
             _boxWall.Scale = new Vector2f(0.5f, 0.5f);
@@ -94,6 +98,7 @@ namespace Bomberman
                 _renderWindow.Draw(_boxWall);
                 _renderWindow.Draw(mainPlayer);
                 _renderWindow.Draw(enemy.getSprite());
+                _renderWindow.Draw(obs);
 
                 foreach (Player p in otherPlayers)
                 {
@@ -295,6 +300,15 @@ namespace Bomberman
             enemy.Scale(0.2f, 0.2f);
 
             return enemy;
+        }
+
+        private Sprite SpawnObstacle()
+        {
+            ObstacleFactory obsFactory = FactoryPicker.GetFactory("Destroyable");
+            Sprite obj = obsFactory.GetDestroyable("Crate").SpawnObstacle();
+            obj.Position = new Vector2f(100, 100);
+
+            return obj;
         }
     }
 }

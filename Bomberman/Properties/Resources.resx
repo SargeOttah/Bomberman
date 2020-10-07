@@ -157,6 +157,9 @@
   <data name="bluerightwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\sprites\player\blue\bluerightwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="crate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Obstacles\crate.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="DesolatedHut" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\DesolatedHut.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -199,6 +202,9 @@
   <data name="greenrightwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\sprites\player\green\greenrightwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="obsidian" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Obstacles\obsidian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="redback" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\sprites\player\red\redback.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -237,6 +243,9 @@
   </data>
   <data name="skeleton_front" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\Enemies\skeleton_front.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="stone" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Obstacles\stone.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Title_Image" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\sprites\ground\title_image.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
