@@ -25,7 +25,7 @@ namespace BombermanServer.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            int playerId = _playerService.GetFirstEmptyId();
+            int playerId = _playerService.GetEmptyId();
             Console.WriteLine("Client Connected:" + this.Context.ConnectionId + " " + playerId);
             var newPlayer = PlayerDirector.Build(playerId, Context.ConnectionId);
 
