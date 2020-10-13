@@ -1,5 +1,8 @@
-﻿using BombermanServer.Models;
+﻿using System;
+using BombermanServer.Models;
 using System.Collections.Generic;
+using System.Linq;
+using BombermanServer.Services.Strategies;
 
 namespace BombermanServer.Services.Impl
 {
@@ -39,23 +42,15 @@ namespace BombermanServer.Services.Impl
         {
             return players.Remove(player);
         }
-        // Returns the smallest not taken id
-        public int GetFirstEmptyId()
+       
+        public int GetEmptyId()
         {
-            for (int i = 0; i < 4; i++)
-            {
-                bool success = true;
-                for (int j = 0; j < players.Count; j++)
-                {
-                    if (players[j].Id == i)
-                    {
-                        success = false;
-                        break;
-                    }
-                }
-                if (success) { return i; }
-            }
-            return -1;
+            var rng = new Random();
+            var playerEmptyIdStrategy = rng.Next(0, 1) == 1
+                ? new MaxPlayerEmptyIdStrategy() as IPlayerEmptyIdStrategy
+                : new MinPlayerEmptyIdStrategy();
+
+            return playerEmptyIdStrategy.GetEmptyId(players);
         }
     }
 }

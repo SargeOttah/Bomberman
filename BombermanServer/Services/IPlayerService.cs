@@ -1,7 +1,6 @@
 ﻿using BombermanServer.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace BombermanServer.Services
 {
@@ -17,6 +16,6 @@ namespace BombermanServer.Services
 
         public bool RemovePlayer(Player player);
 
-        public int GetFirstEmptyId();
+        public int GetEmptyId();
     }
 }
