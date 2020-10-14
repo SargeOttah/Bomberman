@@ -1,8 +1,5 @@
-﻿using System;
-using BombermanServer.Models;
+﻿using BombermanServer.Models;
 using System.Collections.Generic;
-using System.Linq;
-using BombermanServer.Services.Strategies;
 
 namespace BombermanServer.Services.Impl
 {
@@ -45,10 +42,7 @@ namespace BombermanServer.Services.Impl
        
         public int GetEmptyId()
         {
-            var rng = new Random();
-            var playerEmptyIdStrategy = rng.Next(0, 1) == 1
-                ? new MaxPlayerEmptyIdStrategy() as IPlayerEmptyIdStrategy
-                : new MinPlayerEmptyIdStrategy();
+            var playerEmptyIdStrategy = PlayerServiceHelper.GetPlayerIdStrategy();
 
             return playerEmptyIdStrategy.GetEmptyId(players);
         }
