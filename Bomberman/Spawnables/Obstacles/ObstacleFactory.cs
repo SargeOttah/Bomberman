@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Bomberman.Spawnables.Obstacles
 {
+    // ABSTRACT-FACTORY
     abstract class ObstacleFactory : GameApplication
     {
         public abstract DestroyableObstacle GetDestroyable(string destroyableObj);

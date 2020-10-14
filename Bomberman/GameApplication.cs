@@ -1,6 +1,10 @@
 ﻿using Bomberman.Dto;
 using Bomberman.Enemies;
+using Bomberman.Spawnables;
+using Bomberman.GUI;
 using Bomberman.Spawnables.Obstacles;
+using Bomberman.Global;
+using Bomberman.Collisions;
 using Bomberman.Spawnables.Obstacles.DestructableObstacles;
 using Microsoft.AspNetCore.SignalR.Client;
 using SFML.Graphics;
@@ -34,6 +38,13 @@ namespace Bomberman
 
         private static HubConnection _userHubConnection;
 
+        // To track time
+        Clock FrameClock { get; set; } = new Clock();
+        Clock RespawnClock { get; set; } = new Clock();
+
+        public static GameScore scoreBoard;
+
+
         public static GameApplication GetInstance()
         {
             return Instance;
@@ -58,8 +69,9 @@ namespace Bomberman
 
         public void Run()
         {
-            //if (_serverBool) { ConfigureHubConnections(); }
-            ConfigureHubConnections();
+
+            if (_serverBool) { ConfigureHubConnections(); }
+            else { mainPlayer = new Player(new PlayerDTO()); }
 
             // TODO: Selector
 
@@ -74,35 +86,79 @@ namespace Bomberman
             _renderWindow.SetActive();
 
             // Wall box
-            _boxWall = LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
+            _boxWall = SpriteLoader.LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
             // Enemy create
             Enemy enemy = SpawnEnemy("Zombie");
+
+
             // Spawn obstacle
-            Sprite obs = SpawnObstacle();
-            obs.Position = new Vector2f(100, 100);
+            //Sprite obs = SpawnObstacle();
+            //obs.Position = new Vector2f(100, 100);
 
             _boxWall.Position = new Vector2f(250, 250);
             _boxWall.Scale = new Vector2f(0.5f, 0.5f);
+
+            // UI score object
+            scoreBoard = new GameScore(_renderWindow);
 
             // Player postion from left, top (x, y)
             var coordText = new Text("", new Font(Properties.Resources.arial));
             coordText.CharacterSize = 20;
             coordText.Position = new Vector2f(10, 10);
 
+            // BombKey [SPACE] event handler
+            _renderWindow.KeyPressed += new EventHandler<KeyEventArgs>(OnKeyPressed);
+
+            // damage - placeDelay - bombTimer
+            mainPlayer.Bomb = new Bomb(20, 500, 2000);
+
+
+
             while (_renderWindow.IsOpen)
             {
-                _userHubConnection.InvokeAsync("Refresh", mainPlayer.GetPointPosition()).Wait(); // Requesting refresh data from server at every new frame
+                Time deltaTime = FrameClock.Restart();
+
+                if (_serverBool)
+                {
+                    _userHubConnection.InvokeAsync("Refresh", mainPlayer.GetPointPosition()).Wait(); // Requesting refresh data from server at every new frame
+                }
+
                 _renderWindow.DispatchEvents(); // event handler to processes keystrokes/mouse movements
                 _renderWindow.Clear();
                 _renderWindow.Draw(_backgroundSprite);
                 _renderWindow.Draw(_boxWall);
                 _renderWindow.Draw(mainPlayer);
                 _renderWindow.Draw(enemy.getSprite());
-                _renderWindow.Draw(obs);
+                //_renderWindow.Draw(obs);
 
                 foreach (Player p in otherPlayers)
                 {
                     _renderWindow.Draw(p);
+                }
+
+                _renderWindow.Draw(scoreBoard);
+
+                //DEBUG - RED FRAME
+                _renderWindow.Draw(mainPlayer.DrawFrame());
+
+                // Update drawable destructor timers
+                UpdateLoop(deltaTime);
+
+                // BOMBS
+                mainPlayer.Update();    // Update projectile placement positions (bombs)
+                DrawLoop();             // Draw projectile buffer list
+
+                if (mainPlayer.CheckCollisions()) // if collided with spawnables
+                {
+                    Time respawnTime = FrameClock.Restart();
+                    float TimeSinceCreation = 0.0f;
+
+                    while (TimeSinceCreation < 1.0f) // SLOWDOWN score polling
+                    {
+                        TimeSinceCreation += respawnTime.AsSeconds();
+                        //Console.WriteLine("TimeSinceCreation {0}", TimeSinceCreation);
+                    }
+                    scoreBoard.UpdateScore("P1"); // update to check for player ID
                 }
 
                 // Print player coordinates left, top (x, y)
@@ -117,6 +173,7 @@ namespace Bomberman
                 _renderWindow.Display(); // update screen
             }
         }
+
         public void InputControl()
         {
                 float movementSpeed = 5;
@@ -126,12 +183,14 @@ namespace Bomberman
 
                 if (Keyboard.IsKeyPressed(Keyboard.Key.W))
                 {
-                    if (_serverBool) { 
-                    _userHubConnection.InvokeAsync("SendMessage", "Asd", "asd").Wait();
+                    if (_serverBool)
+                    {
+                        _userHubConnection.InvokeAsync("SendMessage", "Asd", "asd").Wait();
+                    }
                     // Demo sender - "SendMessage" maps to hub's function name.
-                }
 
-                if (mainPlayer.CheckMovementCollision(0, -moveDistance, _boxWall))
+
+                    if (mainPlayer.CheckMovementCollision(0, -moveDistance, _boxWall))
                     {
                         // Console.WriteLine("Player collided with a wall");
                     }
@@ -176,14 +235,50 @@ namespace Bomberman
                     }
 
                 }
-                mainPlayer.Translate(movementX, movementY); // move?
+
+            mainPlayer.Translate(movementX, movementY); // move?
         }
+
+        // [NOTE] Global OnKeyPressed event handler, not just bombs
+        void OnKeyPressed(object sender, SFML.Window.KeyEventArgs e)
+        {
+            if (e.Code == Keyboard.Key.Space)
+            {
+
+                // Place BOMB
+                var target = mainPlayer.Position;
+                mainPlayer.Bomb.PlaceBomb(target);
+
+            }
+        }
+
+        public void UpdateLoop(Time deltaTime) // Loop updating drawables / spawnables
+        {
+            UpdateBombs(deltaTime);
+        }
+        private void UpdateBombs(Time deltaTime)
+        {
+            mainPlayer.Bomb.UpdateSpawnables(deltaTime.AsSeconds());
+        }
+        
+        public void DrawLoop()
+        {
+            // Draw Spawnables
+            DrawSpawnables();
+
+            // Add other drawables Non-destroyables etc.
+        }
+        private void DrawSpawnables()
+        {
+            mainPlayer.Bomb.DrawSpawnables(_renderWindow); // Draw bomb as spawnable
+            mainPlayer.Bomb.DrawExplosions(_renderWindow); // Draw explosion spawnable after bomb
+        }
+
         private static void OnClose(object sender, EventArgs e)
         {
             var renderWindow = (RenderWindow)sender;
             renderWindow.Close();
         }
-
         private static RenderWindow CreateRenderWindow(Styles windowStyle)
         {
             var videoMode = new VideoMode(VideoResolution[0], VideoResolution[1]);
@@ -196,38 +291,19 @@ namespace Bomberman
             Console.WriteLine($"Resolution: {videoMode.Width}x{videoMode.Height}");
             return renderWindow;
         }
-        private static Sprite LoadSprite(byte[] imageBitmap, IntRect square, bool repeated = false)
-        {
-            var tmpSprite = new Sprite();
-
-            var tmpRect = square;
-
-            try
-            {
-                //tmpTexture
-                var tmpTexture = new Texture(imageBitmap) { Repeated = repeated };
-                tmpSprite = new Sprite(tmpTexture, tmpRect);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Sprite load error:\n{e}");
-            }
-
-            return tmpSprite; // unsafe?
-        }
         private static void LoadGround(byte[] imageBitmap) // kindof useless method tbh
         {
             var square = new IntRect(0, 0, (int)VideoResolution[0], (int)VideoResolution[1]);
             Sprite backgroundSprite;
             try
             {
-                backgroundSprite = LoadSprite(imageBitmap, square, true);
+                backgroundSprite = SpriteLoader.LoadSprite(imageBitmap, square, true);
                 
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Sprite load error:\n{e}");
-                backgroundSprite = LoadSprite(Properties.Resources.Title_Image, square, true); // loading a default background
+                backgroundSprite = SpriteLoader.LoadSprite(Properties.Resources.Title_Image, square, true); // loading a default background
             }
 
             // left, top, width, length
@@ -301,7 +377,6 @@ namespace Bomberman
 
             return enemy;
         }
-
         private Sprite SpawnObstacle()
         {
             ObstacleFactory obsFactory = FactoryPicker.GetFactory("Destroyable");

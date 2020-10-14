@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Bomberman.Spawnables.Obstacles
 {
+    // CONCRETE-FACTORY
     class DestroyableObstacleFactory : ObstacleFactory
     {
         public override UndestroyableObstacle GetUndestroyable(string undestroyableObj)

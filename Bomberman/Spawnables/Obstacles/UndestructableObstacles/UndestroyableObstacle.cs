@@ -7,7 +7,7 @@ namespace Bomberman.Spawnables.Obstacles.UndestructableObstacles
 {
     abstract class UndestroyableObstacle : Obstacle
     {
-        UndestroyableObstacle()
+        public UndestroyableObstacle()
         {
             setHealth(99999);
         }

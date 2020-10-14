@@ -24,6 +24,13 @@ namespace Bomberman.Dto
         {
 
         }
+        public PlayerDTO(int id, PointF position, PlayerSprite sprite)
+        {
+            this.id = id;
+            this.position = position;
+            this.sprite = sprite;
+        }
+
 
         public PlayerDTO(int id, String connectionId, PointF position, PlayerSprite sprite)
         {
