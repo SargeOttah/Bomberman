@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Bomberman.Map;
 
 namespace Bomberman
 {
@@ -56,15 +57,12 @@ namespace Bomberman
                     .WithUrl("https://localhost:5001/user-hub")
                     .Build();
 
-
             _userHubConnection.On<PlayerDTO>("ClientConnected", ClientConnected); // Listens for our own PlayerDTO created by the server
-
-            _userHubConnection.StartAsync().Wait();
-
             _userHubConnection.On("ReceiveMessage", (string user, string message) => Console.WriteLine($"{user}: {message}")); // Demo listener.
             _userHubConnection.On<PlayerDTO>("ReceiveNewClient", OnNewClientConnect); // Listens for new clients that connect to the server
             _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers); // Refreshes data for all players connected to the server ( currenty only position )
 
+            _userHubConnection.StartAsync().Wait();
         }
 
         public void Run()
@@ -72,6 +70,22 @@ namespace Bomberman
 
             if (_serverBool) { ConfigureHubConnections(); }
             else { mainPlayer = new Player(new PlayerDTO()); }
+            int[,] mapMockUp = new int[11, 14]
+            {
+                { 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 2, 0, 2, 3, 0, 4, 0, 6, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+            };
+            TileMap map = new TileMap(new Texture(Properties.Resources.spritesheet), mapMockUp);
+
 
             // TODO: Selector
 
@@ -125,10 +139,11 @@ namespace Bomberman
 
                 _renderWindow.DispatchEvents(); // event handler to processes keystrokes/mouse movements
                 _renderWindow.Clear();
-                _renderWindow.Draw(_backgroundSprite);
+                //_renderWindow.Draw(_backgroundSprite);
+                _renderWindow.Draw(map);
                 _renderWindow.Draw(_boxWall);
                 _renderWindow.Draw(mainPlayer);
-                _renderWindow.Draw(enemy.getSprite());
+                //_renderWindow.Draw(enemy.getSprite());
                 //_renderWindow.Draw(obs);
 
                 foreach (Player p in otherPlayers)

@@ -253,6 +253,9 @@
   <data name="skeleton_front" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\Enemies\skeleton_front.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="spritesheet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\sprites\spritesheet.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="stone" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\Obstacles\stone.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

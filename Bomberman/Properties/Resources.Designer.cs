@@ -513,6 +513,16 @@ namespace Bomberman.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] spritesheet {
+            get {
+                object obj = ResourceManager.GetObject("spritesheet", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] stone {
             get {
                 object obj = ResourceManager.GetObject("stone", resourceCulture);
