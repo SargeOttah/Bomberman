@@ -90,6 +90,9 @@ namespace Bomberman
             // Enemy create
             Enemy enemy = SpawnEnemy("Zombie");
 
+            //Crate
+            Sprite crate = SpawnObstacle();
+
 
             // Spawn obstacle
             //Sprite obs = SpawnObstacle();
@@ -129,6 +132,7 @@ namespace Bomberman
                 _renderWindow.Draw(_boxWall);
                 _renderWindow.Draw(mainPlayer);
                 _renderWindow.Draw(enemy.getSprite());
+                _renderWindow.Draw(crate);
                 //_renderWindow.Draw(obs);
 
                 foreach (Player p in otherPlayers)
@@ -382,6 +386,7 @@ namespace Bomberman
             ObstacleFactory obsFactory = FactoryPicker.GetFactory("Destroyable");
             Sprite obj = obsFactory.GetDestroyable("Crate").SpawnObstacle();
             obj.Position = new Vector2f(100, 100);
+            obj.Scale = new Vector2f(0.5f, 0.5f);
 
             return obj;
         }

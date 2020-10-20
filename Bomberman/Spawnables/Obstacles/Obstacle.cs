@@ -6,11 +6,9 @@ namespace Bomberman.Spawnables.Obstacles
 {
     class Obstacle
     {
-        private string name { get; set; }
-        private int health { get; set; }
+        private bool isDestroyable { get; set; }
 
-        public int geHealth() { return this.health; }
+        public bool getIsDestroyable() { return this.isDestroyable; }
 
-        public void setHealth(int health) { this.health = health; }
     }
 }
