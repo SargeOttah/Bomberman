@@ -9,7 +9,7 @@ namespace Bomberman.Spawnables.Obstacles.UndestructableObstacles
     {
         private Sprite obstacle;
 
-        public Stone() : base(7)
+        public Stone() : base(17)
         {
             obstacle = CreateSprite();
         }

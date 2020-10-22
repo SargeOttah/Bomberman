@@ -27,7 +27,7 @@ namespace Bomberman.Map
 
         /// <param name="tileSize">Pixel size of the tile that is going to be rendered</param>
         /// <param name="spriteSize">Pixel size of the sprite sizes in sprite sheet</param>
-        public TileMap(Texture spriteSheet, string[] map, int tileSize = 64, int spriteSize = 8)
+        public TileMap(Texture spriteSheet, string[] map, int tileSize = 64, int spriteSize = 32)
         {
             this.tiles = new List<Tile>();
             this.spriteSheet = spriteSheet;
@@ -46,7 +46,6 @@ namespace Bomberman.Map
                 for (int j = 0; j < values.Length; j++)
                 {
                     this.map[i, j] = values[j];
-                    Console.WriteLine(values[j]);
                 }
             }
         }
@@ -101,13 +100,12 @@ namespace Bomberman.Map
             {
                 for (int j = x; j < width; j++)
                 {
-                    int texture = 0; // Default ground tile
+                    int texture = 2; // Default ground tile
                     // If we launch the game and map is not big enough it will throw an npe XD
                     switch (map[i, j])
                     {
                         // Destructible Obstacles
                         case "B":
-                            Console.WriteLine("Adding brick wall" + j + " " + i);
                             obstacles.Add(destroyableFactory.GetDestroyable("BrickWall"));
                             break;
                         case "C":
@@ -131,9 +129,16 @@ namespace Bomberman.Map
                             }
                             break;
                     }
+                    // We add a ground tile every time
                     tiles.Add(new Tile(texture));
                 }
             }
+        }
+        // Returns only those obstacles that are close to pos
+        public List<Obstacle> GetCloseObstacles(Vector2f pos)
+        {
+            var tile = GetTile(pos);
+            return null;
         }
 
         /// <summary>
@@ -182,6 +187,7 @@ namespace Bomberman.Map
         /// <param name="y">Y coord of the tile</param>
         public void Refresh(int x, int y)
         {
+
             if (x < offset.X || x >= offset.X + width || y < offset.Y || y >= offset.Y + height)
                 return; //check if tile is visible
 
@@ -196,8 +202,9 @@ namespace Bomberman.Map
             var rec = new FloatRect(x * tileSize, y * tileSize, tileSize, tileSize);
 
             int textureIdx = isObstacle ? obstacles[index].tileIndex : tiles[index].tileIndex;
-            var textureX = (textureIdx * spriteSize) % width;
-            var textureY = (textureIdx * spriteSize) % height;
+            var textureX = (textureIdx * spriteSize) % unchecked((int)spriteSheet.Size.X); // unsafe, but who cares right?
+            var textureY = (textureIdx * spriteSize) / unchecked((int)spriteSheet.Size.X) * 32;
+            //Console.WriteLine($"texturing {x} {y} {textureIdx} {textureX} {textureY} {spriteSize}");
             IntRect src = new IntRect(textureX, textureY, spriteSize, spriteSize);
 
             

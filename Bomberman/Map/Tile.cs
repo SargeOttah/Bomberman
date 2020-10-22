@@ -6,7 +6,7 @@ using SFML.Window;
 
 namespace Bomberman.Map
 {
-    class Tile
+    public class Tile
     {
         public Vertex[] vertices { get; private set; }
         public int tileIndex { get; private set; }
@@ -53,8 +53,8 @@ namespace Bomberman.Map
             vertices[3].TexCoords.Y = src.Top + src.Height;
             vertices[3].Color = Color.White;
 
-            Console.WriteLine(vertices[0].Position.X);
-            Console.WriteLine($"{vertices[0].TexCoords.X} {vertices[0].TexCoords.Y} {vertices[1].TexCoords.X} {vertices[1].TexCoords.Y} {vertices[2].TexCoords.X} {vertices[2].TexCoords.Y} {vertices[3].TexCoords.X} {vertices[3].TexCoords.Y}");
+            //Console.WriteLine(vertices[0].Position.X);
+            //Console.WriteLine($"{vertices[0].TexCoords.X} {vertices[0].TexCoords.Y} {vertices[1].TexCoords.X} {vertices[1].TexCoords.Y} {vertices[2].TexCoords.X} {vertices[2].TexCoords.Y} {vertices[3].TexCoords.X} {vertices[3].TexCoords.Y}");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Bomberman.Map;
 using SFML.Graphics;
 using SFML.System;
 
@@ -28,6 +29,26 @@ namespace Bomberman.Collisions
                             trans.TransformPoint(local.Width, local.Height),
                             trans.TransformPoint(0f, local.Height)
                       };
+
+            Console.WriteLine("Transform: " + trans.ToString());
+
+            for (int i = 0; i < Points.Length; i++)
+            {
+                Console.WriteLine(Points[i].ToString());
+            }
+        }
+
+        public OrientedBoundingBox(Tile obj)
+        {
+            Vertex[] vertices = obj.vertices;
+
+            Points = new Vector2f[4]
+            {
+                vertices[0].Position,
+                vertices[1].Position,
+                vertices[2].Position,
+                vertices[3].Position
+            };
         }
 
         /// <summary>

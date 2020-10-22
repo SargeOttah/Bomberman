@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Bomberman.Spawnables.Obstacles
 {
-    class Obstacle : Tile
+    public class Obstacle : Tile
     {
         private string name { get; set; }
         private int health { get; set; }
