@@ -29,13 +29,6 @@ namespace Bomberman.Collisions
                             trans.TransformPoint(local.Width, local.Height),
                             trans.TransformPoint(0f, local.Height)
                       };
-
-            Console.WriteLine("Transform: " + trans.ToString());
-
-            for (int i = 0; i < Points.Length; i++)
-            {
-                Console.WriteLine(Points[i].ToString());
-            }
         }
 
         public OrientedBoundingBox(Tile obj)

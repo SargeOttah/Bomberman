@@ -203,7 +203,7 @@ namespace Bomberman.Map
 
             int textureIdx = isObstacle ? obstacles[index].tileIndex : tiles[index].tileIndex;
             var textureX = (textureIdx * spriteSize) % unchecked((int)spriteSheet.Size.X); // unsafe, but who cares right?
-            var textureY = (textureIdx * spriteSize) / unchecked((int)spriteSheet.Size.X) * 32;
+            var textureY = textureIdx / (unchecked((int)spriteSheet.Size.X) / spriteSize) * spriteSize;
             //Console.WriteLine($"texturing {x} {y} {textureIdx} {textureX} {textureY} {spriteSize}");
             IntRect src = new IntRect(textureX, textureY, spriteSize, spriteSize);
 
