@@ -7,7 +7,7 @@ namespace Bomberman.Spawnables.Obstacles.DestructableObstacles
 {
     abstract class DestroyableObstacle : Obstacle
     {
-        public DestroyableObstacle()
+        public DestroyableObstacle(int textureIdx) : base(textureIdx)
         {
             setHealth(1);
         }

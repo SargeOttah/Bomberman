@@ -28,7 +28,7 @@ namespace Bomberman
         // TODO: Sprite arrays/lists to load
         private static Sprite _backgroundSprite;
         private static Sprite _boxWall;
-        private static readonly uint[] VideoResolution = { 800, 600 };
+        private static readonly uint[] VideoResolution = { 832, 576 };
         private const string WindowTitle = "Bomberman v0.01";
 
         //player init
@@ -70,19 +70,19 @@ namespace Bomberman
 
             if (_serverBool) { ConfigureHubConnections(); }
             else { mainPlayer = new Player(new PlayerDTO()); }
-            int[,] mapMockUp = new int[11, 14]
+            string[] mapMockUp = new string[11]
             {
-                { 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                { 0, 0, 0, 0, 2, 0, 2, 3, 0, 4, 0, 6, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+                "S,0,1,0,0,1,0,0,0,0,0,0,0,0,0",
+                "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                "O,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                "0,0,0,0,2,0,2,3,0,4,0,6,0,0,0",
+                "B,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                "C,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+                "0,0,0,0,0,0,0,1,1,1,1,1,1,1,0",
+                "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
             };
             TileMap map = new TileMap(new Texture(Properties.Resources.spritesheet), mapMockUp);
 

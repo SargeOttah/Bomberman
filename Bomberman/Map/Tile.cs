@@ -9,11 +9,16 @@ namespace Bomberman.Map
     class Tile
     {
         public Vertex[] vertices { get; private set; }
+        public int tileIndex { get; private set; }
 
-        public Tile(int tileIndex)
+        public Tile()
         {
             vertices = new Vertex[4];
+        }
 
+        public Tile(int tileIndex) : this()
+        {
+            this.tileIndex = tileIndex;
         }
 
         /// <summary>
