@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using static Bomberman.Collisions.OrientedBoundingBox;
+using Bomberman.Map;
 
 namespace Bomberman.Collisions
 {
@@ -11,7 +12,7 @@ namespace Bomberman.Collisions
 
     /// <summary>
     /// Provides methods for testing collisions between Sprites
-    /// </summary>
+    /// </summary>  
     public static class CollisionTester
     {
         private static BitmaskManager _bitmasks = new BitmaskManager();
@@ -86,30 +87,43 @@ namespace Bomberman.Collisions
             return (distance.X * distance.X + distance.Y * distance.Y) <= ((firstRadius + secondRadius) * (firstRadius + secondRadius));
         }
 
+        public static bool TileBoundingBoxTest(Sprite firstObj, Tile secondObj) {
+            OrientedBoundingBox firstObb = new OrientedBoundingBox(firstObj);
+            OrientedBoundingBox secondObb = new OrientedBoundingBox(secondObj);
+
+            return BoundingBoxTest(firstObb, secondObb);
+        }
+
+        public static bool BoundingBoxTest(Sprite firstObj, Sprite secondObj)
+        {
+            OrientedBoundingBox firstObb = new OrientedBoundingBox(firstObj);
+            OrientedBoundingBox secondObb = new OrientedBoundingBox(secondObj);
+
+            return BoundingBoxTest(firstObb, secondObb);
+        }
+
         /// <summary>
         /// Check if 2 Sprites are colliding based on the Separating Axis Theorem
         /// </summary>
         /// <param name="firstObj">The first Sprite object to compare</param>
         /// <param name="secondObj">The second Sprite object to compare</param>
         /// <returns>True if the Sprites' projections overlap</returns>
-        public static bool BoundingBoxTest(Sprite firstObj, Sprite secondObj)
+        private static bool BoundingBoxTest(OrientedBoundingBox firstObj, OrientedBoundingBox secondObj)
         {
-            OrientedBoundingBox firstObb = new OrientedBoundingBox(firstObj);
-            OrientedBoundingBox secondObb = new OrientedBoundingBox(secondObj);
 
             Vector2f[] axes = new Vector2f[4] {
-                                    new Vector2f(firstObb.Points[1].X - firstObb.Points[0].X, firstObb.Points[1].Y - firstObb.Points[0].Y),
-                                    new Vector2f(firstObb.Points[1].X - firstObb.Points[2].X, firstObb.Points[1].Y - firstObb.Points[2].Y),
-                                    new Vector2f(secondObb.Points[0].X - secondObb.Points[3].X, secondObb.Points[0].Y - secondObb.Points[3].Y),
-                                    new Vector2f(secondObb.Points[0].X - firstObb.Points[1].X, firstObb.Points[0].Y - firstObb.Points[1].Y)
+                                    new Vector2f(firstObj.Points[1].X - firstObj.Points[0].X, firstObj.Points[1].Y - firstObj.Points[0].Y),
+                                    new Vector2f(firstObj.Points[1].X - firstObj.Points[2].X, firstObj.Points[1].Y - firstObj.Points[2].Y),
+                                    new Vector2f(secondObj.Points[0].X - secondObj.Points[3].X, secondObj.Points[0].Y - secondObj.Points[3].Y),
+                                    new Vector2f(secondObj.Points[0].X - firstObj.Points[1].X, firstObj.Points[0].Y - firstObj.Points[1].Y)
                                };
 
             for (int i = 0; i < 4; ++i)
             {
                 float firstMinObb, firstMaxObb, secondMinObb, secondMaxObb;
 
-                firstObb.ProjectOntoAxis(axes[i], out firstMinObb, out firstMaxObb);
-                secondObb.ProjectOntoAxis(axes[i], out secondMinObb, out secondMaxObb);
+                firstObj.ProjectOntoAxis(axes[i], out firstMinObb, out firstMaxObb);
+                secondObj.ProjectOntoAxis(axes[i], out secondMinObb, out secondMaxObb);
 
                 if (!((secondMinObb <= firstMaxObb) && (secondMaxObb >= firstMinObb))) return false;
             }

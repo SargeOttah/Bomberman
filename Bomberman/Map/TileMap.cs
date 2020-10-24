@@ -138,7 +138,7 @@ namespace Bomberman.Map
         public List<Obstacle> GetCloseObstacles(Vector2f pos)
         {
             var tile = GetTile(pos);
-            return null;
+            return obstacles.FindAll((obs) => obs != null); // TODO: finish lol
         }
 
         /// <summary>

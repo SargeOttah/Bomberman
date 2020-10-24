@@ -33,7 +33,7 @@
     Each data row contains a name, and value. The row also contains a 
     type or mimetype. Type corresponds to a .NET class that support 
     text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+    Classes that don't support this are serialized and sto with the 
     mimetype set.
     
     The mimetype is used for serialized objects, and tells the 
@@ -69,7 +69,7 @@
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="name" use="requi" type="xsd:string" />
               <xsd:attribute name="type" type="xsd:string" />
               <xsd:attribute name="mimetype" type="xsd:string" />
               <xsd:attribute ref="xml:space" />
@@ -87,7 +87,7 @@
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
                 <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="name" type="xsd:string" use="requi" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
               <xsd:attribute ref="xml:space" />
@@ -98,7 +98,7 @@
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="name" type="xsd:string" use="requi" />
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -119,43 +119,43 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="arial" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\fonts\arial.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Fonts\arial.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="blueback" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\blueback.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\blueback.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="bluebackwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\bluebackwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\bluebackwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="bluebackwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\bluebackwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\bluebackwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="bluedown1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\bluedown1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\bluedown1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="bluedown2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\bluedown2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\bluedown2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="bluefront" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\bluefront.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\bluefront.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="blueleft" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\blueleft.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\blueleft.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="blueleftwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\blueleftwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\blueleftwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="blueleftwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\blueleftwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\blueleftwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="blueright" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\blueright.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\blueright.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="bluerightwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\bluerightwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\bluerightwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="bluerightwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\blue\bluerightwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Blue\bluerightwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="bomb" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\bomb.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -176,94 +176,94 @@
     <value>..\Sprites\Enemies\Ghost.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greenback" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greenback.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greenback.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greenbackwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greenbackwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greenbackwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greenbackwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greenbackwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greenbackwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greendown1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greendown1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greendown1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greendown2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greendown2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greendown2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greenfront" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greenfront.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greenfront.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greenleft" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greenleft.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greenleft.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greenleftwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greenleftwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greenleftwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greenleftwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greenleftwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greenleftwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greenright" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greenright.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greenright.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greenrightwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greenrightwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greenrightwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="greenrightwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\green\greenrightwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Player\Green\greenrightwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="obsidian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\Obstacles\obsidian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="redback" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\redback.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="back" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\redback.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="redbackwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\redbackwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="backwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\redbackwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="redbackwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\redbackwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="backwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\redbackwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="reddown1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\reddown1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="down1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\reddown1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="reddown2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\reddown2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="down2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\reddown2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="redfront" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\redfront.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="front" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\redfront.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="redleft" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\redleft.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="left" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\redleft.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="redleftwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\redleftwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="leftwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\redleftwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="redleftwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\redleftwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="leftwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\redleftwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="redright" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\redright.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="right" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\redright.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="redrightwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\redrightwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="rightwalk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\redrightwalk1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="redrightwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\player\red\redrightwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="rightwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Player\Red\redrightwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="skeleton_front" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\Enemies\skeleton_front.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="spritesheet" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\spritesheet.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\spritesheet.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="spritesheet2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\spritesheet2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\spritesheet2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="stone" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\Obstacles\stone.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Title_Image" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\sprites\ground\title_image.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Ground\Title_Image.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="zombie_front" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\Enemies\zombie_front.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

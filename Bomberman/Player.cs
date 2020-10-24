@@ -1,10 +1,13 @@
 ﻿using Bomberman.Collisions;
 using Bomberman.Dto;
 using Bomberman.Spawnables;
+using Bomberman.Spawnables.Obstacles;
 using SFML.Graphics;
 using SFML.System;
+using System;
 using System.Drawing;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Bomberman
 {
@@ -29,11 +32,10 @@ namespace Bomberman
             // TODO: scale player position based on current resolution
             this.Position = new Vector2f(playerDTO.position.X, playerDTO.position.Y); //new Vector2f(_renderWindow.Size.X / 2, _renderWindow.Size.Y / 2)
             this.TextureRect = new IntRect(0, 0, 19, 32);
-            this.Scale = new Vector2f(3, 3);
+            this.Scale = new Vector2f(3, 1.7f);
             this.Texture = playerDTO.GetTexture();
             this.connectionId = playerDTO.connectionId;
             this.Origin = GetSpriteCenter(this);
-
 
             InitDebug();
         }
@@ -84,22 +86,21 @@ namespace Bomberman
             debugShape.OutlineThickness = 1f;
         }
 
-        public bool CheckMovementCollision(float xOffset, float yOffset, Sprite targetCollider)
+        public bool CheckMovementCollision(float xOffset, float yOffset, List<Obstacle> obstacles)
         {
-            
-
-            Translate(xOffset, yOffset);
-            if (CollisionTester.BoundingBoxTest(this, targetCollider))
-            {
-                Translate(-xOffset, -yOffset);
-                return true;
+            foreach (Obstacle obstacle in obstacles) { // kinda works
+                Translate(xOffset, yOffset);
+                if (CollisionTester.TileBoundingBoxTest(this, obstacle))
+                {
+                    Translate(-xOffset, -yOffset);
+                    return true;
+                }
+                else
+                {
+                    Translate(-xOffset, -yOffset);
+                }
             }
-            else
-            {
-                Translate(-xOffset, -yOffset);
-                return false;
-            }
-            
+            return false;
         }
 
         public bool CheckCollisions()

@@ -7,6 +7,7 @@ using Bomberman.Global;
 using Bomberman.Collisions;
 using Bomberman.Spawnables.Obstacles.DestructableObstacles;
 using Microsoft.AspNetCore.SignalR.Client;
+using System.Net.Http;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -45,6 +46,8 @@ namespace Bomberman
 
         public static GameScore scoreBoard;
 
+        public static TileMap tileMap;
+
 
         public static GameApplication GetInstance()
         {
@@ -54,10 +57,20 @@ namespace Bomberman
         private static void ConfigureHubConnections()
         {
             _userHubConnection = new HubConnectionBuilder()
-                    .WithUrl("https://localhost:5001/user-hub")
+                    .WithUrl("https://localhost:5001/user-hub", (opts) =>
+                    {
+                        opts.HttpMessageHandlerFactory = (message) =>
+                        {
+                            if (message is HttpClientHandler clientHandler)
+                            // bypass SSL certificate
+                                clientHandler.ServerCertificateCustomValidationCallback +=
+                                    (sender, certificate, chain, sslPolicyErrors) => { return true; };
+                            return message;
+                        };
+                    })
                     .Build();
 
-            _userHubConnection.On<PlayerDTO>("ClientConnected", ClientConnected); // Listens for our own PlayerDTO created by the server
+            _userHubConnection.On<PlayerDTO, string[]>("ClientConnected", ClientConnected); // Listens for our own PlayerDTO created by the server
             _userHubConnection.On("ReceiveMessage", (string user, string message) => Console.WriteLine($"{user}: {message}")); // Demo listener.
             _userHubConnection.On<PlayerDTO>("ReceiveNewClient", OnNewClientConnect); // Listens for new clients that connect to the server
             _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers); // Refreshes data for all players connected to the server ( currenty only position )
@@ -70,22 +83,6 @@ namespace Bomberman
 
             if (_serverBool) { ConfigureHubConnections(); }
             else { mainPlayer = new Player(new PlayerDTO()); }
-            string[] mapMockUp = new string[11]
-            {
-                "S,2,2,2,2,2,2,2,2,2,2,2,2,2,2",
-                "2,2,2,2,2,2,2,2,2,2,2,2,2,2,2",
-                "O,2,2,2,2,2,2,2,2,2,2,2,2,2,2",
-                "2,2,2,2,2,2,2,2,2,2,2,2,2,2,2",
-                "B,2,2,2,2,2,2,2,2,2,2,2,2,2,2",
-                "2,2,2,2,2,2,2,2,2,2,2,2,2,2,2",
-                "C,2,2,2,2,2,2,2,2,2,2,2,2,2,2",
-                "2,2,2,2,2,2,2,2,2,2,2,2,2,2,2",
-                "2,2,2,2,2,2,2,2,2,2,2,2,2,2,2",
-                "2,2,2,2,2,2,2,2,2,2,2,2,2,2,2",
-                "2,2,2,2,2,2,2,2,2,2,2,2,2,2,2"
-            };
-            TileMap map = new TileMap(new Texture(Properties.Resources.spritesheet2), mapMockUp, spriteSize: 32);
-
 
             // TODO: Selector
 
@@ -134,13 +131,14 @@ namespace Bomberman
 
                 if (_serverBool)
                 {
-                    _userHubConnection.InvokeAsync("Refresh", mainPlayer.GetPointPosition()).Wait(); // Requesting refresh data from server at every new frame
+                    _userHubConnection.InvokeAsync("RefreshPlayer", mainPlayer.GetPointPosition()).Wait(); // Requesting refresh data from server at every new frame
+                    //_userHubConnection.InvokeAsync("RefreshMap", null).Wait(); // Refresh map data
                 }
 
                 _renderWindow.DispatchEvents(); // event handler to processes keystrokes/mouse movements
                 _renderWindow.Clear();
                 //_renderWindow.Draw(_backgroundSprite);
-                _renderWindow.Draw(map);
+                _renderWindow.Draw(tileMap);
                 _renderWindow.Draw(_boxWall);
                 _renderWindow.Draw(mainPlayer);
                 //_renderWindow.Draw(enemy.getSprite());
@@ -205,7 +203,7 @@ namespace Bomberman
                     // Demo sender - "SendMessage" maps to hub's function name.
 
 
-                    if (mainPlayer.CheckMovementCollision(0, -moveDistance, _boxWall))
+                    if (mainPlayer.CheckMovementCollision(0, -moveDistance, tileMap.GetCloseObstacles(mainPlayer.Position)))
                     {
                         // Console.WriteLine("Player collided with a wall");
                     }
@@ -217,7 +215,7 @@ namespace Bomberman
 
                 if (Keyboard.IsKeyPressed(Keyboard.Key.S))
                 {
-                    if (mainPlayer.CheckMovementCollision(0, moveDistance, _boxWall))
+                    if (mainPlayer.CheckMovementCollision(0, moveDistance, tileMap.GetCloseObstacles(mainPlayer.Position)))
                     {
                         //Console.WriteLine("Player collided with a wall");
                     }
@@ -228,7 +226,7 @@ namespace Bomberman
                 }
                 if (Keyboard.IsKeyPressed(Keyboard.Key.D))
                 {
-                    if (mainPlayer.CheckMovementCollision(moveDistance, 0, _boxWall))
+                    if (mainPlayer.CheckMovementCollision(moveDistance, 0, tileMap.GetCloseObstacles(mainPlayer.Position)))
                     {
                         //Console.WriteLine("Player collided with a wall");
                     }
@@ -240,7 +238,7 @@ namespace Bomberman
                 }
                 if (Keyboard.IsKeyPressed(Keyboard.Key.A))
                 {
-                    if (mainPlayer.CheckMovementCollision(-moveDistance, 0, _boxWall))
+                    if (mainPlayer.CheckMovementCollision(-moveDistance, 0, tileMap.GetCloseObstacles(mainPlayer.Position)))
                     {
                         //Console.WriteLine("Player collided with a wall");
                     }
@@ -326,10 +324,11 @@ namespace Bomberman
             _backgroundSprite = backgroundSprite;
         }
         // Called when this client connects to the server, receives the player information
-        private static void ClientConnected(PlayerDTO playerDTO)
+        private static void ClientConnected(PlayerDTO playerDTO, string[] map)
         {
             Console.WriteLine("We have connected");
             Console.WriteLine(playerDTO.ToString());
+            tileMap = new TileMap(new Texture(Properties.Resources.spritesheet2), map, spriteSize: 32);
             mainPlayer = new Player(playerDTO);
         }
         // Called when a new client (except the current one) connects to the server, receives the other players information
@@ -338,6 +337,7 @@ namespace Bomberman
             Console.WriteLine("New client connected");
             Console.WriteLine(playerDTO.ToString());
             Player newPlayer = new Player(playerDTO);
+            
             otherPlayers.Add(newPlayer);
         }
 

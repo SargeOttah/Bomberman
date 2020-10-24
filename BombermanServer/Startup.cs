@@ -18,6 +18,7 @@ namespace BombermanServer
             services.AddSignalR();
 
             services.AddSingleton<IPlayerService, PlayerService>();
+            services.AddSingleton<IMapService, MapService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

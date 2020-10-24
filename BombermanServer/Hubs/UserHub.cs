@@ -12,10 +12,13 @@ namespace BombermanServer.Hubs
     public class UserHub : Hub
     {
         private IPlayerService _playerService;
+        private IMapService _mapService;
 
-        public UserHub(IPlayerService playerService)
+        public UserHub(IPlayerService playerService, IMapService mapService)
         {
             this._playerService = playerService;
+            this._mapService = mapService;
+            _mapService.LoadMap(0); // TODO: send map id from client side ant then load it?
         }
 
         public async Task SendMessage(string user, string message) // 'SendMessage' is a name that ClientSide sends requests to.
@@ -35,7 +38,7 @@ namespace BombermanServer.Hubs
                 Console.WriteLine("Player limit exceeded");
             }
 
-            await Clients.Caller.SendAsync("ClientConnected", newPlayer); // Sends back the newly created player to the owner
+            await Clients.Caller.SendAsync("ClientConnected", newPlayer, _mapService.GetMap()); // Sends back the newly created player and map to the owner
             Console.WriteLine(newPlayer.ToString());
 
             Console.WriteLine("Clients Count:" + _playerService.GetCount());
@@ -65,12 +68,18 @@ namespace BombermanServer.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        public async Task Refresh(PointF playerPosition)
+        public async Task RefreshPlayer(PointF playerPosition)
         {
             _playerService.GetPlayer(this.Context.ConnectionId).Position = playerPosition;
             List<Player> players = _playerService.GetPlayers();
 
             await Clients.Caller.SendAsync("RefreshPlayers", players);
         }
+
+        public async Task RefreshMap(Dictionary<Point, char> changes) {
+            await Clients.Caller.SendAsync("RefreshMap", _mapService.GetMap());
+        }
+
+        
     }
 }
