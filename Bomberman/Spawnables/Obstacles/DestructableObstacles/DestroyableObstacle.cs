@@ -9,7 +9,7 @@ namespace Bomberman.Spawnables.Obstacles.DestructableObstacles
     {
         public DestroyableObstacle(int textureIdx) : base(textureIdx)
         {
-            setHealth(1);
+        
         }
         public abstract Sprite SpawnObstacle();
     }
