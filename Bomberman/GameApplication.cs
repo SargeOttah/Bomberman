@@ -202,7 +202,7 @@ namespace Bomberman
                     // Demo sender - "SendMessage" maps to hub's function name.
 
 
-                    if (mainPlayer.CheckMovementCollision(0, -moveDistance, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
+                    if (mainPlayer.CheckMovementCollision(0, -moveDistance, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)) && _serverBool)
                     {
                         // Console.WriteLine("Player collided with a wall");
                     }
@@ -214,7 +214,7 @@ namespace Bomberman
 
                 if (Keyboard.IsKeyPressed(Keyboard.Key.S))
                 {
-                    if (mainPlayer.CheckMovementCollision(0, moveDistance, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
+                    if (mainPlayer.CheckMovementCollision(0, moveDistance, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)) && _serverBool)
                     {
                         //Console.WriteLine("Player collided with a wall");
                     }
@@ -225,7 +225,7 @@ namespace Bomberman
                 }
                 if (Keyboard.IsKeyPressed(Keyboard.Key.D))
                 {
-                    if (mainPlayer.CheckMovementCollision(moveDistance, 0, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
+                    if (mainPlayer.CheckMovementCollision(moveDistance, 0, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)) && _serverBool)
                     {
                         //Console.WriteLine("Player collided with a wall");
                     }
@@ -237,7 +237,7 @@ namespace Bomberman
                 }
                 if (Keyboard.IsKeyPressed(Keyboard.Key.A))
                 {
-                    if (mainPlayer.CheckMovementCollision(-moveDistance, 0, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
+                    if (mainPlayer.CheckMovementCollision(-moveDistance, 0, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)) && _serverBool)
                     {
                         //Console.WriteLine("Player collided with a wall");
                     }
