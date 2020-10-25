@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Drawing;
 using System.Threading.Tasks;
 using Bomberman.Map;
 
@@ -20,7 +21,6 @@ namespace Bomberman
 {
     internal class GameApplication
     {
-        private bool _serverBool = true;
         private static readonly GameApplication Instance = new GameApplication();
 
         private static RenderWindow _renderWindow;
@@ -29,7 +29,7 @@ namespace Bomberman
         private static Sprite _backgroundSprite;
         private static Sprite _boxWall;
         private static readonly uint[] VideoResolution = { 832, 576 };
-        private const string WindowTitle = "Bomberman v0.01";
+        private const string WindowTitle = "Bomberman v0.02";
 
         //player init
         static Player mainPlayer = new Player();
@@ -72,6 +72,14 @@ namespace Bomberman
 
             _userHubConnection.On<PlayerDTO, string[]>("ClientConnected", ClientConnected); // Listens for our own PlayerDTO created by the server
             _userHubConnection.On("ReceiveMessage", (string user, string message) => Console.WriteLine($"{user}: {message}")); // Demo listener.
+            
+            // Receive bomb log
+            _userHubConnection.On("ReceiveBombLocation", 
+                (string user, PointF pos) => Console.WriteLine($"User: {user} Placed bomb at (x, y): [{pos.X}, {pos.Y}]"));
+            // Receive bomb creation signal
+            _userHubConnection.On<PointF>("ReceiveNewBomb", OnBombPlaced);
+
+
             _userHubConnection.On<PlayerDTO>("ReceiveNewClient", OnNewClientConnect); // Listens for new clients that connect to the server
             _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers); // Refreshes data for all players connected to the server ( currenty only position )
             _userHubConnection.StartAsync().Wait();
@@ -81,16 +89,6 @@ namespace Bomberman
         {
             // Initializing the tilemap facade
             tileMapFacade = new TileMapFacade((int)VideoResolution[0], (int)VideoResolution[1], Properties.Resources.spritesheet2);
-
-            if (_serverBool) { ConfigureHubConnections(); }
-            else { mainPlayer = new Player(new PlayerDTO()); }
-
-            // TODO: Selector
-
-            // VideoResolution = new uint[] { 800, 600 };   // Graphics resolution
-            // VideoResolution = new uint[] { 1366, 768 };  // Graphics resolution
-            // VideoResolution = new uint[] { 1280, 720 };  // Graphics resolution
-            // VideoResolution = new uint[] { 1920, 1080 }; // Graphics resolution
 
             _renderWindow = CreateRenderWindow(Styles.Default);
             _renderWindow.SetFramerateLimit(60);
@@ -127,22 +125,19 @@ namespace Bomberman
             // damage - placeDelay - bombTimer
             mainPlayer.Bomb = new Bomb(20, 500, 2000);
 
-
-
             while (_renderWindow.IsOpen)
             {
                 Time deltaTime = FrameClock.Restart();
 
-                if (_serverBool)
-                {
-                    _userHubConnection.InvokeAsync("RefreshPlayer", mainPlayer.GetPointPosition()).Wait(); // Requesting refresh data from server at every new frame
-                    //_userHubConnection.InvokeAsync("RefreshMap", null).Wait(); // Refresh map data
-                }
+                // Requesting refresh data from server at every new frame
+                _userHubConnection.InvokeAsync("RefreshPlayer", mainPlayer.GetPointPosition()).Wait();
 
                 _renderWindow.DispatchEvents(); // event handler to processes keystrokes/mouse movements
                 _renderWindow.Clear();
-                //_renderWindow.Draw(_backgroundSprite);
+
+                // TILES
                 _renderWindow.Draw(tileMapFacade.GetTileMap());
+                
                 _renderWindow.Draw(_boxWall);
                 _renderWindow.Draw(mainPlayer);
                 _renderWindow.Draw(enemy.getSprite());
@@ -200,10 +195,10 @@ namespace Bomberman
 
                 if (Keyboard.IsKeyPressed(Keyboard.Key.W))
                 {
-                    if (_serverBool)
-                    {
-                        _userHubConnection.InvokeAsync("SendMessage", "Asd", "asd").Wait();
-                    }
+                    //if (_serverBool)
+                    //{
+                    //    _userHubConnection.InvokeAsync("SendMessage", "Asd", "asd").Wait();
+                    //}
                     // Demo sender - "SendMessage" maps to hub's function name.
 
 
@@ -261,11 +256,15 @@ namespace Bomberman
         {
             if (e.Code == Keyboard.Key.Space)
             {
-
-                // Place BOMB
+                // Place BOMB for local player
                 var target = mainPlayer.Position;
                 mainPlayer.Bomb.PlaceBomb(target);
 
+                // Send bomb signal for server players
+                _userHubConnection.InvokeAsync("SendBombLocation", mainPlayer.connectionId, mainPlayer.GetPointPosition()).Wait();
+
+                // Drawbacks: sync difference
+                // Possible fix: handle ALL bomb creation on server
             }
         }
 
@@ -319,6 +318,14 @@ namespace Bomberman
             }
             mainPlayer = new Player(playerDTO);
         }
+
+        // Called when client received signal of bomb creation "ReceiveNewBomb"
+        private static void OnBombPlaced(PointF pos)
+        {
+            Console.WriteLine("Server bomb placed at: [{0}{1}]", pos.X, pos.Y);
+            mainPlayer.Bomb.PlaceBomb(new Vector2f(pos.X, pos.Y));
+        }
+
         // Called when a new client (except the current one) connects to the server, receives the other players information
         private static void OnNewClientConnect(PlayerDTO playerDTO)
         {
