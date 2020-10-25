@@ -4,8 +4,6 @@ using Bomberman.Spawnables;
 using Bomberman.GUI;
 using Bomberman.Spawnables.Obstacles;
 using Bomberman.Global;
-using Bomberman.Collisions;
-using Bomberman.Spawnables.Obstacles.DestructableObstacles;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Net.Http;
 using SFML.Graphics;
@@ -15,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Bomberman.Map;
 
 namespace Bomberman
@@ -46,7 +45,8 @@ namespace Bomberman
 
         public static GameScore scoreBoard;
 
-        public static TileMap tileMap;
+        public static TileMapFacade tileMapFacade;
+        public static Texture mapSpriteSheet;
 
 
         public static GameApplication GetInstance()
@@ -74,12 +74,13 @@ namespace Bomberman
             _userHubConnection.On("ReceiveMessage", (string user, string message) => Console.WriteLine($"{user}: {message}")); // Demo listener.
             _userHubConnection.On<PlayerDTO>("ReceiveNewClient", OnNewClientConnect); // Listens for new clients that connect to the server
             _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers); // Refreshes data for all players connected to the server ( currenty only position )
-
             _userHubConnection.StartAsync().Wait();
         }
 
         public void Run()
         {
+            // Initializing the tilemap facade
+            tileMapFacade = new TileMapFacade((int)VideoResolution[0], (int)VideoResolution[1], Properties.Resources.spritesheet2);
 
             if (_serverBool) { ConfigureHubConnections(); }
             else { mainPlayer = new Player(new PlayerDTO()); }
@@ -93,9 +94,9 @@ namespace Bomberman
 
             _renderWindow = CreateRenderWindow(Styles.Default);
             _renderWindow.SetFramerateLimit(60);
-            LoadGround(Properties.Resources.Title_Image);
             _renderWindow.SetActive();
 
+            
             // Wall box
             _boxWall = SpriteLoader.LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
             // Enemy create
@@ -141,7 +142,7 @@ namespace Bomberman
                 _renderWindow.DispatchEvents(); // event handler to processes keystrokes/mouse movements
                 _renderWindow.Clear();
                 //_renderWindow.Draw(_backgroundSprite);
-                _renderWindow.Draw(tileMap);
+                _renderWindow.Draw(tileMapFacade.GetTileMap());
                 _renderWindow.Draw(_boxWall);
                 _renderWindow.Draw(mainPlayer);
                 _renderWindow.Draw(enemy.getSprite());
@@ -206,7 +207,7 @@ namespace Bomberman
                     // Demo sender - "SendMessage" maps to hub's function name.
 
 
-                    if (mainPlayer.CheckMovementCollision(0, -moveDistance, tileMap.GetCloseObstacles(mainPlayer.Position)))
+                    if (mainPlayer.CheckMovementCollision(0, -moveDistance, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
                     {
                         // Console.WriteLine("Player collided with a wall");
                     }
@@ -218,7 +219,7 @@ namespace Bomberman
 
                 if (Keyboard.IsKeyPressed(Keyboard.Key.S))
                 {
-                    if (mainPlayer.CheckMovementCollision(0, moveDistance, tileMap.GetCloseObstacles(mainPlayer.Position)))
+                    if (mainPlayer.CheckMovementCollision(0, moveDistance, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
                     {
                         //Console.WriteLine("Player collided with a wall");
                     }
@@ -229,7 +230,7 @@ namespace Bomberman
                 }
                 if (Keyboard.IsKeyPressed(Keyboard.Key.D))
                 {
-                    if (mainPlayer.CheckMovementCollision(moveDistance, 0, tileMap.GetCloseObstacles(mainPlayer.Position)))
+                    if (mainPlayer.CheckMovementCollision(moveDistance, 0, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
                     {
                         //Console.WriteLine("Player collided with a wall");
                     }
@@ -241,7 +242,7 @@ namespace Bomberman
                 }
                 if (Keyboard.IsKeyPressed(Keyboard.Key.A))
                 {
-                    if (mainPlayer.CheckMovementCollision(-moveDistance, 0, tileMap.GetCloseObstacles(mainPlayer.Position)))
+                    if (mainPlayer.CheckMovementCollision(-moveDistance, 0, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
                     {
                         //Console.WriteLine("Player collided with a wall");
                     }
@@ -307,31 +308,15 @@ namespace Bomberman
             Console.WriteLine($"Resolution: {videoMode.Width}x{videoMode.Height}");
             return renderWindow;
         }
-        private static void LoadGround(byte[] imageBitmap) // kindof useless method tbh
-        {
-            var square = new IntRect(0, 0, (int)VideoResolution[0], (int)VideoResolution[1]);
-            Sprite backgroundSprite;
-            try
-            {
-                backgroundSprite = SpriteLoader.LoadSprite(imageBitmap, square, true);
-                
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Sprite load error:\n{e}");
-                backgroundSprite = SpriteLoader.LoadSprite(Properties.Resources.Title_Image, square, true); // loading a default background
-            }
 
-            // left, top, width, length
-            
-            _backgroundSprite = backgroundSprite;
-        }
         // Called when this client connects to the server, receives the player information
         private static void ClientConnected(PlayerDTO playerDTO, string[] map)
         {
             Console.WriteLine("We have connected");
             Console.WriteLine(playerDTO.ToString());
-            tileMap = new TileMap(new Texture(Properties.Resources.spritesheet2), map, spriteSize: 32);
+            if (!tileMapFacade.SetupTileMap(map)) {
+                Console.WriteLine("Invalid map");
+            }
             mainPlayer = new Player(playerDTO);
         }
         // Called when a new client (except the current one) connects to the server, receives the other players information

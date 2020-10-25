@@ -36,7 +36,7 @@ namespace Bomberman.Map
             ParseMap(map);
         }
 
-        private void ParseMap(string[] map)
+        public void ParseMap(string[] map)
         {
             this.map = new string[map.Length, map[0].Split(",").Length];
 
