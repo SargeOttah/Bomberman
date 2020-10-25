@@ -26,6 +26,16 @@ namespace BombermanServer.Hubs
             await Clients.Caller.SendAsync("ReceiveMessage", user, message); // 'ReceiveMessage' is a name that ClientSide listens to.
         }
 
+        public async Task SendBombLocation(string user, PointF position) // 'SendMessage' is a name that ClientSide sends requests to.
+        {
+            // Wait for bomb signal
+            await Clients.Caller.SendAsync("ReceiveBombLocation", user, position); 
+
+            // Send signal of bomb creation
+            //await Clients.All.SendAsync("ReceiveNewBomb", position);
+            await Clients.AllExcept(this.Context.ConnectionId).SendAsync("ReceiveNewBomb", position);
+        }
+
         public override async Task OnConnectedAsync()
         {
             int playerId = _playerService.GetEmptyId();

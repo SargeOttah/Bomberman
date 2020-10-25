@@ -111,7 +111,8 @@ namespace Bomberman.Spawnables
             if (DelayTimer.ElapsedTime.AsMilliseconds() > PlaceSpeed)
             {
                 DelayTimer.Restart(); // restart wait clock when placed
-                Spawnable bomb = new Spawnable(ProjectileSprite, this.Position, this.Rotation);
+                Spawnable bomb = new Spawnable(ProjectileSprite, target, this.Rotation);
+                //Spawnable bomb = new Spawnable(ProjectileSprite, this.Position, this.Rotation);
                 Spawnables.Add(bomb);
             }
         }
