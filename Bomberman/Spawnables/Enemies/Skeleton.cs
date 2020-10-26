@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using SFML.Graphics;
 
-namespace Bomberman.Enemies
+namespace Bomberman.Spawnables.Enemies
 {
     class Skeleton : Enemy
     {
@@ -21,6 +21,12 @@ namespace Bomberman.Enemies
             tmpSprite = new Sprite(tmpTexture);
 
             return tmpSprite;
+        }
+
+        // Returns a shallow copy
+        public override Enemy Clone()
+        {
+            return this.MemberwiseClone() as Enemy;
         }
     }
 }

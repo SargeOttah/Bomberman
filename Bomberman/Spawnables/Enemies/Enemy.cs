@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Bomberman.Enemies
+namespace Bomberman.Spawnables.Enemies
 {
     abstract class Enemy
     {
@@ -23,7 +23,7 @@ namespace Bomberman.Enemies
         public Sprite getSprite () { return this.sprite; }
         public void setSprite(Sprite sprite) { this.sprite = sprite; }
 
-        public void Position(int x, int y)
+        public void Position(float x, float y)
         {
             this.sprite.Position = new Vector2f(x, y);
         }
@@ -35,5 +35,8 @@ namespace Bomberman.Enemies
 
         //public abstract void attack();
         //public abstract void move();
+
+        // Enemy type prototype method
+        public abstract Enemy Clone();
     }
 }

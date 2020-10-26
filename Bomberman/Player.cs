@@ -1,6 +1,7 @@
 ﻿using Bomberman.Collisions;
 using Bomberman.Dto;
 using Bomberman.Spawnables;
+using Bomberman.Spawnables.Weapons;
 using Bomberman.Spawnables.Obstacles;
 using SFML.Graphics;
 using SFML.System;

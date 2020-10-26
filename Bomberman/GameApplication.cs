@@ -1,6 +1,6 @@
 ﻿using Bomberman.Dto;
-using Bomberman.Enemies;
 using Bomberman.Spawnables;
+using Bomberman.Spawnables.Weapons;
 using Bomberman.GUI;
 using Bomberman.Spawnables.Obstacles;
 using Bomberman.Global;
@@ -16,6 +16,7 @@ using System.Linq;
 using System.Drawing;
 using System.Threading.Tasks;
 using Bomberman.Map;
+using System.Runtime.CompilerServices;
 
 namespace Bomberman
 {
@@ -90,6 +91,8 @@ namespace Bomberman
             // Initializing the tilemap facade
             tileMapFacade = new TileMapFacade((int)VideoResolution[0], (int)VideoResolution[1], Properties.Resources.spritesheet2);
 
+            ConfigureHubConnections();
+
             _renderWindow = CreateRenderWindow(Styles.Default);
             _renderWindow.SetFramerateLimit(60);
             _renderWindow.SetActive();
@@ -97,8 +100,14 @@ namespace Bomberman
             
             // Wall box
             _boxWall = SpriteLoader.LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
-            // Enemy create
-            Enemy enemy = SpawnEnemy("Zombie");
+
+            BoardBuilder board = new BoardBuilder();
+            //Enemy enemy = SpawnEnemy("Zombie");
+
+
+            // <Enemy> factory -> Enemy -> BoardBuilder -> Prototype implementation
+            board.AddGhost(new Vector2f(200, 200), new Vector2f(0.2f, 0.2f));
+            board.AddSkeleton(new Vector2f(100, 100), new Vector2f(2f, 2f));
 
             //Crate
             Sprite crate = SpawnObstacle();
@@ -140,7 +149,13 @@ namespace Bomberman
                 
                 _renderWindow.Draw(_boxWall);
                 _renderWindow.Draw(mainPlayer);
-                _renderWindow.Draw(enemy.getSprite());
+
+                foreach (var p in board._enemies)
+                {
+                    _renderWindow.Draw(p.getSprite());
+                }
+
+                //_renderWindow.Draw(enemy.getSprite());
                 //_renderWindow.Draw(obs);
 
                 foreach (Player p in otherPlayers)
@@ -266,6 +281,11 @@ namespace Bomberman
                 // Drawbacks: sync difference
                 // Possible fix: handle ALL bomb creation on server
             }
+
+            if (e.Code == Keyboard.Key.Z)
+            {
+
+            }
         }
 
         public void UpdateLoop(Time deltaTime) // Loop updating drawables / spawnables
@@ -378,15 +398,15 @@ namespace Bomberman
             return fullPath;
         }
 
-        private Enemy SpawnEnemy(string name)
-        {
-            EnemyFactory enemyFactory = new EnemyFactory();
-            Enemy enemy = enemyFactory.createEnemy(name);
-            enemy.Position(50, 100);
-            enemy.Scale(0.2f, 0.2f);
+        //private Enemy SpawnEnemy(string name)
+        //{
+        //    EnemyFactory enemyFactory = new EnemyFactory();
+        //    Enemy enemy = enemyFactory.createEnemy(name);
+        //    enemy.Position(50, 100);
+        //    enemy.Scale(0.2f, 0.2f);
 
-            return enemy;
-        }
+        //    return enemy;
+        //}
         private Sprite SpawnObstacle()
         {
             ObstacleFactory obsFactory = FactoryPicker.GetFactory("Destroyable");

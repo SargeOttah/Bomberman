@@ -73,6 +73,36 @@ namespace Bomberman.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] back {
+            get {
+                object obj = ResourceManager.GetObject("back", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] backwalk1 {
+            get {
+                object obj = ResourceManager.GetObject("backwalk1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] backwalk2 {
+            get {
+                object obj = ResourceManager.GetObject("backwalk2", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] blueback {
             get {
                 object obj = ResourceManager.GetObject("blueback", resourceCulture);
@@ -223,6 +253,26 @@ namespace Bomberman.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] down1 {
+            get {
+                object obj = ResourceManager.GetObject("down1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] down2 {
+            get {
+                object obj = ResourceManager.GetObject("down2", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] explosion {
             get {
                 object obj = ResourceManager.GetObject("explosion", resourceCulture);
@@ -236,6 +286,16 @@ namespace Bomberman.Properties {
         public static byte[] explosionSmall {
             get {
                 object obj = ResourceManager.GetObject("explosionSmall", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] front {
+            get {
+                object obj = ResourceManager.GetObject("front", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -373,6 +433,36 @@ namespace Bomberman.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] left {
+            get {
+                object obj = ResourceManager.GetObject("left", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] leftwalk1 {
+            get {
+                object obj = ResourceManager.GetObject("leftwalk1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] leftwalk2 {
+            get {
+                object obj = ResourceManager.GetObject("leftwalk2", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] obsidian {
             get {
                 object obj = ResourceManager.GetObject("obsidian", resourceCulture);
@@ -383,9 +473,9 @@ namespace Bomberman.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        public static byte[] redback {
+        public static byte[] right {
             get {
-                object obj = ResourceManager.GetObject("redback", resourceCulture);
+                object obj = ResourceManager.GetObject("right", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -393,9 +483,9 @@ namespace Bomberman.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        public static byte[] redbackwalk1 {
+        public static byte[] rightwalk1 {
             get {
-                object obj = ResourceManager.GetObject("redbackwalk1", resourceCulture);
+                object obj = ResourceManager.GetObject("rightwalk1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -403,99 +493,9 @@ namespace Bomberman.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        public static byte[] redbackwalk2 {
+        public static byte[] rightwalk2 {
             get {
-                object obj = ResourceManager.GetObject("redbackwalk2", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] reddown1 {
-            get {
-                object obj = ResourceManager.GetObject("reddown1", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] reddown2 {
-            get {
-                object obj = ResourceManager.GetObject("reddown2", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] redfront {
-            get {
-                object obj = ResourceManager.GetObject("redfront", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] redleft {
-            get {
-                object obj = ResourceManager.GetObject("redleft", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] redleftwalk1 {
-            get {
-                object obj = ResourceManager.GetObject("redleftwalk1", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] redleftwalk2 {
-            get {
-                object obj = ResourceManager.GetObject("redleftwalk2", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] redright {
-            get {
-                object obj = ResourceManager.GetObject("redright", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] redrightwalk1 {
-            get {
-                object obj = ResourceManager.GetObject("redrightwalk1", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        public static byte[] redrightwalk2 {
-            get {
-                object obj = ResourceManager.GetObject("redrightwalk2", resourceCulture);
+                object obj = ResourceManager.GetObject("rightwalk2", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -536,6 +536,16 @@ namespace Bomberman.Properties {
         public static byte[] stone {
             get {
                 object obj = ResourceManager.GetObject("stone", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] superbomb {
+            get {
+                object obj = ResourceManager.GetObject("superbomb", resourceCulture);
                 return ((byte[])(obj));
             }
         }
