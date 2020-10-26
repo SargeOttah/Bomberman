@@ -5,7 +5,8 @@ namespace BombermanServer.Services
 {
     public interface IMapService
     {
-        public void LoadMap(int id);
+        public void LoadMap(int id = 0);
         public string[] GetMap();
+        public string GetServiceName();
     }
 }

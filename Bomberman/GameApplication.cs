@@ -63,7 +63,7 @@ namespace Bomberman
                         opts.HttpMessageHandlerFactory = (message) =>
                         {
                             if (message is HttpClientHandler clientHandler)
-                            // bypass SSL certificate
+                                // bypass SSL certificate
                                 clientHandler.ServerCertificateCustomValidationCallback +=
                                     (sender, certificate, chain, sslPolicyErrors) => { return true; };
                             return message;
@@ -73,9 +73,9 @@ namespace Bomberman
 
             _userHubConnection.On<PlayerDTO, string[]>("ClientConnected", ClientConnected); // Listens for our own PlayerDTO created by the server
             _userHubConnection.On("ReceiveMessage", (string user, string message) => Console.WriteLine($"{user}: {message}")); // Demo listener.
-            
+
             // Receive bomb log
-            _userHubConnection.On("ReceiveBombLocation", 
+            _userHubConnection.On("ReceiveBombLocation",
                 (string user, PointF pos) => Console.WriteLine($"User: {user} Placed bomb at (x, y): [{pos.X}, {pos.Y}]"));
             // Receive bomb creation signal
             _userHubConnection.On<PointF>("ReceiveNewBomb", OnBombPlaced);
@@ -97,7 +97,7 @@ namespace Bomberman
             _renderWindow.SetFramerateLimit(60);
             _renderWindow.SetActive();
 
-            
+
             // Wall box
             _boxWall = SpriteLoader.LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
 
@@ -146,9 +146,8 @@ namespace Bomberman
 
                 // TILES
                 _renderWindow.Draw(tileMapFacade.GetTileMap());
-                
-                _renderWindow.Draw(_boxWall);
-                _renderWindow.Draw(mainPlayer);
+
+
 
                 foreach (var p in board._enemies)
                 {
@@ -163,8 +162,9 @@ namespace Bomberman
                     _renderWindow.Draw(p);
                 }
 
-                _renderWindow.Draw(scoreBoard);
 
+
+                _renderWindow.Draw(mainPlayer);
                 //DEBUG - RED FRAME
                 _renderWindow.Draw(mainPlayer.DrawFrame());
 
@@ -191,6 +191,7 @@ namespace Bomberman
                 // Print player coordinates left, top (x, y)
                 coordText.DisplayedString = $"x {mainPlayer.Position.X} y {mainPlayer.Position.Y}";
                 _renderWindow.Draw(coordText);
+                _renderWindow.Draw(scoreBoard);
 
                 if (_renderWindow.HasFocus()) // if window is focused
                 {
@@ -203,65 +204,42 @@ namespace Bomberman
 
         public void InputControl()
         {
-                float movementSpeed = 5;
-                float moveDistance = movementSpeed;
-                float movementX = 0;
-                float movementY = 0;
+            float movementSpeed = 5;
+            float moveDistance = movementSpeed;
+            float movementX = 0;
+            float movementY = 0;
 
-                if (Keyboard.IsKeyPressed(Keyboard.Key.W))
+            List<Obstacle> collidableObstacles = tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position);
+
+            if (Keyboard.IsKeyPressed(Keyboard.Key.W))
+            {
+                if (!mainPlayer.CheckMovementCollision(0, -moveDistance, collidableObstacles))
                 {
-                    //if (_serverBool)
-                    //{
-                    //    _userHubConnection.InvokeAsync("SendMessage", "Asd", "asd").Wait();
-                    //}
-                    // Demo sender - "SendMessage" maps to hub's function name.
-
-
-                    if (mainPlayer.CheckMovementCollision(0, -moveDistance, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
-                    {
-                        // Console.WriteLine("Player collided with a wall");
-                    }
-                    else
-                    {
-                        movementY -= moveDistance;
-                    }
+                    movementY -= moveDistance;
                 }
+            }
 
-                if (Keyboard.IsKeyPressed(Keyboard.Key.S))
+            if (Keyboard.IsKeyPressed(Keyboard.Key.S))
+            {
+                if (!mainPlayer.CheckMovementCollision(0, moveDistance, collidableObstacles))
                 {
-                    if (mainPlayer.CheckMovementCollision(0, moveDistance, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
-                    {
-                        //Console.WriteLine("Player collided with a wall");
-                    }
-                    else
-                    {
-                        movementY += moveDistance;
-                    }
+                    movementY += moveDistance;
                 }
-                if (Keyboard.IsKeyPressed(Keyboard.Key.D))
+            }
+            if (Keyboard.IsKeyPressed(Keyboard.Key.D))
+            {
+                if (!mainPlayer.CheckMovementCollision(moveDistance, 0, collidableObstacles))
                 {
-                    if (mainPlayer.CheckMovementCollision(moveDistance, 0, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
-                    {
-                        //Console.WriteLine("Player collided with a wall");
-                    }
-                    else
-                    {
-                        movementX += moveDistance;
-                    }
-
+                    movementX += moveDistance;
                 }
-                if (Keyboard.IsKeyPressed(Keyboard.Key.A))
+            }
+            if (Keyboard.IsKeyPressed(Keyboard.Key.A))
+            {
+                if (!mainPlayer.CheckMovementCollision(-moveDistance, 0, collidableObstacles))
                 {
-                    if (mainPlayer.CheckMovementCollision(-moveDistance, 0, tileMapFacade.GetTileMap().GetCloseObstacles(mainPlayer.Position)))
-                    {
-                        //Console.WriteLine("Player collided with a wall");
-                    }
-                    else
-                    {
-                        movementX -= moveDistance;
-                    }
-
+                    movementX -= moveDistance;
                 }
+            }
 
             mainPlayer.Translate(movementX, movementY); // move?
         }
@@ -296,7 +274,7 @@ namespace Bomberman
         {
             mainPlayer.Bomb.UpdateSpawnables(deltaTime.AsSeconds());
         }
-        
+
         public void DrawLoop()
         {
             // Draw Spawnables
@@ -333,7 +311,8 @@ namespace Bomberman
         {
             Console.WriteLine("We have connected");
             Console.WriteLine(playerDTO.ToString());
-            if (!tileMapFacade.SetupTileMap(map)) {
+            if (!tileMapFacade.SetupTileMap(map))
+            {
                 Console.WriteLine("Invalid map");
             }
             mainPlayer = new Player(playerDTO);
@@ -352,7 +331,7 @@ namespace Bomberman
             Console.WriteLine("New client connected");
             Console.WriteLine(playerDTO.ToString());
             Player newPlayer = new Player(playerDTO);
-            
+
             otherPlayers.Add(newPlayer);
         }
 
@@ -368,7 +347,8 @@ namespace Bomberman
                 if (p != null)
                 {
                     p.UpdateStats(pNew);
-                } else
+                }
+                else
                 {
                     otherPlayers.Add(new Player(pNew));
                 }

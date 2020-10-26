@@ -74,8 +74,8 @@ namespace Bomberman.Map
         /// <param name="v">Size of the visible area</param>
         private void SetSize(Vector2f v)
         {
-            var w = (int)(v.X / tileSize) + 2;
-            var h = (int)(v.Y / tileSize) + 2;
+            var w = (int)(v.X / tileSize);
+            var h = (int)(v.Y / tileSize);
             //Console.WriteLine($"screen Width: {v.X}, Height: {v.Y}");
 
             if (w == width && h == height) return;
@@ -188,8 +188,8 @@ namespace Bomberman.Map
         public void Refresh(int x, int y)
         {
 
-            if (x < offset.X || x >= offset.X + width || y < offset.Y || y >= offset.Y + height)
-                return; //check if tile is visible
+            // if (x < offset.X || x >= offset.X + width || y < offset.Y || y >= offset.Y + height)
+            //     return; //check if tile is visible
 
             //vertices works like 2d ring buffer
             var vx = x % width;
@@ -207,11 +207,12 @@ namespace Bomberman.Map
             //Console.WriteLine($"texturing {x} {y} {textureIdx} {textureX} {textureY} {spriteSize}");
             IntRect src = new IntRect(textureX, textureY, spriteSize, spriteSize);
 
-            
+
             if (!isObstacle)
             {
                 tiles[index].UpdateTile(rec, src);
-            } else
+            }
+            else
             {
                 if (obstacles[index] != null) // this shouldn't happen, buuuuut just for safety
                 {
@@ -220,7 +221,7 @@ namespace Bomberman.Map
             }
 
             //Console.WriteLine($"vx {vx} {vy} {width}");
-            
+
         }
 
 
@@ -246,9 +247,10 @@ namespace Bomberman.Map
                 if (obstacle != null)
                 {
                     rt.Draw(obstacle.vertices, PrimitiveType.Quads, states);
+                    //rt.Draw(obstacle.debugShape);
                 }
             }
-            
+
         }
     }
 }

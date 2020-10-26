@@ -1,11 +1,14 @@
 ﻿using BombermanServer.Builders.PlayerBuilder;
 using BombermanServer.Models;
 using BombermanServer.Services;
+using BombermanServer.Configurations;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace BombermanServer.Hubs
 {
@@ -14,11 +17,11 @@ namespace BombermanServer.Hubs
         private IPlayerService _playerService;
         private IMapService _mapService;
 
-        public UserHub(IPlayerService playerService, IMapService mapService)
+        public UserHub(IPlayerService playerService, IEnumerable<IMapService> mapServices, IOptions<MapConfiguration> settings)
         {
             this._playerService = playerService;
-            this._mapService = mapService;
-            _mapService.LoadMap(0); // TODO: send map id from client side ant then load it?
+            this._mapService = mapServices.FirstOrDefault(h => h.GetServiceName() == settings.Value.CurrentMapLoader);
+            _mapService.LoadMap(); // TODO: send map id from client side ant then load it?
         }
 
         public async Task SendMessage(string user, string message) // 'SendMessage' is a name that ClientSide sends requests to.
@@ -29,7 +32,7 @@ namespace BombermanServer.Hubs
         public async Task SendBombLocation(string user, PointF position) // 'SendMessage' is a name that ClientSide sends requests to.
         {
             // Wait for bomb signal
-            await Clients.Caller.SendAsync("ReceiveBombLocation", user, position); 
+            await Clients.Caller.SendAsync("ReceiveBombLocation", user, position);
 
             // Send signal of bomb creation
             //await Clients.All.SendAsync("ReceiveNewBomb", position);
@@ -52,7 +55,7 @@ namespace BombermanServer.Hubs
             Console.WriteLine(newPlayer.ToString());
 
             Console.WriteLine("Clients Count:" + _playerService.GetCount());
-            
+
 
             if (_playerService.GetCount() > 1) // If there are other clients connected, notify them of the new player
             {
@@ -86,10 +89,11 @@ namespace BombermanServer.Hubs
             await Clients.Caller.SendAsync("RefreshPlayers", players);
         }
 
-        public async Task RefreshMap(Dictionary<Point, char> changes) {
+        public async Task RefreshMap(Dictionary<Point, char> changes)
+        {
             await Clients.Caller.SendAsync("RefreshMap", _mapService.GetMap());
         }
 
-        
+
     }
 }

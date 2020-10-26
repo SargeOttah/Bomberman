@@ -1,4 +1,5 @@
 ﻿using BombermanServer.Models;
+using BombermanServer.Constants;
 using System.Drawing;
 
 namespace BombermanServer.Builders.PlayerBuilder.ConcreteBuilders
@@ -13,7 +14,8 @@ namespace BombermanServer.Builders.PlayerBuilder.ConcreteBuilders
         }
         public override void BuildPosition()
         {
-            Player.Position = new PointF(0, 100);
+            Player.Position = new PointF(MapConstants.tileSize + MapConstants.tileSize / 2,
+                                         MapConstants.tileSize * (MapConstants.mapHeight - 2) + MapConstants.tileSize / 2);
         }
 
         public override void BuildSprite()
