@@ -1,4 +1,3 @@
-using System.Text;
 using System;
 using BombermanServer.Constants;
 using BombermanServer.Utils;
@@ -7,27 +6,11 @@ namespace BombermanServer.Services.Impl.Adapter
 {
     public class MapGenerator
     {
-        string[,] map;
+        public string[,] map { get; private set; }
 
         public MapGenerator()
         {
             map = new string[MapConstants.mapHeight, MapConstants.mapWidth];
-        }
-
-        public string[] ConvertMap()
-        {
-            string[] convertedMap = new string[MapConstants.mapHeight];
-            for (int i = 0; i < MapConstants.mapHeight; i++)
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (int j = 0; j < MapConstants.mapWidth; j++)
-                {
-                    stringBuilder.Append(map[i, j]);
-                    if (j != MapConstants.mapWidth - 1) { stringBuilder.Append(","); }
-                }
-                convertedMap[i] = stringBuilder.ToString();
-            }
-            return convertedMap;
         }
 
         public void FillEmptyMap()

@@ -187,9 +187,8 @@ namespace Bomberman.Map
         /// <param name="y">Y coord of the tile</param>
         public void Refresh(int x, int y)
         {
-
-            // if (x < offset.X || x >= offset.X + width || y < offset.Y || y >= offset.Y + height)
-            //     return; //check if tile is visible
+            if (x < offset.X || x >= offset.X + width || y < offset.Y || y >= offset.Y + height)
+                return; //check if tile is visible
 
             //vertices works like 2d ring buffer
             var vx = x % width;

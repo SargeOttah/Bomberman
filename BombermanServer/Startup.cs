@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using BombermanServer.Configurations;
 using BombermanServer.Services;
-using BombermanServer.Constants;
 using BombermanServer.Services.Impl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using BombermanServer.Services.Impl.Adapter;
-using System.Configuration;
 
 namespace BombermanServer
 {
