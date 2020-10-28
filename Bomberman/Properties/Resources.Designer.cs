@@ -293,6 +293,16 @@ namespace Bomberman.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] fastbomb {
+            get {
+                object obj = ResourceManager.GetObject("fastbomb", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] front {
             get {
                 object obj = ResourceManager.GetObject("front", resourceCulture);

@@ -6,6 +6,7 @@ using SFML.Window;
 using Bomberman.Spawnables.Obstacles;
 using Bomberman.Spawnables.Enemies;
 using SFML.System;
+using Bomberman.Global;
 
 namespace Bomberman.Map
 {
@@ -26,6 +27,7 @@ namespace Bomberman.Map
         public void AddZombie(Vector2f pos, Vector2f scale)
         {
             var zombieEnemy = enemyZombie.Clone();
+            zombieEnemy.sprite.Origin = SpriteUtils.GetSpriteCenter(zombieEnemy.sprite);
             zombieEnemy.Position(pos.X, pos.Y);
             zombieEnemy.Scale(scale.X, scale.Y);
             _enemies.Add(zombieEnemy);
@@ -33,6 +35,7 @@ namespace Bomberman.Map
         public void AddGhost(Vector2f pos, Vector2f scale)
         {
             var ghostEnemy = enemyGhost.Clone();
+            ghostEnemy.sprite.Origin = SpriteUtils.GetSpriteCenter(ghostEnemy.sprite);
             ghostEnemy.Position(pos.X, pos.Y);
             ghostEnemy.Scale(scale.X, scale.Y);
             _enemies.Add(ghostEnemy);
@@ -40,6 +43,7 @@ namespace Bomberman.Map
         public void AddSkeleton(Vector2f pos, Vector2f scale)
         {
             var skeletonEnemy = enemySkeleton.Clone();
+            skeletonEnemy.sprite.Origin = SpriteUtils.GetSpriteCenter(skeletonEnemy.sprite);
             skeletonEnemy.Position(pos.X, pos.Y);
             skeletonEnemy.Scale(scale.X, scale.Y);
             _enemies.Add(skeletonEnemy);

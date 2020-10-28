@@ -157,9 +157,6 @@
   <data name="bluerightwalk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\Player\Blue\bluerightwalk2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="bomb" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Sprites\bomb.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="crate" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\Obstacles\crate.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -271,7 +268,13 @@
   <data name="redfront" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Sprites\Player\Red\redfront.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="bomb" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Bomb\bomb.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="fastbomb" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Sprites\Bomb\fastbomb.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="superbomb" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Sprites\superbomb.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Sprites\Bomb\superbomb.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

@@ -9,6 +9,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Linq;
+using SFML.System;
+
+
 
 namespace BombermanServer.Hubs
 {
@@ -29,14 +32,20 @@ namespace BombermanServer.Hubs
             await Clients.Caller.SendAsync("ReceiveMessage", user, message); // 'ReceiveMessage' is a name that ClientSide listens to.
         }
 
-        public async Task SendBombLocation(string user, PointF position) // 'SendMessage' is a name that ClientSide sends requests to.
+        public async Task SendBombLocation(string name, PointF pos) // 'SendMessage' is a name that ClientSide sends requests to.
         {
+
             // Wait for bomb signal
-            await Clients.Caller.SendAsync("ReceiveBombLocation", user, position);
+            // await Clients.Caller.SendAsync("ReceiveBombLocation", user, extBomb.Position);
+            await Clients.Caller.SendAsync("ReceiveBombLocation", name, pos);
 
             // Send signal of bomb creation
             //await Clients.All.SendAsync("ReceiveNewBomb", position);
-            await Clients.AllExcept(this.Context.ConnectionId).SendAsync("ReceiveNewBomb", position);
+
+            //tmpBomb.myPosition = position;
+            await Clients.AllExcept(this.Context.ConnectionId).SendAsync("ReceiveNewBomb", pos);
+
+            //await Clients.AllExcept(this.Context.ConnectionId).SendAsync("ReceiveNewBomb", position);
         }
 
         public override async Task OnConnectedAsync()

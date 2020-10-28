@@ -8,16 +8,20 @@ using SFML.System;
 
 namespace Bomberman.Spawnables.Weapons
 {
-    class RegularBomb : Bomb
+    class RegularBomb : Weapon
     {
-        public RegularBomb() : base(20, 500, 2000)
+        public RegularBomb(BombImplementation implementation) : base(implementation)
         {
-            setSprite();
+
         }
 
-        private void setSprite()
+        public override void Operation()
         {
-            this.ProjectileSprite = SpriteLoader.LoadSprite(Resources.bomb, new IntRect(0, 0, 64, 64));
+            Console.WriteLine("Generating Regular bomb");
+
+
+            _implementation.Deploy();
         }
+
     }
 }

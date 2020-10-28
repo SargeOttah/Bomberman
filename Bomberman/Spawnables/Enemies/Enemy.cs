@@ -11,7 +11,7 @@ namespace Bomberman.Spawnables.Enemies
         private string name { get; set; }
         private int damage { get; set; }
 
-        private Sprite sprite { get; set; }
+        public Sprite sprite { get; set; }
 
         public string getName() { return this.name; }
         public void setName(string name) { this.name = name;  }
