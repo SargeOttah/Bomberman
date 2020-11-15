@@ -27,6 +27,7 @@ namespace Bomberman
         private static Sprite _boxWall;
         private static readonly uint[] VideoResolution = { 832, 576 };
         private const string WindowTitle = "Bomberman v0.02";
+        private BoardBuilder _boardBuilder;
 
         //player init
         static Player mainPlayer = new Player();
@@ -53,7 +54,7 @@ namespace Bomberman
             return Instance;
         }
 
-        private static void ConfigureHubConnections()
+        private void ConfigureHubConnections()
         {
             _userHubConnection = new HubConnectionBuilder()
                     .WithUrl("https://localhost:5001/user-hub", (opts) =>
@@ -82,6 +83,25 @@ namespace Bomberman
 
             _userHubConnection.On<PlayerDTO>("ReceiveNewClient", OnNewClientConnect); // Listens for new clients that connect to the server
             _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers); // Refreshes data for all players connected to the server ( currenty only position )
+            
+            var enemiesCreated = false;
+            _userHubConnection.On("RefreshEnemies", (int posX, int posY) =>
+            {
+                if (!enemiesCreated)
+                {
+                    _boardBuilder.AddGhost(new Vector2f(posX, posY), new Vector2f(0.2f, 0.2f));
+                    foreach (var p in _boardBuilder._enemies)
+                    {
+                        _renderWindow.Draw(p.getSprite());
+                    }
+
+                    enemiesCreated = true;
+                }
+                else
+                {
+                    _boardBuilder.MoveGhost(posX, posY);
+                }
+            });
             _userHubConnection.StartAsync().Wait();
         }
 
@@ -89,10 +109,10 @@ namespace Bomberman
         {
             // Initializing the tilemap facade
             tileMapFacade = new TileMapFacade((int)VideoResolution[0], (int)VideoResolution[1], Properties.Resources.spritesheet2);
-
             //InputControl = new InputHandler(mainPlayer, tileMapFacade);
             BindKeys();
 
+            _boardBuilder = new BoardBuilder();
             ConfigureHubConnections();
 
             _renderWindow = CreateRenderWindow(Styles.Default);
@@ -103,10 +123,6 @@ namespace Bomberman
             // Wall box
             _boxWall = SpriteLoader.LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
 
-            BoardBuilder board = new BoardBuilder();
-            // <Enemy> factory -> Enemy -> BoardBuilder -> Prototype implementation
-            board.AddGhost(new Vector2f(351, 225), new Vector2f(0.2f, 0.2f));
-            board.AddSkeleton(new Vector2f(481, 96), new Vector2f(2f, 2f));
 
             //Crate
             Sprite crate = SpawnObstacle();
@@ -145,13 +161,6 @@ namespace Bomberman
 
                 // TILES
                 _renderWindow.Draw(tileMapFacade.GetTileMap());
-
-
-
-                foreach (var p in board._enemies)
-                {
-                    _renderWindow.Draw(p.getSprite());
-                }
 
                 foreach (Player p in otherPlayers)
                 {

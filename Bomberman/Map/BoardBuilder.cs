@@ -48,5 +48,10 @@ namespace Bomberman.Map
             skeletonEnemy.Scale(scale.X, scale.Y);
             _enemies.Add(skeletonEnemy);
         }
+
+        public void MoveGhost(int posX, int posY)
+        {
+            enemyGhost.Position(posX, posY);
+        }
     }
 }

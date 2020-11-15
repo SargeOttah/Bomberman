@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
 using SFML.System;
 
 
@@ -25,6 +26,23 @@ namespace BombermanServer.Hubs
             this._playerService = playerService;
             this._mapService = mapServices.FirstOrDefault(h => h.GetServiceName() == settings.Value.CurrentMapLoader);
             _mapService.LoadMap(); // TODO: send map id from client side ant then load it?
+
+            RefreshEnemies();
+        }
+
+        private void RefreshEnemies()
+        {
+            new Timer(async _ =>
+            {
+                try
+                {
+                    await Clients.All.SendAsync("RefreshEnemies", 736, 400);
+                }
+                catch (Exception __)
+                {
+                    // ignored
+                }
+            }, null, 0, 500);
         }
 
         public async Task SendMessage(string user, string message) // 'SendMessage' is a name that ClientSide sends requests to.
@@ -102,7 +120,5 @@ namespace BombermanServer.Hubs
         {
             await Clients.Caller.SendAsync("RefreshMap", _mapService.GetMap());
         }
-
-
     }
 }
