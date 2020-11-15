@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using SFML.Graphics;
 using SFML.Window;
@@ -16,7 +17,7 @@ namespace Bomberman.Map
         public List<Enemy> _enemies = new List<Enemy>();
         public float spriteScale = 0.2f;
         private Enemy enemyZombie { get; }
-        private Enemy enemyGhost { get; }
+        public Enemy enemyGhost { get; }
         private Enemy enemySkeleton { get; }
         public BoardBuilder()
         {
@@ -51,7 +52,11 @@ namespace Bomberman.Map
 
         public void MoveGhost(int posX, int posY)
         {
-            enemyGhost.Position(posX, posY);
+            Console.WriteLine(posX);
+            var ghost = _enemies.FirstOrDefault(e => e is Ghost);
+            ghost.Position(posX, posY);
+
+            Console.WriteLine(_enemies.FirstOrDefault(e => e is Ghost).sprite.Position.X);
         }
     }
 }

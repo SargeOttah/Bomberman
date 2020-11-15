@@ -1,16 +1,14 @@
 ﻿using BombermanServer.Builders.PlayerBuilder;
+using BombermanServer.Configurations;
 using BombermanServer.Models;
 using BombermanServer.Services;
-using BombermanServer.Configurations;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Threading.Tasks;
 using System.Linq;
-using System.Threading;
-using SFML.System;
+using System.Threading.Tasks;
 
 
 
@@ -23,26 +21,11 @@ namespace BombermanServer.Hubs
 
         public UserHub(IPlayerService playerService, IEnumerable<IMapService> mapServices, IOptions<MapConfiguration> settings)
         {
+            Console.WriteLine("Construct");
             this._playerService = playerService;
             this._mapService = mapServices.FirstOrDefault(h => h.GetServiceName() == settings.Value.CurrentMapLoader);
             _mapService.LoadMap(); // TODO: send map id from client side ant then load it?
 
-            RefreshEnemies();
-        }
-
-        private void RefreshEnemies()
-        {
-            new Timer(async _ =>
-            {
-                try
-                {
-                    await Clients.All.SendAsync("RefreshEnemies", 736, 400);
-                }
-                catch (Exception __)
-                {
-                    // ignored
-                }
-            }, null, 0, 500);
         }
 
         public async Task SendMessage(string user, string message) // 'SendMessage' is a name that ClientSide sends requests to.

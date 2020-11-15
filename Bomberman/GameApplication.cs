@@ -85,21 +85,17 @@ namespace Bomberman
             _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers); // Refreshes data for all players connected to the server ( currenty only position )
             
             var enemiesCreated = false;
-            _userHubConnection.On("RefreshEnemies", (int posX, int posY) =>
+            _userHubConnection.On("RefreshEnemies", (string posX, string posY) =>
             {
                 if (!enemiesCreated)
                 {
-                    _boardBuilder.AddGhost(new Vector2f(posX, posY), new Vector2f(0.2f, 0.2f));
-                    foreach (var p in _boardBuilder._enemies)
-                    {
-                        _renderWindow.Draw(p.getSprite());
-                    }
+                    _boardBuilder.AddGhost(new Vector2f(int.Parse(posX), int.Parse(posY)), new Vector2f(0.2f, 0.2f));
 
                     enemiesCreated = true;
                 }
                 else
                 {
-                    _boardBuilder.MoveGhost(posX, posY);
+                    _boardBuilder.MoveGhost(int.Parse(posX), int.Parse(posY));
                 }
             });
             _userHubConnection.StartAsync().Wait();
@@ -113,12 +109,10 @@ namespace Bomberman
             BindKeys();
 
             _boardBuilder = new BoardBuilder();
-            ConfigureHubConnections();
-
             _renderWindow = CreateRenderWindow(Styles.Default);
             _renderWindow.SetFramerateLimit(60);
             _renderWindow.SetActive();
-
+            ConfigureHubConnections();
 
             // Wall box
             _boxWall = SpriteLoader.LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
@@ -161,6 +155,11 @@ namespace Bomberman
 
                 // TILES
                 _renderWindow.Draw(tileMapFacade.GetTileMap());
+                foreach (var enemy in _boardBuilder._enemies)
+                {
+                    var sprite = enemy.getSprite();
+                    _renderWindow.Draw(sprite);
+                }
 
                 foreach (Player p in otherPlayers)
                 {
