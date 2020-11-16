@@ -52,11 +52,9 @@ namespace Bomberman.Map
 
         public void MoveGhost(int posX, int posY)
         {
-            Console.WriteLine(posX);
             var ghost = _enemies.FirstOrDefault(e => e is Ghost);
-            ghost.Position(posX, posY);
 
-            Console.WriteLine(_enemies.FirstOrDefault(e => e is Ghost).sprite.Position.X);
+            ghost.Position(posX, posY);
         }
     }
 }

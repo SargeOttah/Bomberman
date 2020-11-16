@@ -87,7 +87,6 @@ namespace Bomberman
             var enemiesCreated = false;
             _userHubConnection.On("RefreshEnemies", (string posX, string posY) =>
             {
-                Console.WriteLine($"{posX} - {posY}: {enemiesCreated}");
                 if (!enemiesCreated)
                 {
                     _boardBuilder.AddGhost(new Vector2f(int.Parse(posX), int.Parse(posY)), new Vector2f(0.2f, 0.2f));
@@ -110,9 +109,6 @@ namespace Bomberman
             BindKeys();
 
             _boardBuilder = new BoardBuilder();
-            _renderWindow = CreateRenderWindow(Styles.Default);
-            _renderWindow.SetFramerateLimit(60);
-            _renderWindow.SetActive();
             ConfigureHubConnections();
 
             // Wall box
@@ -131,6 +127,9 @@ namespace Bomberman
             _boxWall.Scale = new Vector2f(0.5f, 0.5f);
 
             // UI score object
+            _renderWindow = CreateRenderWindow(Styles.Default);
+            _renderWindow.SetFramerateLimit(60);
+            _renderWindow.SetActive();
             scoreBoard = new GameScore(_renderWindow);
 
             // Player postion from left, top (x, y)
@@ -393,6 +392,7 @@ namespace Bomberman
                 Console.WriteLine("Invalid map");
             }
             mainPlayer = new Player(playerDTO);
+
         }
 
         private static void BindKeys()

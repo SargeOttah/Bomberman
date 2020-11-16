@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace BombermanServer.Services
+﻿namespace BombermanServer.Services
 {
     public interface IEnemyMovementService
     {
-        Task UpdateGhostMovement();
+        void UpdateGhostMovement();
     }
 }
