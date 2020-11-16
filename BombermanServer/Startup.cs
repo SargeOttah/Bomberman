@@ -30,7 +30,7 @@ namespace BombermanServer
 
             services.AddSingleton<IPlayerService, PlayerService>();
             services.AddSingleton<IMapService, MapService>();
-            services.AddSingleton<IMapService, MapGeneratorAdapter>();
+            // services.AddSingleton<IMapService, MapGeneratorAdapter>();
             services.AddSingleton<IEnemyMovementService, EnemyMovementService>();
         }
 
