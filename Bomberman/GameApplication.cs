@@ -87,6 +87,7 @@ namespace Bomberman
             var enemiesCreated = false;
             _userHubConnection.On("RefreshEnemies", (string posX, string posY) =>
             {
+                Console.WriteLine($"{posX} - {posY}: {enemiesCreated}");
                 if (!enemiesCreated)
                 {
                     _boardBuilder.AddGhost(new Vector2f(int.Parse(posX), int.Parse(posY)), new Vector2f(0.2f, 0.2f));

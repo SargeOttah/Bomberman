@@ -31,6 +31,7 @@ namespace BombermanServer
             services.AddSingleton<IPlayerService, PlayerService>();
             services.AddSingleton<IMapService, MapService>();
             services.AddSingleton<IMapService, MapGeneratorAdapter>();
+            services.AddSingleton<IEnemyMovementService, EnemyMovementService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +44,7 @@ namespace BombermanServer
 
             app.UseRouting();
             app.ConfigureHubs(); // Implementation in Configurations / HubConfiguration.cs
+            app.ApplicationServices.GetService<IEnemyMovementService>();
         }
     }
 }

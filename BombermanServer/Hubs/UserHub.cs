@@ -21,7 +21,6 @@ namespace BombermanServer.Hubs
 
         public UserHub(IPlayerService playerService, IEnumerable<IMapService> mapServices, IOptions<MapConfiguration> settings)
         {
-            Console.WriteLine("Construct");
             this._playerService = playerService;
             this._mapService = mapServices.FirstOrDefault(h => h.GetServiceName() == settings.Value.CurrentMapLoader);
             _mapService.LoadMap(); // TODO: send map id from client side ant then load it?
