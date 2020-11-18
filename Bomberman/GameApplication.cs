@@ -33,7 +33,7 @@ namespace Bomberman
         static Player mainPlayer = new Player();
         static List<Player> otherPlayers = new List<Player>();
 
-        
+
         private static HubConnection _userHubConnection;
 
         // To track time
@@ -252,7 +252,7 @@ namespace Bomberman
                 }
             }
 
-            
+
 
             mainPlayer.Translate(movementX, movementY); // move?
         }
@@ -261,7 +261,7 @@ namespace Bomberman
         void OnKeyPressed(object sender, SFML.Window.KeyEventArgs e)
         {
             var target = mainPlayer.Position;
-            
+
 
             if (e.Code == Keyboard.Key.Space)
             {
@@ -278,11 +278,11 @@ namespace Bomberman
                     //(float dmg, float placeDelay, float bombTimer, Sprite projectileSprite, PointF pos)
                     //var tmp = new BombDTO(mainPlayer.Bomb.Damage, mainPlayer.Bomb.PlaceSpeed, mainPlayer.Bomb.BombTimer, 
                     //    mainPlayer.Bomb.ProjectileSprite, mainPlayer.GetPointPosition());
-                    
+
                     // TODO: set bomb type with interface method, send location and type
 
                     //old
-                     _userHubConnection.InvokeAsync("SendBombLocation", mainPlayer.connectionId, mainPlayer.GetPointPosition()).Wait();
+                    _userHubConnection.InvokeAsync("SendBombLocation", mainPlayer.connectionId, mainPlayer.GetPointPosition()).Wait();
 
                 }
 
@@ -301,7 +301,7 @@ namespace Bomberman
                 //bool bombSet = mainPlayer.Bomb.PlaceBomb(target);
                 //if (bombSet)
                 //{
-                    //_userHubConnection.InvokeAsync("SendBombLocation", mainPlayer.connectionId, mainPlayer.GetVectorPosition()).Wait();
+                //_userHubConnection.InvokeAsync("SendBombLocation", mainPlayer.connectionId, mainPlayer.GetVectorPosition()).Wait();
                 //    //PlaceBridgeBomb(mainPlayer.Position);
                 //}
             }
@@ -406,7 +406,7 @@ namespace Bomberman
         }
         private static void PlaceBridgeBomb(Vector2f pos)
         {
-          //  mainPlayer.Bomb.PlaceBomb(pos);
+            //  mainPlayer.Bomb.PlaceBomb(pos);
         }
 
         // Called when client received signal of bomb creation "ReceiveNewBomb"

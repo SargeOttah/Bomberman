@@ -34,7 +34,6 @@ namespace BombermanServer.Hubs
 
         public async Task SendBombLocation(string name, PointF pos) // 'SendMessage' is a name that ClientSide sends requests to.
         {
-
             // Wait for bomb signal
             // await Clients.Caller.SendAsync("ReceiveBombLocation", user, extBomb.Position);
             await Clients.Caller.SendAsync("ReceiveBombLocation", name, pos);

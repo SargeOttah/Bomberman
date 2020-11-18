@@ -1,4 +1,6 @@
 using BombermanServer.Models;
+using BombermanServer.Constants;
+using System;
 using System.Collections.Generic;
 
 namespace BombermanServer.Services.Impl
@@ -7,6 +9,12 @@ namespace BombermanServer.Services.Impl
     {
         string currentName => nameof(MapService);
         string[] map;
+        List<char> obstacleList;
+
+        public MapService()
+        {
+            obstacleList = MapConstants.GetObstacleList();
+        }
 
         public void LoadMap(int id) // load from file or whatever
         {
@@ -27,6 +35,18 @@ namespace BombermanServer.Services.Impl
         public string[] GetMap()
         {
             return map;
+        }
+
+        public bool IsObstacle(float x, float y)
+        {
+            int tileX = (int)Math.Floor(x) / MapConstants.tileSize * 2;
+            int tileY = (int)Math.Floor(y) / MapConstants.tileSize;
+
+            if (obstacleList.Contains(map[tileY][tileX]))
+            {
+                return true;
+            }
+            return false;
         }
 
         public string GetServiceName()
