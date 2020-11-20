@@ -87,8 +87,6 @@ namespace BombermanServer.Services.Impl
                             break;
                     }
 
-                    Console.WriteLine(_playerService.GetPlayers().FirstOrDefault()?.Position.X);
-
                     await _hubContext.Clients.All.SendAsync("RefreshEnemies", x.ToString(), y.ToString());
 
                     foreach (var player in players)
