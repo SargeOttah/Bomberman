@@ -88,6 +88,13 @@ namespace BombermanServer.Services.Impl
 
                     await _hubContext.Clients.All.SendAsync("RefreshEnemies", x.ToString(), y.ToString());
                 }
+                else // Reset everything after players disconnect in order to have a clean start on another connection.
+                {
+                    x = 6.5f * MapConstants.tileSize; 
+                    y = 5.5f * MapConstants.tileSize;
+
+                    lastTurnIndex = null;
+                }
             }, null, 0, period);
         }
     }
