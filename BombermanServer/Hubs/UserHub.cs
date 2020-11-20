@@ -1,15 +1,14 @@
 ﻿using BombermanServer.Builders.PlayerBuilder;
+using BombermanServer.Configurations;
 using BombermanServer.Models;
 using BombermanServer.Services;
-using BombermanServer.Configurations;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Threading.Tasks;
 using System.Linq;
-using SFML.System;
+using System.Threading.Tasks;
 
 
 
@@ -25,6 +24,7 @@ namespace BombermanServer.Hubs
             this._playerService = playerService;
             this._mapService = mapServices.FirstOrDefault(h => h.GetServiceName() == settings.Value.CurrentMapLoader);
             _mapService.LoadMap(); // TODO: send map id from client side ant then load it?
+
         }
 
         public async Task SendMessage(string user, string message) // 'SendMessage' is a name that ClientSide sends requests to.
@@ -34,7 +34,6 @@ namespace BombermanServer.Hubs
 
         public async Task SendBombLocation(string name, PointF pos) // 'SendMessage' is a name that ClientSide sends requests to.
         {
-
             // Wait for bomb signal
             // await Clients.Caller.SendAsync("ReceiveBombLocation", user, extBomb.Position);
             await Clients.Caller.SendAsync("ReceiveBombLocation", name, pos);
@@ -102,7 +101,5 @@ namespace BombermanServer.Hubs
         {
             await Clients.Caller.SendAsync("RefreshMap", _mapService.GetMap());
         }
-
-
     }
 }
