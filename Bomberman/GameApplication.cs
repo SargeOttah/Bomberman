@@ -98,6 +98,12 @@ namespace Bomberman
                     _boardBuilder.MoveGhost(int.Parse(posX), int.Parse(posY));
                 }
             });
+
+            _userHubConnection.On("PlayerDied", (string connectionId) =>
+            {
+                Console.WriteLine($"GOT IT! Id: {connectionId}");
+                Console.WriteLine($"My id: {mainPlayer.connectionId}");
+            });
             _userHubConnection.StartAsync().Wait();
         }
 

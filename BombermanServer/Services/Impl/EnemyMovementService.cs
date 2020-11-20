@@ -41,7 +41,8 @@ namespace BombermanServer.Services.Impl
 
             new Timer(async _ => // Infinite loop
             {
-                if (_playerService.GetPlayers().Any()) // Only do the calculations if we have any clients connected.
+                var players = _playerService.GetPlayers();
+                if (players.Any()) // Only do the calculations if we have any clients connected.
                 {
                     var allTurns = new List<bool> // Check legality of each direction (false if the move is illegal, true if legal).
                     {
@@ -89,6 +90,17 @@ namespace BombermanServer.Services.Impl
                     Console.WriteLine(_playerService.GetPlayers().FirstOrDefault()?.Position.X);
 
                     await _hubContext.Clients.All.SendAsync("RefreshEnemies", x.ToString(), y.ToString());
+
+                    foreach (var player in players)
+                    {
+                        if (
+                            Math.Abs(x - player.Position.X) < MapConstants.tileSize  // check if ghost touched each player
+                            && Math.Abs(y - player.Position.Y) < MapConstants.tileSize
+                        )
+                        {
+                            await _hubContext.Clients.All.SendAsync("PlayerDied", player.ConnectionId);
+                        }
+                    }
                 }
                 else // Reset everything after players disconnect in order to have a clean start on another connection.
                 {
