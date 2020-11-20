@@ -86,6 +86,8 @@ namespace BombermanServer.Services.Impl
                             break;
                     }
 
+                    Console.WriteLine(_playerService.GetPlayers().FirstOrDefault()?.Position.X);
+
                     await _hubContext.Clients.All.SendAsync("RefreshEnemies", x.ToString(), y.ToString());
                 }
                 else // Reset everything after players disconnect in order to have a clean start on another connection.
