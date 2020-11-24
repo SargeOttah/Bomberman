@@ -29,8 +29,9 @@ namespace BombermanServer
             services.Configure<MapConfiguration>(Configuration.GetSection("AppSettings"));
 
             services.AddSingleton<IPlayerService, PlayerService>();
+            services.AddSingleton<IBombService, BombService>();
+            //services.AddSingleton<IMapService, MapGeneratorAdapter>();
             services.AddSingleton<IMapService, MapService>();
-            services.AddSingleton<IMapService, MapGeneratorAdapter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

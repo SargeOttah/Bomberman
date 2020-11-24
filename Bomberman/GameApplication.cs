@@ -82,6 +82,7 @@ namespace Bomberman
 
             _userHubConnection.On<PlayerDTO>("ReceiveNewClient", OnNewClientConnect); // Listens for new clients that connect to the server
             _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers); // Refreshes data for all players connected to the server ( currenty only position )
+            _userHubConnection.On<string[]>("RefreshMap", RefreshMap);
             _userHubConnection.StartAsync().Wait();
         }
 
@@ -107,10 +108,6 @@ namespace Bomberman
             // <Enemy> factory -> Enemy -> BoardBuilder -> Prototype implementation
             board.AddGhost(new Vector2f(351, 225), new Vector2f(0.2f, 0.2f));
             board.AddSkeleton(new Vector2f(481, 96), new Vector2f(2f, 2f));
-
-            //Crate
-            Sprite crate = SpawnObstacle();
-
 
             // Spawn obstacle
             //Sprite obs = SpawnObstacle();
@@ -270,11 +267,21 @@ namespace Bomberman
                     //(float dmg, float placeDelay, float bombTimer, Sprite projectileSprite, PointF pos)
                     //var tmp = new BombDTO(mainPlayer.Bomb.Damage, mainPlayer.Bomb.PlaceSpeed, mainPlayer.Bomb.BombTimer, 
                     //    mainPlayer.Bomb.ProjectileSprite, mainPlayer.GetPointPosition());
+                    var bombDTO = new BombDTO(
+                        10, //change these when upgrades are implemented
+                        mainPlayer.Bomb.BombTimer,
+                        5,
+                        mainPlayer.GetPointPosition()
+                    );
+
+
+
 
                     // TODO: set bomb type with interface method, send location and type
 
                     //old
-                    _userHubConnection.InvokeAsync("SendBombLocation", mainPlayer.connectionId, mainPlayer.GetPointPosition()).Wait();
+
+                    _userHubConnection.InvokeAsync("SendBombLocation", mainPlayer.connectionId, bombDTO).Wait();
 
                 }
 
@@ -439,14 +446,9 @@ namespace Bomberman
             }
         }
 
-        private Sprite SpawnObstacle()
+        private static void RefreshMap(string[] map)
         {
-            ObstacleFactory obsFactory = FactoryPicker.GetFactory("Destroyable");
-            Sprite obj = obsFactory.GetDestroyable("Crate").SpawnObstacle();
-            obj.Position = new Vector2f(100, 100);
-            obj.Scale = new Vector2f(0.5f, 0.5f);
-
-            return obj;
+            tileMapFacade.UpdateTileMap(map);
         }
     }
 }

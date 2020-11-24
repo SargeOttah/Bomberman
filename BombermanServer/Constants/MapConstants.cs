@@ -10,13 +10,27 @@ namespace BombermanServer.Constants
         public static readonly int mapHeight = 9;
         public static readonly int tileSize = 64;
 
-        public static List<char> GetObstacleList()
+        public static List<string> GetObstacleList()
         {
-            List<char> obstacles = new List<char>();
-            var destructable = Enum.GetValues(typeof(DestructableObstacles)).Cast<DestructableObstacles>().Select(obstacle => (char)obstacle);
-            var undestructable = Enum.GetValues(typeof(UndestructableObstacles)).Cast<UndestructableObstacles>().Select(obstacle => (char)obstacle);
-            obstacles.AddRange(destructable);
+            List<string> obstacles = new List<string>();
+            obstacles.AddRange(GetDestructableObstacles());
+            obstacles.AddRange(GetUndestructableObstacles());
+            return obstacles;
+        }
+
+        public static List<string> GetUndestructableObstacles()
+        {
+            List<string> obstacles = new List<string>();
+            var undestructable = Enum.GetValues(typeof(UndestructableObstacles)).Cast<UndestructableObstacles>().Select(obstacle => ((char)obstacle).ToString());
             obstacles.AddRange(undestructable);
+            return obstacles;
+        }
+
+        public static List<string> GetDestructableObstacles()
+        {
+            List<string> obstacles = new List<string>();
+            var destructable = Enum.GetValues(typeof(DestructableObstacles)).Cast<DestructableObstacles>().Select(obstacle => ((char)obstacle).ToString());
+            obstacles.AddRange(destructable);
             return obstacles;
         }
     }
