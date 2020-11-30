@@ -21,7 +21,7 @@ namespace Bomberman.Spawnables
 
             float xSize = projectileSprite.Scale.X * projectileSprite.TextureRect.Width;
             float ySize = projectileSprite.Scale.Y * projectileSprite.TextureRect.Height;
-            var size =  new Vector2f(xSize, ySize);
+            var size = new Vector2f(xSize, ySize);
             ProjectileSprite.Origin = new Vector2f(size.X / 2.0f, size.Y / 2.0f);
 
 

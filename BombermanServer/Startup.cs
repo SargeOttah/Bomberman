@@ -29,6 +29,7 @@ namespace BombermanServer
             services.Configure<MapConfiguration>(Configuration.GetSection("AppSettings"));
 
             services.AddSingleton<IPlayerService, PlayerService>();
+            services.AddSingleton<IBombService, BombService>();
             services.AddSingleton<IMapService, MapService>();
             // services.AddSingleton<IMapService, MapGeneratorAdapter>();
             services.AddSingleton<IEnemyMovementService, EnemyMovementService>();

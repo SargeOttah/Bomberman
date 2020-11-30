@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Text;
 using BombermanServer.Constants;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace BombermanServer.Services.Impl.Adapter
         string currentName => nameof(MapGeneratorAdapter);
         MapGenerator mapGenerator;
         string[] map;
-        List<char> obstacleList;
+        List<string> obstacleList;
 
         public MapGeneratorAdapter()
         {
@@ -30,16 +31,38 @@ namespace BombermanServer.Services.Impl.Adapter
             return map;
         }
 
-        public bool IsObstacle(float x, float y)
+        public string[,] GetMapMatrix()
+        {
+            return mapGenerator.map;
+        }
+
+        public Point GetTilePosition(float x, float y)
         {
             int tileX = (int)Math.Floor(x) / MapConstants.tileSize;
             int tileY = (int)Math.Floor(y) / MapConstants.tileSize;
+            return new Point(tileX, tileY);
+        }
 
-            if (obstacleList.Contains(map[tileY][tileX]))
+        public bool IsObstacle(float x, float y)
+        {
+            var pos = GetTilePosition(x, y);
+            return IsObstacle(pos.X, pos.Y);
+        }
+
+        public bool IsObstacle(int x, int y)
+        {
+            if (obstacleList.Contains(mapGenerator.map[y, x]))
             {
                 return true;
             }
             return false;
+        }
+
+        public void RemoveObstacle(int x, int y)
+        {
+            var line = map[y].ToCharArray();
+            line[x] = (char)TileType.Ground;
+            map[y] = new string(line);
         }
 
         public string GetServiceName()
@@ -47,7 +70,7 @@ namespace BombermanServer.Services.Impl.Adapter
             return currentName;
         }
 
-        public string[] ConvertMap(string[,] map)
+        private string[] ConvertMap(string[,] map)
         {
             string[] convertedMap = new string[MapConstants.mapHeight];
             for (int i = 0; i < MapConstants.mapHeight; i++)

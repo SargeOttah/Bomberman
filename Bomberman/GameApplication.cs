@@ -73,17 +73,13 @@ namespace Bomberman
             _userHubConnection.On<PlayerDTO, string[]>("ClientConnected", ClientConnected); // Listens for our own PlayerDTO created by the server
             _userHubConnection.On("ReceiveMessage", (string user, string message) => Console.WriteLine($"{user}: {message}")); // Demo listener.
 
-            // Receive bomb log
-            _userHubConnection.On("ReceiveBombLocation",
-                (string user, PointF pos) => Console.WriteLine($"User: {user} Placed bomb at (x, y): [{pos.X}, {pos.Y}]"));
-            // Receive bomb creation signal
-            //_userHubConnection.On<PointF>("ReceiveNewBomb", OnBombPlaced);
-            _userHubConnection.On<PointF>("ReceiveNewBomb", OnBombPlaced);
-
 
             _userHubConnection.On<PlayerDTO>("ReceiveNewClient", OnNewClientConnect); // Listens for new clients that connect to the server
             _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers); // Refreshes data for all players connected to the server ( currenty only position )
-            
+            _userHubConnection.On<BombDTO>("ReceiveNewBomb", OnNewBomb);
+            _userHubConnection.On<BombExplosionDTO>("ReceiveNewExplosion", OnBombExplosion);
+            _userHubConnection.On<string[]>("RefreshMap", RefreshMap);
+
             var enemiesCreated = false;
             _userHubConnection.On("RefreshEnemies", (string posX, string posY) =>
             {
@@ -119,10 +115,6 @@ namespace Bomberman
 
             // Wall box
             _boxWall = SpriteLoader.LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
-
-
-            //Crate
-            Sprite crate = SpawnObstacle();
 
 
             // Spawn obstacle
@@ -276,24 +268,26 @@ namespace Bomberman
                 // Place BOMB for local player
                 //bool bombSet = mainPlayer.Bomb.PlaceBomb(target);
 
-                bool bombSet = mainPlayer.PlaceBomb(target);
+                bool bombSet = true;
 
                 // Send bomb signal for server players
                 if (bombSet)
                 {
                     //(float dmg, float placeDelay, float bombTimer, Sprite projectileSprite, PointF pos)
-                    //var tmp = new BombDTO(mainPlayer.Bomb.Damage, mainPlayer.Bomb.PlaceSpeed, mainPlayer.Bomb.BombTimer, 
-                    //    mainPlayer.Bomb.ProjectileSprite, mainPlayer.GetPointPosition());
-
+                    var bombDTO = new BombDTO(
+                        mainPlayer.connectionId,
+                        10, //change these when upgrades are implemented
+                        mainPlayer.Bomb.BombTimer,
+                        5,
+                        mainPlayer.GetPointPosition()
+                    );
                     // TODO: set bomb type with interface method, send location and type
 
                     //old
-                    _userHubConnection.InvokeAsync("SendBombLocation", mainPlayer.connectionId, mainPlayer.GetPointPosition()).Wait();
+
+                    _userHubConnection.InvokeAsync("OnBombPlace", bombDTO).Wait();
 
                 }
-
-                // Drawbacks: sync difference
-                // Possible fix: handle ALL bomb creation on server
             }
 
             if (e.Code == Keyboard.Key.Z)
@@ -415,15 +409,6 @@ namespace Bomberman
             //  mainPlayer.Bomb.PlaceBomb(pos);
         }
 
-        // Called when client received signal of bomb creation "ReceiveNewBomb"
-        private static void OnBombPlaced(PointF pos)
-        {
-
-            Console.WriteLine("Server bomb placed at: [{0}{1}]", pos.X, pos.Y);
-            mainPlayer.PlaceBomb(new Vector2f(pos.X, pos.Y));
-            //mainPlayer.Bomb.PlaceBomb(new Vector2f(pos.X, pos.Y));
-        }
-
         // Called when a new client (except the current one) connects to the server, receives the other players information
         private static void OnNewClientConnect(PlayerDTO playerDTO)
         {
@@ -454,14 +439,19 @@ namespace Bomberman
             }
         }
 
-        private Sprite SpawnObstacle()
+        private static void OnNewBomb(BombDTO bomb)
         {
-            ObstacleFactory obsFactory = FactoryPicker.GetFactory("Destroyable");
-            Sprite obj = obsFactory.GetDestroyable("Crate").SpawnObstacle();
-            obj.Position = new Vector2f(100, 100);
-            obj.Scale = new Vector2f(0.5f, 0.5f);
+            mainPlayer.AddBomb(bomb);
+        }
 
-            return obj;
+        private static void OnBombExplosion(BombExplosionDTO bombExplosionDTO)
+        {
+            mainPlayer.CreateExplosion(bombExplosionDTO);
+        }
+
+        private static void RefreshMap(string[] map)
+        {
+            tileMapFacade.UpdateTileMap(map);
         }
     }
 }

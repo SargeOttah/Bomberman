@@ -3,7 +3,7 @@ using SFML.Graphics;
 using SFML.System;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
+using System.Drawing;
 using System.Text;
 //https://github.com/SFML/SFML/wiki/Source:-TileMap-Render
 
@@ -50,6 +50,29 @@ namespace Bomberman.Map
             }
         }
 
+        public void UpdateMap(string[] map)
+        {
+            List<Point> tilesToUpdate = new List<Point>();
+            for (int i = 0; i < map.Length; i++)
+            {
+                string[] values = map[i].Split(",");
+                for (int j = 0; j < values.Length; j++)
+                {
+                    if (!this.map[i, j].Equals(values[j]))
+                    {
+                        Console.WriteLine($"deleting tile at: {j + i * width}");
+                        obstacles[j + i * width] = null;
+                        tilesToUpdate.Add(new Point(j, i));
+                    }
+                }
+            }
+            ParseMap(map);
+
+            foreach (var tile in tilesToUpdate)
+            {
+                Refresh(tile.X, tile.Y);
+            }
+        }
 
         /// <summary>
         /// Redraws whole screen
@@ -93,6 +116,7 @@ namespace Bomberman.Map
 
         private void LoadTiles(int x, int y)
         {
+            Console.WriteLine("loading tiles");
             ObstacleFactory destroyableFactory = FactoryPicker.GetFactory("Destroyable");
             ObstacleFactory undestroyableFactory = FactoryPicker.GetFactory("Undestroyable");
 
@@ -130,6 +154,7 @@ namespace Bomberman.Map
                             break;
                     }
                     // We add a ground tile every time
+
                     tiles.Add(new Tile(texture));
                 }
             }
@@ -206,7 +231,6 @@ namespace Bomberman.Map
             //Console.WriteLine($"texturing {x} {y} {textureIdx} {textureX} {textureY} {spriteSize}");
             IntRect src = new IntRect(textureX, textureY, spriteSize, spriteSize);
 
-
             if (!isObstacle)
             {
                 tiles[index].UpdateTile(rec, src);
@@ -246,7 +270,6 @@ namespace Bomberman.Map
                 if (obstacle != null)
                 {
                     rt.Draw(obstacle.vertices, PrimitiveType.Quads, states);
-                    //rt.Draw(obstacle.debugShape);
                 }
             }
 
