@@ -31,11 +31,13 @@ namespace BombermanServer.Services
             this.mapService = mapService;
         }
 
-        public void Add(Bomb bomb)
+        public void Add(Bomb bomb) // TODO: maybe check if there already is a bomb on the tile?
         {
-            SetBombExplosionTimer(bomb);
+            var position = mapService.GetTilePosition(bomb.Position.X, bomb.Position.Y);
+            bomb.Position = new PointF(position.X * MapConstants.tileSize + MapConstants.tileSize / 2,
+                                       position.Y * MapConstants.tileSize + MapConstants.tileSize / 2);
             bombs.Add(bomb);
-            Console.WriteLine("bomb added");
+            SetBombExplosionTimer(bomb);
             Console.WriteLine($"Bomb at: {bomb.Position.X} {bomb.Position.Y}");
         }
 
@@ -52,36 +54,8 @@ namespace BombermanServer.Services
         public async void SetBombExplosionTimer(Bomb bomb)
         {
             await Task.Delay(TimeSpan.FromMilliseconds(bomb.IgnitionDuration));
-            Console.WriteLine("exploded");
             ExplodeBomb(bomb);
             await _hubContext.Clients.All.SendAsync("RefreshMap", mapService.GetMap());
-            Console.WriteLine("PRINTING MAP:");
-            var map = mapService.GetMap();
-
-            for (int i = 0; i < map.Length; i++)
-            {
-                for (int j = 0; j < map[0].Length; j++)
-                {
-                    Console.Write(map[i][j] + " ");
-                }
-                Console.Write(Environment.NewLine + Environment.NewLine);
-            }
-        }
-
-        private void print(string[,] map)
-        {
-            int rowLength = map.GetLength(0);
-            int colLength = map.GetLength(1);
-
-            for (int i = 0; i < rowLength; i++)
-            {
-                for (int j = 0; j < colLength; j++)
-                {
-                    Console.Write(string.Format("{0} ", map[i, j]));
-                }
-                Console.Write(Environment.NewLine + Environment.NewLine);
-            }
-
         }
 
         public void ExplodeBomb(Bomb bomb)
@@ -90,7 +64,6 @@ namespace BombermanServer.Services
             bombExplosion.OwnerId = bomb.OwnerId;
             var map = mapService.GetMapMatrix();
             var pos = mapService.GetTilePosition(bomb.Position.X, bomb.Position.Y);
-            Console.WriteLine($"Bomb at: {pos.X} {pos.Y}");
 
             List<Point> tilesToRemove = new List<Point>();
             for (int i = 0; i < directions.GetLength(0); i++)
@@ -101,7 +74,6 @@ namespace BombermanServer.Services
                 {
                     x = pos.X + (directions[i, 0] * j);
                     y = pos.Y + (directions[i, 1] * j);
-                    Console.WriteLine($"explosion: {x} {y}");
                     if (x > MapConstants.mapWidth || x < 0)
                     {
                         break;
@@ -110,7 +82,6 @@ namespace BombermanServer.Services
                     {
                         break;
                     }
-                    Console.WriteLine(mapService.IsObstacle(x, y));
                     if (mapService.IsObstacle(x, y))
                     {
                         if (destructableObstacles.Contains(map[y, x]))

@@ -144,7 +144,6 @@ namespace Bomberman
                     x += directions[i, 0];
                     y += directions[i, 1];
                 }
-                Console.WriteLine(explosionCoords[i].ToString());
             }
         }
 

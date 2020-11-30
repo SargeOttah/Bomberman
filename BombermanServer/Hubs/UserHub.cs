@@ -1,15 +1,14 @@
 ﻿using BombermanServer.Builders.PlayerBuilder;
+using BombermanServer.Configurations;
 using BombermanServer.Models;
 using BombermanServer.Services;
-using BombermanServer.Configurations;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Threading.Tasks;
 using System.Linq;
-using SFML.System;
+using System.Threading.Tasks;
 
 
 
