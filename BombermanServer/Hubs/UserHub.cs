@@ -33,21 +33,11 @@ namespace BombermanServer.Hubs
             await Clients.Caller.SendAsync("ReceiveMessage", user, message); // 'ReceiveMessage' is a name that ClientSide listens to.
         }
 
-        public async Task SendBombLocation(string name, Bomb bomb) // 'SendMessage' is a name that ClientSide sends requests to.
+        public async Task OnBombPlace(Bomb bomb) // creating a new bomb
         {
             Console.WriteLine(bomb.ToString());
             _bombService.Add(bomb);
-            // Wait for bomb signal
-            // await Clients.Caller.SendAsync("ReceiveBombLocation", user, extBomb.Position);
-            await Clients.Caller.SendAsync("ReceiveBombLocation", name, bomb.Position);
-
-            // Send signal of bomb creation
-            //await Clients.All.SendAsync("ReceiveNewBomb", position);
-
-            //tmpBomb.myPosition = position;
-            await Clients.AllExcept(this.Context.ConnectionId).SendAsync("ReceiveNewBomb", bomb.Position);
-
-            //await Clients.AllExcept(this.Context.ConnectionId).SendAsync("ReceiveNewBomb", position);
+            await Clients.All.SendAsync("ReceiveNewBomb", bomb);
         }
 
         public override async Task OnConnectedAsync()
@@ -106,12 +96,5 @@ namespace BombermanServer.Hubs
 
             await Clients.Caller.SendAsync("RefreshPlayers", players);
         }
-
-        // public async Task RefreshMap(Dictionary<Point, char> changes)
-        // {
-        //     await Clients.Caller.SendAsync("RefreshMap", _mapService.GetMap());
-        // }
-
-
     }
 }

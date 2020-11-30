@@ -1,5 +1,6 @@
 ﻿using Bomberman.Collisions;
 using Bomberman.Dto;
+using Bomberman.Map;
 using Bomberman.Spawnables;
 using Bomberman.Spawnables.Weapons;
 using Bomberman.Spawnables.Obstacles;
@@ -9,12 +10,17 @@ using System;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Bomberman.Command;
 
 namespace Bomberman
 {
     class Player : Sprite
     {
+        private readonly int[,] directions = new int[4, 2]{
+            { -1, 0 }, // left
+            { 0, 1 }, // down
+            { 1, 0 }, // right
+            { 0, -1 }, // up
+        };
         public float Health { get; private set; } = 100;
         public Vector2f Speed { get; set; } = new Vector2f(0.0f, 0.0f);
         public bool IsDead { get; private set; } = false;
@@ -52,7 +58,7 @@ namespace Bomberman
 
             this.playerSpawn = new Vector2f(playerDTO.position.X, playerDTO.position.Y);
 
-            
+
 
             InitDebug();
         }
@@ -98,10 +104,10 @@ namespace Bomberman
                     {
                         // SPAWN EXPLOSIONS - just before bomb erases
                         Bomb.BombExplosionTimer.Restart(); // restart wait clock when placed
-                        Spawnable explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation);
-                        explosion.ProjectileSprite.Position = p.ProjectileSprite.Position; // set flame position to bomb
-                        explosion.DespawnDrawableAfter = .5f; // despawn flame after
-                        BombTriggers.Add(explosion);
+                        // Spawnable explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation);
+                        // explosion.ProjectileSprite.Position = p.ProjectileSprite.Position; // set flame position to bomb
+                        // explosion.DespawnDrawableAfter = .5f; // despawn flame after
+                        // BombTriggers.Add(explosion);
 
 
                         Spawnables.RemoveAt(i); // pop expired bomb
@@ -116,7 +122,36 @@ namespace Bomberman
 
             // Remove old explosions
             UpdateBombColliders(deltaTimeInSeconds); // remove collider
-            //Bomb.UpdateBombColliders(deltaTimeInSeconds); // remove collider
+        }
+
+        public void CreateExplosion(BombExplosionDTO bombExplosionDTO)
+        {
+            var explosionCoords = bombExplosionDTO.ExplosionCoords;
+            Spawnable explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation);
+            explosion.ProjectileSprite.Position = CalculateMapPos(explosionCoords[1].X, explosionCoords[0].Y); // set flame position to bomb
+            explosion.DespawnDrawableAfter = .5f; // despawn flame after
+            BombTriggers.Add(explosion);
+            for (int i = 0; i < directions.GetLength(0); i++)
+            {
+                int x = explosionCoords[1].X + directions[i, 0];
+                int y = explosionCoords[0].Y + directions[i, 1];
+                while (x != explosionCoords[i].X || y != explosionCoords[i].Y)
+                {
+                    explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation);
+                    explosion.ProjectileSprite.Position = CalculateMapPos(x, y); // set flame position to bomb
+                    explosion.DespawnDrawableAfter = .5f; // despawn flame after
+                    BombTriggers.Add(explosion);
+                    x += directions[i, 0];
+                    y += directions[i, 1];
+                }
+                Console.WriteLine(explosionCoords[i].ToString());
+            }
+        }
+
+        private Vector2f CalculateMapPos(int x, int y)
+        {
+            return new Vector2f(x * MapConstants.tileSize + MapConstants.tileSize / 2,
+                                y * MapConstants.tileSize + MapConstants.tileSize / 2);
         }
 
         public void UpdateBombColliders(float deltaTimeInSeconds)
@@ -153,13 +188,15 @@ namespace Bomberman
             return bombSet;
         }
 
+        public void AddBomb(BombDTO bomb)
+        {
+            Spawnable spawnable = new Spawnable(Bomb.ProjectileSprite, new Vector2f(bomb.Position.X, bomb.Position.Y), this.Rotation);
+            Spawnables.Add(spawnable);
+        }
+
 
         // BOMBS
         // -----------------
-
-
-
-
 
         public static Vector2f GetSpriteCenter(Sprite sprite)
         {
@@ -184,8 +221,8 @@ namespace Bomberman
         public void Translate(float xOffset, float yOffset)
         {
             this.Position = new Vector2f(this.Position.X + xOffset * SpeedMultiplier, this.Position.Y + yOffset * SpeedMultiplier);
-            
-            if(boolDebug)
+
+            if (boolDebug)
             {
                 var nonOriginPos = new Vector2f(this.GetGlobalBounds().Left, this.GetGlobalBounds().Top);
                 debugShape.Position = nonOriginPos;
@@ -209,7 +246,8 @@ namespace Bomberman
 
         public bool CheckMovementCollision(float xOffset, float yOffset, List<Obstacle> obstacles)
         {
-            foreach (Obstacle obstacle in obstacles) { // kinda works
+            foreach (Obstacle obstacle in obstacles)
+            { // kinda works
                 Translate(xOffset, yOffset);
                 if (CollisionTester.TileBoundingBoxTest(this, obstacle))
                 {
@@ -236,15 +274,11 @@ namespace Bomberman
                     this.Position = playerSpawn; // Presume death
                     // death now handled outside player class as a Command
                     tmpDeath = true;
-                    
+
                 }
             }
             return tmpDeath;
         }
-
-
-
-
 
         public void IncreaseMovementSpeed(float multiplier, float durationInMilis)
         {

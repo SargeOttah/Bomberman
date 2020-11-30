@@ -14,9 +14,9 @@ namespace BombermanServer.Services
     {
         private readonly int[,] directions = new int[4, 2]{
             { -1, 0 }, // left
-            { 0, 1 }, // up
+            { 0, 1 }, // down
             { 1, 0 }, // right
-            { 0, -1 }, // down
+            { 0, -1 }, // up
         };
 
         private List<Bomb> bombs;
@@ -37,6 +37,16 @@ namespace BombermanServer.Services
             bombs.Add(bomb);
             Console.WriteLine("bomb added");
             Console.WriteLine($"Bomb at: {bomb.Position.X} {bomb.Position.Y}");
+        }
+
+        public List<Bomb> GetBombs()
+        {
+            return bombs;
+        }
+
+        private bool RemoveBomb(Bomb bomb)
+        {
+            return bombs.Remove(bomb);
         }
 
         public async void SetBombExplosionTimer(Bomb bomb)
@@ -76,6 +86,8 @@ namespace BombermanServer.Services
 
         public void ExplodeBomb(Bomb bomb)
         {
+            BombExplosion bombExplosion = new BombExplosion();
+            bombExplosion.OwnerId = bomb.OwnerId;
             var map = mapService.GetMapMatrix();
             var pos = mapService.GetTilePosition(bomb.Position.X, bomb.Position.Y);
             Console.WriteLine($"Bomb at: {pos.X} {pos.Y}");
@@ -83,10 +95,12 @@ namespace BombermanServer.Services
             List<Point> tilesToRemove = new List<Point>();
             for (int i = 0; i < directions.GetLength(0); i++)
             {
+                int x = pos.X;
+                int y = pos.Y;
                 for (int j = 1; j < bomb.ExplosionRadius; j++)
                 {
-                    int x = pos.X + (directions[i, 0] * j);
-                    int y = pos.Y + (directions[i, 1] * j);
+                    x = pos.X + (directions[i, 0] * j);
+                    y = pos.Y + (directions[i, 1] * j);
                     Console.WriteLine($"explosion: {x} {y}");
                     if (x > MapConstants.mapWidth || x < 0)
                     {
@@ -106,8 +120,16 @@ namespace BombermanServer.Services
                         break;
                     }
                 }
+                bombExplosion.ExplosionCoords[i] = new Point(x, y);
             }
+            SendExplosionEvent(bombExplosion).Wait();
             RemoveExplodedObstacles(tilesToRemove);
+            RemoveBomb(bomb);
+        }
+
+        private async Task SendExplosionEvent(BombExplosion bombExplosion)
+        {
+            await _hubContext.Clients.All.SendAsync("ReceiveNewExplosion", bombExplosion);
         }
 
         private void RemoveExplodedObstacles(List<Point> tiles)
