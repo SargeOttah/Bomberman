@@ -15,15 +15,23 @@ namespace Bomberman
 {
     class Player : Sprite
     {
-        private readonly int[,] directions = new int[4, 2]{
-            { -1, 0 }, // left
-            { 0, 1 }, // down
-            { 1, 0 }, // right
-            { 0, -1 }, // up
+        //private readonly int[,] directions = new int[4, 2]{
+        //    { -1, 0 }, // left
+        //    { 0, 1 }, // down
+        //    { 1, 0 }, // right
+        //    { 0, -1 }, // up
+        //};
+        private readonly int[][] directions = new int[][]{
+            new int[] { -1, 0  },
+            new int[] {  0, 1  },
+            new int[] {  1, 0  },
+            new int[] {  0, -1 }
         };
+
+
         public float Health { get; private set; } = 100;
         public Vector2f Speed { get; set; } = new Vector2f(0.0f, 0.0f);
-        public bool IsDead { get; private set; } = false;
+        
         public float SpeedMultiplier { get; private set; } = 1;
 
         public Vector2f playerSpawn;
@@ -32,6 +40,7 @@ namespace Bomberman
         public Bomb Bomb { get; set; }
 
         public int Level = 0;
+        public bool IsDead { get; private set; } = false;
 
         //Debug
         private RectangleShape debugShape { get; set; }
@@ -99,17 +108,13 @@ namespace Bomberman
                 {
                     Spawnable p = Spawnables[i];
 
-                    //if (p.TimeSinceCreation > p.DespawnDrawableAfter)
-                    if (p.TimeSinceCreation > (float)(Bomb.BombTimer / 1000))
+                    // Changing to Bomb.IgnitionDuration instead p.DespawnDrawableAfter
+                    // removes Bomb decals too fast or slow (aka. local timescale instead global)
+
+                    if (p.TimeSinceCreation > (float)(p.DespawnDrawableAfter / 1000))
                     {
                         // SPAWN EXPLOSIONS - just before bomb erases
                         Bomb.BombExplosionTimer.Restart(); // restart wait clock when placed
-                        // Spawnable explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation);
-                        // explosion.ProjectileSprite.Position = p.ProjectileSprite.Position; // set flame position to bomb
-                        // explosion.DespawnDrawableAfter = .5f; // despawn flame after
-                        // BombTriggers.Add(explosion);
-
-
                         Spawnables.RemoveAt(i); // pop expired bomb
                     }
                     else
@@ -117,7 +122,6 @@ namespace Bomberman
                         p.AddDeltaTime(deltaTimeInSeconds);
                     }
                 }
-
             }
 
             // Remove old explosions
@@ -133,21 +137,21 @@ namespace Bomberman
             BombTriggers.Add(explosion);
             for (int i = 0; i < directions.GetLength(0); i++)
             {
-                int x = explosionCoords[1].X + directions[i, 0];
-                int y = explosionCoords[0].Y + directions[i, 1];
+                int x = explosionCoords[1].X + directions[i][0];
+                int y = explosionCoords[0].Y + directions[i][1];
                 while (x != explosionCoords[i].X || y != explosionCoords[i].Y)
                 {
                     explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation);
                     explosion.ProjectileSprite.Position = CalculateMapPos(x, y); // set flame position to bomb
                     explosion.DespawnDrawableAfter = .5f; // despawn flame after
                     BombTriggers.Add(explosion);
-                    x += directions[i, 0];
-                    y += directions[i, 1];
+                    x += directions[i][0];
+                    y += directions[i][1];
                 }
             }
         }
 
-        private Vector2f CalculateMapPos(int x, int y)
+        static private Vector2f CalculateMapPos(int x, int y)
         {
             return new Vector2f(x * MapConstants.tileSize + MapConstants.tileSize / 2,
                                 y * MapConstants.tileSize + MapConstants.tileSize / 2);
@@ -173,23 +177,23 @@ namespace Bomberman
             }
         }
 
-        public bool PlaceBomb(Vector2f target)
-        {
-            bool bombSet = false;
-            if (Bomb.DelayTimer.ElapsedTime.AsMilliseconds() > Bomb.PlaceSpeed)
-            {
-                Bomb.DelayTimer.Restart(); // restart wait clock when placed
-                Spawnable bomb = new Spawnable(Bomb.ProjectileSprite, target, this.Rotation);
-                //Spawnable bomb = new Spawnable(ProjectileSprite, this.Position, this.Rotation);
-                Spawnables.Add(bomb);
-                bombSet = true;
-            }
-            return bombSet;
-        }
-
         public void AddBomb(BombDTO bomb)
         {
-            Spawnable spawnable = new Spawnable(Bomb.ProjectileSprite, new Vector2f(bomb.Position.X, bomb.Position.Y), this.Rotation);
+            // global bomb - doesnt know if its player bomb or enemy
+            var tmpBomb = new Bomb(20, 2500, 0);
+
+            if (bomb.CurrentBombType == 2)
+            {
+                tmpBomb = new FastBomb();
+            }
+            else if (bomb.CurrentBombType == 1)
+            {
+                tmpBomb = new SuperBomb();
+            }
+
+            Spawnable spawnable = new Spawnable(tmpBomb.ProjectileSprite, new Vector2f(bomb.bombPosition.X, bomb.bombPosition.Y), this.Rotation);
+            spawnable.DespawnDrawableAfter = tmpBomb.IgnitionDuration; // set type specific speed
+
             Spawnables.Add(spawnable);
         }
 
@@ -228,6 +232,11 @@ namespace Bomberman
             }
         }
 
+        public BombDTO getBombDTO() // get bomb in data transfer format
+        {
+            return Bomb.getBombDTO(this.connectionId, GetPointPosition());
+        }
+
         //DebugBox
         public RectangleShape DrawFrame()
         {
@@ -261,22 +270,28 @@ namespace Bomberman
             return false;
         }
 
-        public bool CheckCollisions()
+        public bool CheckDeathCollisions()
         {
-            bool tmpDeath = false;
-            //foreach (Spawnable item in Bomb.BombTriggers)
+            //bool tmpDeath = false;
+            
             foreach (Spawnable item in BombTriggers)
             {
                 if (this.GetGlobalBounds().Intersects(item.ProjectileSprite.GetGlobalBounds()))
                 {
-
+                    
                     this.Position = playerSpawn; // Presume death
                     // death now handled outside player class as a Command
-                    tmpDeath = true;
-
+                    //tmpDeath = true;
+                    this.IsDead = true;
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
-            return tmpDeath;
+
+            return false;
         }
 
         public void IncreaseMovementSpeed(float multiplier, float durationInMilis)

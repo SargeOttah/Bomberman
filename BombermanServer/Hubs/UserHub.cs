@@ -32,8 +32,10 @@ namespace BombermanServer.Hubs
             await Clients.Caller.SendAsync("ReceiveMessage", user, message); // 'ReceiveMessage' is a name that ClientSide listens to.
         }
 
-        public async Task OnBombPlace(Bomb bomb) // creating a new bomb
+        public async Task OnBombPlace(BombDTO bomb) // creating a new bomb
         {
+            Console.WriteLine("WE ARE HERE");
+
             Console.WriteLine(bomb.ToString());
             _bombService.Add(bomb);
             await Clients.All.SendAsync("ReceiveNewBomb", bomb);

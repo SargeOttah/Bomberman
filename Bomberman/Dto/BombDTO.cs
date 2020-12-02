@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using SFML.Graphics;
+using Bomberman.Spawnables.Weapons;
 
 namespace Bomberman.Dto
 {
@@ -8,15 +10,18 @@ namespace Bomberman.Dto
         public float Damage { get; set; }
         public float IgnitionDuration { get; set; }
         public int ExplosionRadius { get; set; }
-        public PointF Position { get; set; }
+        public PointF bombPosition { get; set; }
 
-        public BombDTO(string OwnerId, float Damage, float IgnitionDuration, int ExplosionRadius, PointF Position)
+        public int CurrentBombType { get; set; }
+
+        public BombDTO(string OwnerId, float Damage, float IgnitionDuration, int ExplosionRadius, PointF Position, int bombType)
         {
             this.OwnerId = OwnerId;
             this.Damage = Damage;
             this.IgnitionDuration = IgnitionDuration;
             this.ExplosionRadius = ExplosionRadius;
-            this.Position = Position;
+            this.bombPosition = Position;
+            this.CurrentBombType = bombType;
         }
 
         public BombDTO()
@@ -24,6 +29,6 @@ namespace Bomberman.Dto
 
         }
 
-
+        public override string ToString() => $"{OwnerId} {Damage} {IgnitionDuration} {ExplosionRadius} {bombPosition.X} {bombPosition.Y}";
     }
 }

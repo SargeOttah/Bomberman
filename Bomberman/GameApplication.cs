@@ -26,7 +26,7 @@ namespace Bomberman
         // TODO: Sprite arrays/lists to load
         private static Sprite _boxWall;
         private static readonly uint[] VideoResolution = { 832, 576 };
-        private const string WindowTitle = "Bomberman v0.02";
+        private const string WindowTitle = "Bomberman v0.3";
         private BoardBuilder _boardBuilder;
 
         //player init
@@ -38,16 +38,12 @@ namespace Bomberman
 
         // To track time
         Clock FrameClock { get; set; } = new Clock();
-        Clock RespawnClock { get; set; } = new Clock();
 
         public static GameScore scoreBoard;
 
         public static TileMapFacade tileMapFacade;
 
-        // Input handler
-        //InputHandler InputControl;
-
-        private static IMovement buttonW, buttonS, buttonA, buttonD, buttonZ;
+        private static IMovement buttonW, buttonS, buttonA, buttonD;
 
         public static GameApplication GetInstance()
         {
@@ -76,6 +72,8 @@ namespace Bomberman
 
             _userHubConnection.On<PlayerDTO>("ReceiveNewClient", OnNewClientConnect); // Listens for new clients that connect to the server
             _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers); // Refreshes data for all players connected to the server ( currenty only position )
+            
+            // bombs
             _userHubConnection.On<BombDTO>("ReceiveNewBomb", OnNewBomb);
             _userHubConnection.On<BombExplosionDTO>("ReceiveNewExplosion", OnBombExplosion);
             _userHubConnection.On<string[]>("RefreshMap", RefreshMap);
@@ -107,7 +105,6 @@ namespace Bomberman
         {
             // Initializing the tilemap facade
             tileMapFacade = new TileMapFacade((int)VideoResolution[0], (int)VideoResolution[1], Properties.Resources.spritesheet2);
-            //InputControl = new InputHandler(mainPlayer, tileMapFacade);
             BindKeys();
 
             _boardBuilder = new BoardBuilder();
@@ -115,11 +112,6 @@ namespace Bomberman
 
             // Wall box
             _boxWall = SpriteLoader.LoadSprite(Properties.Resources.DesolatedHut, new IntRect(0, 0, 100, 100));
-
-
-            // Spawn obstacle
-            //Sprite obs = SpawnObstacle();
-            //obs.Position = new Vector2f(100, 100);
 
             _boxWall.Position = new Vector2f(250, 250);
             _boxWall.Scale = new Vector2f(0.5f, 0.5f);
@@ -139,7 +131,9 @@ namespace Bomberman
             _renderWindow.KeyPressed += new EventHandler<KeyEventArgs>(OnKeyPressed);
 
             // damage - placeDelay - bombTimer
-            mainPlayer.Bomb = new Bomb(20, 600, 4000);
+            mainPlayer.Bomb = new Bomb(20, 2500, 0);
+
+            float RespawnPause = 0f;
 
             while (_renderWindow.IsOpen)
             {
@@ -165,6 +159,7 @@ namespace Bomberman
                 }
 
                 _renderWindow.Draw(mainPlayer);
+
                 //DEBUG - RED FRAME
                 _renderWindow.Draw(mainPlayer.DrawFrame());
 
@@ -175,22 +170,16 @@ namespace Bomberman
                 mainPlayer.Update();    // Update projectile placement positions (bombs)
                 DrawLoop();             // Draw projectile buffer list
 
-                if (mainPlayer.CheckCollisions()) // if collided with spawnables
+
+                // RESPAWN ROUTINE
+                if(RespawnPause > 0)
+                    RespawnPause -= deltaTime.AsSeconds();
+
+                if (mainPlayer.CheckDeathCollisions() && RespawnPause <= 0f) // if collided with flames?
                 {
-                    //invoker.RouteDeath(); // Handles death and GUI
-                    //mainPlayer.Position = mainPlayer.playerSpawn;
-
-                    Time respawnTime = FrameClock.Restart();
-                    float TimeSinceCreation = 0.0f;
-
-                    while (TimeSinceCreation < 1.0f) // SLOWDOWN score polling
-                    {
-                        TimeSinceCreation += respawnTime.AsSeconds();
-                        //Console.WriteLine("TimeSinceCreation {0}", TimeSinceCreation);
-                    }
+                    RespawnPause = 2f;
                     scoreBoard.UpdateScore("P1");
                 }
-
 
                 // Print player coordinates left, top (x, y)
                 coordText.DisplayedString = $"x {mainPlayer.Position.X} y {mainPlayer.Position.Y}";
@@ -199,7 +188,6 @@ namespace Bomberman
 
                 if (_renderWindow.HasFocus()) // if window is focused
                 {
-                    //InputControl.Control();
                     InputControl();
                 }
 
@@ -207,7 +195,7 @@ namespace Bomberman
             }
         }
 
-        public void InputControl()
+        static public void InputControl()
         { // invoker
             float movementSpeed = 5;
             float moveDistance = movementSpeed;
@@ -260,108 +248,62 @@ namespace Bomberman
         {
             var target = mainPlayer.Position;
 
-
             if (e.Code == Keyboard.Key.Space)
             {
-                Console.WriteLine("point: {0}  vector: {1}", mainPlayer.GetPointPosition(), target);
-
-                // Place BOMB for local player
-                //bool bombSet = mainPlayer.Bomb.PlaceBomb(target);
-
-                bool bombSet = true;
-
-                // Send bomb signal for server players
-                if (bombSet)
-                {
-                    //(float dmg, float placeDelay, float bombTimer, Sprite projectileSprite, PointF pos)
-                    var bombDTO = new BombDTO(
-                        mainPlayer.connectionId,
-                        10, //change these when upgrades are implemented
-                        mainPlayer.Bomb.BombTimer,
-                        5,
-                        mainPlayer.GetPointPosition()
-                    );
-                    // TODO: set bomb type with interface method, send location and type
-
-                    //old
-
-                    _userHubConnection.InvokeAsync("OnBombPlace", bombDTO).Wait();
-
-                }
+                BombDTO bombDTO = mainPlayer.getBombDTO();
+                _userHubConnection.InvokeAsync("OnBombPlace", bombDTO).Wait();
             }
 
             if (e.Code == Keyboard.Key.Z)
             {
                 mainPlayer.Bomb = new FastBomb();
+                mainPlayer.Bomb.CurrentBombType = 2;
 
                 Console.WriteLine("Bomb: [FastBomb]");
                 Console.WriteLine("Damage: {0} PlaceSpeed: {1} BombTimer: {2}",
-                    mainPlayer.Bomb.Damage, mainPlayer.Bomb.PlaceSpeed, mainPlayer.Bomb.BombTimer);
-
-                //bool bombSet = mainPlayer.Bomb.PlaceBomb(target);
-                //if (bombSet)
-                //{
-                //_userHubConnection.InvokeAsync("SendBombLocation", mainPlayer.connectionId, mainPlayer.GetVectorPosition()).Wait();
-                //    //PlaceBridgeBomb(mainPlayer.Position);
-                //}
+                    mainPlayer.Bomb.Damage, mainPlayer.Bomb.PlaceSpeed, mainPlayer.Bomb.IgnitionDuration);
             }
             if (e.Code == Keyboard.Key.X)
             {
                 mainPlayer.Bomb = new SuperBomb();
+                mainPlayer.Bomb.CurrentBombType = 1;
+
 
                 Console.WriteLine("Bomb: [SuperBomb]");
                 Console.WriteLine("Damage: {0} PlaceSpeed: {1} BombTimer: {2}",
-                    mainPlayer.Bomb.Damage, mainPlayer.Bomb.PlaceSpeed, mainPlayer.Bomb.BombTimer);
-
-                //bool bombSet = mainPlayer.Bomb.PlaceBomb(target);
-                //if (bombSet)
-                //{
-                //    _userHubConnection.InvokeAsync("SendBombLocation", mainPlayer.connectionId, mainPlayer.GetVectorPosition()).Wait();
-                //    //PlaceBridgeBomb(mainPlayer.Position);
-
-                //}
+                    mainPlayer.Bomb.Damage, mainPlayer.Bomb.PlaceSpeed, mainPlayer.Bomb.IgnitionDuration);
             }
             if (e.Code == Keyboard.Key.C)
             {
-                mainPlayer.Bomb = new Bomb(20, 500, 2000);
+                mainPlayer.Bomb.CurrentBombType = 0;
+                mainPlayer.Bomb = new Bomb(20, 2500, 0);
 
                 Console.WriteLine("Bomb: [GeneralBomb]");
                 Console.WriteLine("Damage: {0} PlaceSpeed: {1} BombTimer: {2}",
-                    mainPlayer.Bomb.Damage, mainPlayer.Bomb.PlaceSpeed, mainPlayer.Bomb.BombTimer);
-
-                //bool bombSet = mainPlayer.Bomb.PlaceBomb(target);
-                //if (bombSet)
-                //{
-                //    _userHubConnection.InvokeAsync("SendBombLocation", mainPlayer.connectionId, mainPlayer.GetVectorPosition()).Wait();
-                //    //PlaceBridgeBomb(mainPlayer.Position);
-                //}
+                    mainPlayer.Bomb.Damage, mainPlayer.Bomb.PlaceSpeed, mainPlayer.Bomb.IgnitionDuration);
             }
         }
 
-        public void UpdateLoop(Time deltaTime) // Loop updating drawables / spawnables
+        static public void UpdateLoop(Time deltaTime) // Loop updating drawables / spawnables
         {
             UpdateBombs(deltaTime);
         }
-        private void UpdateBombs(Time deltaTime)
+        static private void UpdateBombs(Time deltaTime)
         {
             mainPlayer.UpdateSpawnables(deltaTime.AsSeconds());
-            //mainPlayer.Bomb.UpdateSpawnables(deltaTime.AsSeconds());
         }
 
-        public void DrawLoop()
+        static public void DrawLoop()
         {
             // Draw Spawnables
             DrawSpawnables();
 
             // Add other drawables Non-destroyables etc.
         }
-        private void DrawSpawnables()
+        static private void DrawSpawnables()
         {
             mainPlayer.DrawSpawnables(_renderWindow); // Draw bomb as spawnable
             mainPlayer.DrawExplosions(_renderWindow); // Draw explosion spawnable after bomb
-
-            //mainPlayer.Bomb.DrawSpawnables(_renderWindow); // Draw bomb as spawnable
-            //mainPlayer.Bomb.DrawExplosions(_renderWindow); // Draw explosion spawnable after bomb
         }
 
         private static void OnClose(object sender, EventArgs e)
@@ -404,10 +346,6 @@ namespace Bomberman
 
             //buttonZ = new MoveForward();
         }
-        private static void PlaceBridgeBomb(Vector2f pos)
-        {
-            //  mainPlayer.Bomb.PlaceBomb(pos);
-        }
 
         // Called when a new client (except the current one) connects to the server, receives the other players information
         private static void OnNewClientConnect(PlayerDTO playerDTO)
@@ -421,13 +359,13 @@ namespace Bomberman
 
         private static void RefreshPlayers(List<PlayerDTO> players)
         {
-            PlayerDTO main = players.Where(p => p.connectionId.Equals(mainPlayer.connectionId)).First();
-            List<PlayerDTO> others = players.Where(p => !p.connectionId.Equals(mainPlayer.connectionId)).ToList();
+            PlayerDTO main = players.Where(p => p.connectionId.Equals(mainPlayer.connectionId, StringComparison.Ordinal)).First();
+            List<PlayerDTO> others = players.Where(p => !p.connectionId.Equals(mainPlayer.connectionId, StringComparison.Ordinal)).ToList();
 
             mainPlayer.UpdateStats(main);
             foreach (PlayerDTO pNew in others)
             {
-                Player p = otherPlayers.Find(p => p.connectionId.Equals(pNew.connectionId));
+                Player p = otherPlayers.Find(p => string.Equals(p.connectionId, pNew.connectionId, StringComparison.Ordinal));
                 if (p != null)
                 {
                     p.UpdateStats(pNew);

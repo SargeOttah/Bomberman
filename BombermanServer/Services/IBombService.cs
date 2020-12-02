@@ -6,7 +6,7 @@ namespace BombermanServer.Services
 {
     public interface IBombService
     {
-        public void Add(Bomb bomb);
-        public List<Bomb> GetBombs();
+        public void Add(BombDTO bomb);
+        public List<BombDTO> GetBombs();
     }
 }
