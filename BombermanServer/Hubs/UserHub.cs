@@ -1,15 +1,14 @@
 ﻿using BombermanServer.Builders.PlayerBuilder;
+using BombermanServer.Configurations;
 using BombermanServer.Models;
 using BombermanServer.Services;
-using BombermanServer.Configurations;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Threading.Tasks;
 using System.Linq;
-using SFML.System;
+using System.Threading.Tasks;
 
 
 
@@ -19,12 +18,13 @@ namespace BombermanServer.Hubs
     {
         private IPlayerService _playerService;
         private IMapService _mapService;
+        private IBombService _bombService;
 
-        public UserHub(IPlayerService playerService, IEnumerable<IMapService> mapServices, IOptions<MapConfiguration> settings)
+        public UserHub(IPlayerService playerService, IBombService bombService, IEnumerable<IMapService> mapServices, IOptions<MapConfiguration> settings)
         {
             this._playerService = playerService;
+            this._bombService = bombService;
             this._mapService = mapServices.FirstOrDefault(h => h.GetServiceName() == settings.Value.CurrentMapLoader);
-            _mapService.LoadMap(); // TODO: send map id from client side ant then load it?
         }
 
         public async Task SendMessage(string user, string message) // 'SendMessage' is a name that ClientSide sends requests to.
@@ -32,20 +32,13 @@ namespace BombermanServer.Hubs
             await Clients.Caller.SendAsync("ReceiveMessage", user, message); // 'ReceiveMessage' is a name that ClientSide listens to.
         }
 
-        public async Task SendBombLocation(string name, PointF pos) // 'SendMessage' is a name that ClientSide sends requests to.
+        public async Task OnBombPlace(BombDTO bomb) // creating a new bomb
         {
+            Console.WriteLine("WE ARE HERE");
 
-            // Wait for bomb signal
-            // await Clients.Caller.SendAsync("ReceiveBombLocation", user, extBomb.Position);
-            await Clients.Caller.SendAsync("ReceiveBombLocation", name, pos);
-
-            // Send signal of bomb creation
-            //await Clients.All.SendAsync("ReceiveNewBomb", position);
-
-            //tmpBomb.myPosition = position;
-            await Clients.AllExcept(this.Context.ConnectionId).SendAsync("ReceiveNewBomb", pos);
-
-            //await Clients.AllExcept(this.Context.ConnectionId).SendAsync("ReceiveNewBomb", position);
+            Console.WriteLine(bomb.ToString());
+            _bombService.Add(bomb);
+            await Clients.All.SendAsync("ReceiveNewBomb", bomb);
         }
 
         public override async Task OnConnectedAsync()
@@ -54,11 +47,18 @@ namespace BombermanServer.Hubs
             Console.WriteLine("Client Connected:" + this.Context.ConnectionId + " " + playerId);
             var newPlayer = PlayerDirector.Build(playerId, Context.ConnectionId);
 
+            if (_playerService.GetCount() == 0)
+            { // load map for first player
+                _mapService.LoadMap(); // TODO: send map id from client side ant then load it?
+            }
+
             if (!_playerService.AddPlayer(newPlayer))
             {
                 // TODO: player limit exceeded
                 Console.WriteLine("Player limit exceeded");
             }
+
+
 
             await Clients.Caller.SendAsync("ClientConnected", newPlayer, _mapService.GetMap()); // Sends back the newly created player and map to the owner
             Console.WriteLine(newPlayer.ToString());
@@ -96,16 +96,6 @@ namespace BombermanServer.Hubs
             List<Player> players = _playerService.GetPlayers();
 
             await Clients.Caller.SendAsync("RefreshPlayers", players);
-        }
-
-        public async Task RefreshMap(Dictionary<Point, char> changes)
-        {
-            await Clients.Caller.SendAsync("RefreshMap", _mapService.GetMap());
-        }
-
-        public async Task RefreshScore()
-        {
-
         }
     }
 }

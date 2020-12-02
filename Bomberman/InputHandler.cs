@@ -16,7 +16,7 @@ namespace Bomberman
         //Stores all commands for replay and undo
         public static List<IMovement> oldCommands = new List<IMovement>();
 
-        private static IMovement buttonW, buttonS, buttonA, buttonD, buttonZ;
+        private static IMovement buttonW, buttonS, buttonA, buttonD;
 
         public InputHandler(Player player, TileMapFacade tileMapFacade)
         {

@@ -1,12 +1,12 @@
 using BombermanServer.Configurations;
 using BombermanServer.Services;
 using BombermanServer.Services.Impl;
+using BombermanServer.Services.Impl.Adapter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using BombermanServer.Services.Impl.Adapter;
 
 namespace BombermanServer
 {
@@ -29,8 +29,10 @@ namespace BombermanServer
             services.Configure<MapConfiguration>(Configuration.GetSection("AppSettings"));
 
             services.AddSingleton<IPlayerService, PlayerService>();
+            services.AddSingleton<IBombService, BombService>();
             services.AddSingleton<IMapService, MapService>();
-            services.AddSingleton<IMapService, MapGeneratorAdapter>();
+            // services.AddSingleton<IMapService, MapGeneratorAdapter>();
+            services.AddSingleton<IEnemyMovementService, EnemyMovementService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +45,7 @@ namespace BombermanServer
 
             app.UseRouting();
             app.ConfigureHubs(); // Implementation in Configurations / HubConfiguration.cs
+            app.ApplicationServices.GetService<IEnemyMovementService>();
         }
     }
 }

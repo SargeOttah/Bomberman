@@ -47,7 +47,7 @@ namespace Bomberman.Dto
 
         public override string ToString()
         {
-            return id.ToString() + " " + connectionId + " "+ position.X + "|" + position.Y + " " + this.sprite;
+            return id.ToString() + " " + connectionId + " " + position.X + "|" + position.Y + " " + this.sprite;
         }
     }
 
