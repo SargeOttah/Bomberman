@@ -72,6 +72,9 @@ namespace Bomberman
             _userHubConnection.On<PlayerDTO, string[]>("ClientConnected", ClientConnected); // Listens for our own PlayerDTO created by the server
             _userHubConnection.On("ReceiveMessage", (string user, string message) => Console.WriteLine($"{user}: {message}")); // Demo listener.
 
+            //Score test
+
+
             // Receive bomb log
             _userHubConnection.On("ReceiveBombLocation",
                 (string user, PointF pos) => Console.WriteLine($"User: {user} Placed bomb at (x, y): [{pos.X}, {pos.Y}]"));
@@ -120,7 +123,7 @@ namespace Bomberman
             _boxWall.Scale = new Vector2f(0.5f, 0.5f);
 
             // UI score object
-            scoreBoard = new GameScore(_renderWindow);
+            scoreBoard = new GameScore(_renderWindow, otherPlayers, mainPlayer.connectionId);
 
             // Player postion from left, top (x, y)
             var coordText = new Text("", new Font(Properties.Resources.arial));
@@ -182,7 +185,8 @@ namespace Bomberman
                         TimeSinceCreation += respawnTime.AsSeconds();
                         //Console.WriteLine("TimeSinceCreation {0}", TimeSinceCreation);
                     }
-                    scoreBoard.UpdateScore("P1");
+                    _userHubConnection.InvokeAsync("RefreshScore", scoreBoard);
+                    //scoreBoard.UpdateScore(mainPlayer.connectionId);
                 }
 
 
@@ -415,8 +419,9 @@ namespace Bomberman
             Console.WriteLine("New client connected");
             Console.WriteLine(playerDTO.ToString());
             Player newPlayer = new Player(playerDTO);
-
+            
             otherPlayers.Add(newPlayer);
+            scoreBoard = new GameScore(_renderWindow, otherPlayers, mainPlayer.connectionId);
         }
 
         private static void RefreshPlayers(List<PlayerDTO> players)

@@ -103,6 +103,9 @@ namespace BombermanServer.Hubs
             await Clients.Caller.SendAsync("RefreshMap", _mapService.GetMap());
         }
 
+        public async Task RefreshScore()
+        {
 
+        }
     }
 }
