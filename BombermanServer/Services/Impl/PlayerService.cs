@@ -5,46 +5,46 @@ namespace BombermanServer.Services.Impl
 {
     public class PlayerService : IPlayerService
     {
-        List<Player> players;
+        private readonly List<Player> _players;
 
         public PlayerService()
         {
-            players = new List<Player>(4);
+            _players = new List<Player>(4);
         }
 
         public bool AddPlayer(Player player)
         {
-            if (players.Count >= 4) { return false; }
+            if (_players.Count >= 4) { return false; }
 
-            players.Add(player);
+            _players.Add(player);
             return true;
         }
 
         public Player GetPlayer(string connectionId)
         {
-            return players.Find(x => x.ConnectionId.Equals(connectionId));
+            return _players.Find(x => x.ConnectionId.Equals(connectionId));
         }
 
         public int GetCount()
         {
-            return players.Count;
+            return _players.Count;
         }
 
         public List<Player> GetPlayers()
         {
-            return players;
+            return _players;
         }
 
         public bool RemovePlayer(Player player)
         {
-            return players.Remove(player);
+            return _players.Remove(player);
         }
        
         public int GetEmptyId()
         {
             var playerEmptyIdStrategy = PlayerServiceHelper.GetPlayerIdStrategy();
 
-            return playerEmptyIdStrategy.GetEmptyId(players);
+            return playerEmptyIdStrategy.GetEmptyId(_players);
         }
     }
 }

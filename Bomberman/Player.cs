@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace Bomberman
 {
-    class Player : Sprite
+    public class Player : Sprite
     {
         //private readonly int[,] directions = new int[4, 2]{
         //    { -1, 0 }, // left
