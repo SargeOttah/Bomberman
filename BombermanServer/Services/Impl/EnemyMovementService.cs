@@ -1,5 +1,6 @@
 ﻿using BombermanServer.Constants;
 using BombermanServer.Hubs;
+using BombermanServer.Mediator;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -13,16 +14,19 @@ namespace BombermanServer.Services.Impl
         private readonly IPlayerService _playerService;
         private readonly IHubContext<UserHub> _hubContext;
         private readonly IMapService _mapService;
+        private readonly IPlayerDeathMediator _playerDeathMediator;
 
         public EnemyMovementService(
             IHubContext<UserHub> hubContext,
             IPlayerService playerService,
-            IMapService mapService)
+            IMapService mapService,
+            IPlayerDeathMediator playerDeathMediator)
         {
             _hubContext = hubContext;
             _playerService = playerService;
 
             _mapService = mapService;
+            _playerDeathMediator = playerDeathMediator;
             _mapService.LoadMap();
 
             UpdateGhostMovement();
@@ -96,7 +100,7 @@ namespace BombermanServer.Services.Impl
                             && Math.Abs(y - player.Position.Y) < MapConstants.tileSize
                         )
                         {
-                            await _hubContext.Clients.All.SendAsync("PlayerDied", player.ConnectionId);
+                            _playerDeathMediator.Notify(player.Id);
                         }
                     }
                 }

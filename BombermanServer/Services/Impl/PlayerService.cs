@@ -46,5 +46,15 @@ namespace BombermanServer.Services.Impl
 
             return playerEmptyIdStrategy.GetEmptyId(players);
         }
+
+        public void KillPlayer(int id)
+        {
+            var playerIndex = players.FindIndex(p => p.Id == id);
+
+            if (playerIndex >= 0)
+            {
+                players[playerIndex].IsDead = true;
+            }
+        }
     }
 }
