@@ -1,5 +1,5 @@
-﻿using BombermanServer.Models;
-using BombermanServer.Constants;
+﻿using BombermanServer.Constants;
+using BombermanServer.Models;
 using System.Drawing;
 
 namespace BombermanServer.Builders.PlayerBuilder.ConcreteBuilders

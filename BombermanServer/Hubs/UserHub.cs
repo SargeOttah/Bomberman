@@ -76,7 +76,7 @@ namespace BombermanServer.Hubs
         public override Task OnDisconnectedAsync(Exception exception)
         {
             // remove player
-            Player player = _playerService.GetPlayer(this.Context.ConnectionId);
+            PlayerDTO player = _playerService.GetPlayer(this.Context.ConnectionId);
             if (_playerService.RemovePlayer(player))
             {
                 Console.WriteLine($"Client {this.Context.ConnectionId} has disconnected.");
@@ -93,7 +93,7 @@ namespace BombermanServer.Hubs
         public async Task RefreshPlayer(PointF playerPosition)
         {
             _playerService.GetPlayer(this.Context.ConnectionId).Position = playerPosition;
-            List<Player> players = _playerService.GetPlayers();
+            List<PlayerDTO> players = _playerService.GetPlayers();
 
             await Clients.Caller.SendAsync("RefreshPlayers", players);
         }

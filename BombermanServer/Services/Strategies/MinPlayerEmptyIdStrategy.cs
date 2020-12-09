@@ -6,7 +6,7 @@ namespace BombermanServer.Services.Strategies
 {
     public class MinPlayerEmptyIdStrategy : IPlayerEmptyIdStrategy
     {
-        public int GetEmptyId(IEnumerable<Player> players)
+        public int GetEmptyId(IEnumerable<PlayerDTO> players)
         {
             var tempId = 0;
             foreach (var player in players.OrderBy(p => p.Id))

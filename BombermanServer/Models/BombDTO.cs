@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using SFML.Graphics;
 
 namespace BombermanServer.Models
 {
@@ -9,11 +8,15 @@ namespace BombermanServer.Models
         public float Damage { get; set; }
         public float IgnitionDuration { get; set; }
         public int ExplosionRadius { get; set; }
-        public PointF bombPosition { get; set; }
-
+        public PointF Position { get; set; }
         public int CurrentBombType { get; set; }
 
+        public BombDTO()
+        {
 
-        public override string ToString() => $"{OwnerId} {Damage} {IgnitionDuration} {ExplosionRadius} {bombPosition.X} {bombPosition.Y} {CurrentBombType}";
+        }
+
+
+        public override string ToString() => $"{OwnerId} {Damage} {IgnitionDuration} {ExplosionRadius} {Position.X} {Position.Y} {CurrentBombType}";
     }
 }

@@ -5,7 +5,7 @@ namespace BombermanServer.Builders.PlayerBuilder
 {
     public static class PlayerDirector
     {
-        public static Player Build(int playerId, string connectionId)
+        public static PlayerDTO Build(int playerId, string connectionId)
         {
             var builder = GetBuilder(playerId, connectionId);
 
