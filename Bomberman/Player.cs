@@ -219,7 +219,6 @@ namespace Bomberman
 
         public void UpdateStats(PlayerDTO playerDTO)
         {
-            Console.WriteLine(playerDTO.IsDead);
             this.Position = new Vector2f(playerDTO.position.X, playerDTO.position.Y);
             IsDead = playerDTO.IsDead;
         }
