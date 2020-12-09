@@ -16,5 +16,6 @@ namespace BombermanServer.Services
         public bool RemovePlayer(PlayerDTO player);
 
         public int GetEmptyId();
+        public void KillPlayer(int id);
     }
 }

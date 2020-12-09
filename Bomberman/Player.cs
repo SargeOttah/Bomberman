@@ -1,15 +1,15 @@
-﻿using Bomberman.Collisions;
+﻿using System;
+using Bomberman.Collisions;
 using Bomberman.Dto;
 using Bomberman.Map;
 using Bomberman.Spawnables;
-using Bomberman.Spawnables.Weapons;
 using Bomberman.Spawnables.Obstacles;
+using Bomberman.Spawnables.Weapons;
 using SFML.Graphics;
 using SFML.System;
-using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Bomberman
 {
@@ -40,7 +40,7 @@ namespace Bomberman
         public Bomb Bomb { get; set; }
 
         public int Level = 0;
-        public bool IsDead { get; private set; } = false;
+        public bool IsDead { get; set; }
 
         //Debug
         private RectangleShape debugShape { get; set; }
@@ -64,6 +64,7 @@ namespace Bomberman
             this.Texture = playerDTO.GetTexture();
             this.connectionId = playerDTO.connectionId;
             this.Origin = GetSpriteCenter(this);
+            IsDead = playerDTO.IsDead;
 
             this.playerSpawn = new Vector2f(playerDTO.position.X, playerDTO.position.Y);
 
@@ -227,6 +228,7 @@ namespace Bomberman
         public void UpdateStats(PlayerDTO playerDTO)
         {
             this.Position = new Vector2f(playerDTO.position.X, playerDTO.position.Y);
+            IsDead = playerDTO.IsDead;
         }
 
         public void Translate(float xOffset, float yOffset)

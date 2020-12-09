@@ -12,6 +12,7 @@ namespace Bomberman.Dto
         public string connectionId { get; set; }
         public PointF position { get; set; }
         public PlayerSprite sprite { get; set; }
+        public bool IsDead { get; set; }
 
         private static Dictionary<PlayerSprite, byte[]> spriteDict = new Dictionary<PlayerSprite, byte[]>
         {

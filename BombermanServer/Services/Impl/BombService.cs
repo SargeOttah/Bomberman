@@ -6,6 +6,7 @@ using BombermanServer.Constants;
 using BombermanServer.Hubs;
 using BombermanServer.Models;
 using Microsoft.AspNetCore.SignalR;
+using BombermanServer.Mediator;
 
 namespace BombermanServer.Services.Impl
 {
@@ -22,12 +23,16 @@ namespace BombermanServer.Services.Impl
         private List<string> destructableObstacles;
         private readonly IHubContext<UserHub> _hubContext;
         private IMapService mapService;
-        public BombService(IHubContext<UserHub> hubContext, IMapService mapService)
+        private IPlayerService _playerService;
+        private IPlayerDeathMediator _playerDeathMediator;
+        public BombService(IHubContext<UserHub> hubContext, IMapService mapService, IPlayerService playerService, IPlayerDeathMediator playerDeathMediator)
         {
             bombs = new List<BombDTO>();
             destructableObstacles = MapConstants.GetDestructableObstacles();
             _hubContext = hubContext;
             this.mapService = mapService;
+            _playerService = playerService;
+            _playerDeathMediator = playerDeathMediator;
         }
 
         public void Add(BombDTO bomb) // TODO: maybe check if there already is a bomb on the tile?
@@ -72,6 +77,18 @@ namespace BombermanServer.Services.Impl
                 {
                     x = pos.X + (directions[i, 0] * j);
                     y = pos.Y + (directions[i, 1] * j);
+
+                    var players = _playerService.GetPlayers();
+                    foreach (var player in players)
+                    {
+                        if (
+                            Math.Abs(x - player.Position.X) > MapConstants.tileSize
+                            && Math.Abs(y - player.Position.Y) > MapConstants.tileSize)
+                        {
+                            _playerDeathMediator.Notify(player.Id);
+                        }
+                    }
+
                     if (x > MapConstants.mapWidth || x < 0)
                     {
                         break;

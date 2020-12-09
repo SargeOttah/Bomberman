@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http;
 using Bomberman.HubHandler;
 
 namespace Bomberman
@@ -96,11 +97,6 @@ namespace Bomberman
                 }
             });
 
-            _userHubConnection.On("PlayerDied", (string connectionId) =>
-            {
-                Console.WriteLine($"GOT IT! Id: {connectionId}");
-                Console.WriteLine($"My id: {mainPlayer.connectionId}");
-            });
             _userHubConnection.StartAsync().Wait();
         }
 
@@ -158,13 +154,19 @@ namespace Bomberman
 
                 foreach (Player p in otherPlayers)
                 {
-                    _renderWindow.Draw(p);
+                    if (!p.IsDead)
+                    {
+                        _renderWindow.Draw(p);
+                    }
                 }
 
-                _renderWindow.Draw(mainPlayer);
+                if (!mainPlayer.IsDead)
+                {
+                    _renderWindow.Draw(mainPlayer);
 
-                //DEBUG - RED FRAME
-                _renderWindow.Draw(mainPlayer.DrawFrame());
+                    //DEBUG - RED FRAME
+                    _renderWindow.Draw(mainPlayer.DrawFrame());
+                }
 
                 // Update drawable destructor timers
                 UpdateLoop(deltaTime);

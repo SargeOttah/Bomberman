@@ -9,6 +9,7 @@ namespace BombermanServer.Models
         public PointF Position { get; set; }
         public int SpeedMultiplier { get; set; }
         public PlayerSprite Sprite { get; set; }
+        public bool IsDead { get; set; }
 
         public PlayerDTO()
         {
