@@ -25,7 +25,8 @@ namespace BombermanServer.Services
         private IMapService mapService;
         private IPlayerService _playerService;
         private IPlayerDeathMediator _playerDeathMediator;
-        public BombService(IHubContext<UserHub> hubContext, IMapService mapService, IPlayerService playerService, IPlayerDeathMediator playerDeathMediator)
+        private readonly IEnemyMovementService _enemyMovementService;
+        public BombService(IHubContext<UserHub> hubContext, IMapService mapService, IPlayerService playerService, IPlayerDeathMediator playerDeathMediator, IEnemyMovementService enemyMovementService)
         {
             bombs = new List<BombDTO>();
             destructableObstacles = MapConstants.GetDestructableObstacles();
@@ -33,6 +34,7 @@ namespace BombermanServer.Services
             this.mapService = mapService;
             _playerService = playerService;
             _playerDeathMediator = playerDeathMediator;
+            _enemyMovementService = enemyMovementService;
         }
 
         public void Add(BombDTO bomb) // TODO: maybe check if there already is a bomb on the tile?
@@ -79,17 +81,6 @@ namespace BombermanServer.Services
                     x = pos.X + (directions[i, 0] * j);
                     y = pos.Y + (directions[i, 1] * j);
 
-                    var players = _playerService.GetPlayers();
-                    foreach (var player in players)
-                    {
-                        if (
-                            Math.Abs(x - player.Position.X) > MapConstants.tileSize
-                            && Math.Abs(y - player.Position.Y) > MapConstants.tileSize)
-                        {
-                            _playerDeathMediator.Notify(player.Id);
-                        }
-                    }
-
                     if (x > MapConstants.mapWidth || x < 0)
                     {
                         break;
@@ -105,6 +96,25 @@ namespace BombermanServer.Services
                             tilesToRemove.Add(new Point(x, y));
                         }
                         break;
+                    }
+
+                    var players = _playerService.GetPlayers();
+                    foreach (var player in players)
+                    {
+                        if (
+                            Math.Abs(x - Math.Floor(player.Position.X / MapConstants.tileSize)) == 0
+                            && Math.Abs(y - Math.Floor(player.Position.Y / MapConstants.tileSize)) == 0)
+                        {
+                            _playerDeathMediator.Notify(player.Id);
+                        }
+                    }
+
+                    var ghostCoordinates = _enemyMovementService.GetGhostCoordinates();
+                    if (
+                        Math.Abs(x - Math.Floor(ghostCoordinates.X / MapConstants.tileSize)) == 0
+                        && Math.Abs(y - Math.Floor(ghostCoordinates.Y / MapConstants.tileSize)) == 0)
+                    {
+                        _enemyMovementService.KillGhost();
                     }
                 }
                 bombExplosion.ExplosionCoords[i] = new Point(x, y);
