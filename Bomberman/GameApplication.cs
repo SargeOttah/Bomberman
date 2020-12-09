@@ -49,6 +49,8 @@ namespace Bomberman
 
         private static IMovement buttonW, buttonS, buttonA, buttonD;
 
+        private bool ghostDead = false;
+
         public static GameApplication GetInstance()
         {
             return Instance;
@@ -85,15 +87,22 @@ namespace Bomberman
             var enemiesCreated = false;
             _userHubConnection.On("RefreshEnemies", (string posX, string posY) =>
             {
-                if (!enemiesCreated)
+                if (posX != null && posY != null)
                 {
-                    _boardBuilder.AddGhost(new Vector2f(int.Parse(posX), int.Parse(posY)), new Vector2f(0.2f, 0.2f));
+                    if (!enemiesCreated)
+                    {
+                        _boardBuilder.AddGhost(new Vector2f(int.Parse(posX), int.Parse(posY)), new Vector2f(0.2f, 0.2f));
 
-                    enemiesCreated = true;
+                        enemiesCreated = true;
+                    }
+                    else
+                    {
+                        _boardBuilder.MoveGhost(int.Parse(posX), int.Parse(posY));
+                    }
                 }
                 else
                 {
-                    _boardBuilder.MoveGhost(int.Parse(posX), int.Parse(posY));
+                    ghostDead = true;
                 }
             });
 
@@ -146,10 +155,14 @@ namespace Bomberman
 
                 // TILES
                 _renderWindow.Draw(tileMapFacade.GetTileMap());
-                foreach (var enemy in _boardBuilder._enemies)
+
+                if (!ghostDead)
                 {
-                    var sprite = enemy.getSprite();
-                    _renderWindow.Draw(sprite);
+                    foreach (var enemy in _boardBuilder._enemies)
+                    {
+                        var sprite = enemy.getSprite();
+                        _renderWindow.Draw(sprite);
+                    }
                 }
 
                 foreach (Player p in otherPlayers)
