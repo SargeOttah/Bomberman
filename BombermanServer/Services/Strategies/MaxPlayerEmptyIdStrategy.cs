@@ -6,7 +6,7 @@ namespace BombermanServer.Services.Strategies
 {
     public class MaxPlayerEmptyIdStrategy : IPlayerEmptyIdStrategy
     {
-        public int GetEmptyId(IEnumerable<Player> players)
+        public int GetEmptyId(IEnumerable<PlayerDTO> players)
         {
             var tempId = 3;
             foreach (var player in players.OrderByDescending(p => p.Id))

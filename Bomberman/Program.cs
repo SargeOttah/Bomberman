@@ -1,4 +1,5 @@
 ﻿using System;
+using log4net.Config;
 
 namespace Bomberman
 {
@@ -7,6 +8,8 @@ namespace Bomberman
         private static void Main()
         {
             Console.WriteLine("Starting game...");
+
+            XmlConfigurator.Configure();
 
             var game = GameApplication.GetInstance();
             game.Run();

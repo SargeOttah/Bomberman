@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Bomberman
 {
-    class Player : Sprite
+    public class Player : Sprite
     {
         //private readonly int[,] directions = new int[4, 2]{
         //    { -1, 0 }, // left
@@ -132,9 +132,13 @@ namespace Bomberman
         public void CreateExplosion(BombExplosionDTO bombExplosionDTO)
         {
             var explosionCoords = bombExplosionDTO.ExplosionCoords;
-            Spawnable explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation);
-            explosion.ProjectileSprite.Position = CalculateMapPos(explosionCoords[1].X, explosionCoords[0].Y); // set flame position to bomb
-            explosion.DespawnDrawableAfter = .5f; // despawn flame after
+            Spawnable explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation)
+            {
+                ProjectileSprite = {Position = CalculateMapPos(explosionCoords[1].X, explosionCoords[0].Y)},
+                DespawnDrawableAfter = .5f
+            };
+            // set flame position to bomb
+            // despawn flame after
             BombTriggers.Add(explosion);
             for (int i = 0; i < directions.GetLength(0); i++)
             {
@@ -142,9 +146,13 @@ namespace Bomberman
                 int y = explosionCoords[0].Y + directions[i][1];
                 while (x != explosionCoords[i].X || y != explosionCoords[i].Y)
                 {
-                    explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation);
-                    explosion.ProjectileSprite.Position = CalculateMapPos(x, y); // set flame position to bomb
-                    explosion.DespawnDrawableAfter = .5f; // despawn flame after
+                    explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation)
+                    {
+                        ProjectileSprite = {Position = CalculateMapPos(x, y)},
+                        DespawnDrawableAfter = .5f
+                    };
+                    // set flame position to bomb
+                    // despawn flame after
                     BombTriggers.Add(explosion);
                     x += directions[i][0];
                     y += directions[i][1];
@@ -192,7 +200,7 @@ namespace Bomberman
                 tmpBomb = new SuperBomb();
             }
 
-            Spawnable spawnable = new Spawnable(tmpBomb.ProjectileSprite, new Vector2f(bomb.bombPosition.X, bomb.bombPosition.Y), this.Rotation);
+            Spawnable spawnable = new Spawnable(tmpBomb.ProjectileSprite, new Vector2f(bomb.Position.X, bomb.Position.Y), this.Rotation);
             spawnable.DespawnDrawableAfter = tmpBomb.IgnitionDuration; // set type specific speed
 
             Spawnables.Add(spawnable);

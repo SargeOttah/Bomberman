@@ -1,20 +1,19 @@
 ﻿using BombermanServer.Models;
-using System;
 using System.Collections.Generic;
 
 namespace BombermanServer.Services
 {
     public interface IPlayerService
     {
-        public List<Player> GetPlayers();
+        public List<PlayerDTO> GetPlayers();
 
-        public Player GetPlayer(String connectionId);
+        public PlayerDTO GetPlayer(string connectionId);
 
         public int GetCount();
 
-        public bool AddPlayer(Player player);
+        public bool AddPlayer(PlayerDTO player);
 
-        public bool RemovePlayer(Player player);
+        public bool RemovePlayer(PlayerDTO player);
 
         public int GetEmptyId();
         public void KillPlayer(int id);

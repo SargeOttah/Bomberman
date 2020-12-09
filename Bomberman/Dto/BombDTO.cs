@@ -10,8 +10,7 @@ namespace Bomberman.Dto
         public float Damage { get; set; }
         public float IgnitionDuration { get; set; }
         public int ExplosionRadius { get; set; }
-        public PointF bombPosition { get; set; }
-
+        public PointF Position { get; set; }
         public int CurrentBombType { get; set; }
 
         public BombDTO(string OwnerId, float Damage, float IgnitionDuration, int ExplosionRadius, PointF Position, int bombType)
@@ -20,7 +19,7 @@ namespace Bomberman.Dto
             this.Damage = Damage;
             this.IgnitionDuration = IgnitionDuration;
             this.ExplosionRadius = ExplosionRadius;
-            this.bombPosition = Position;
+            this.Position = Position;
             this.CurrentBombType = bombType;
         }
 
@@ -29,6 +28,6 @@ namespace Bomberman.Dto
 
         }
 
-        public override string ToString() => $"{OwnerId} {Damage} {IgnitionDuration} {ExplosionRadius} {bombPosition.X} {bombPosition.Y}";
+        public override string ToString() => $"{OwnerId} {Damage} {IgnitionDuration} {ExplosionRadius} {Position.X} {Position.Y}";
     }
 }

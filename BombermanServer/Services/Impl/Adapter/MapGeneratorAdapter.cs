@@ -1,8 +1,8 @@
+using BombermanServer.Constants;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using BombermanServer.Constants;
-using System.Collections.Generic;
 
 namespace BombermanServer.Services.Impl.Adapter
 {
@@ -51,11 +51,7 @@ namespace BombermanServer.Services.Impl.Adapter
 
         public bool IsObstacle(int x, int y)
         {
-            if (obstacleList.Contains(mapGenerator.map[y, x]))
-            {
-                return true;
-            }
-            return false;
+            return obstacleList.Contains(mapGenerator.map[y, x]);
         }
 
         public void RemoveObstacle(int x, int y)
@@ -70,7 +66,7 @@ namespace BombermanServer.Services.Impl.Adapter
             return currentName;
         }
 
-        private string[] ConvertMap(string[,] map)
+        private static string[] ConvertMap(string[,] map)
         {
             string[] convertedMap = new string[MapConstants.mapHeight];
             for (int i = 0; i < MapConstants.mapHeight; i++)

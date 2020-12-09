@@ -1,14 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Threading.Tasks;
+using BombermanServer.Constants;
 using BombermanServer.Hubs;
 using BombermanServer.Models;
-using BombermanServer.Constants;
 using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Drawing;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using BombermanServer.Mediator;
 
-namespace BombermanServer.Services
+namespace BombermanServer.Services.Impl
 {
     public class BombService : IBombService
     {
@@ -37,12 +37,12 @@ namespace BombermanServer.Services
 
         public void Add(BombDTO bomb) // TODO: maybe check if there already is a bomb on the tile?
         {
-            var position = mapService.GetTilePosition(bomb.bombPosition.X, bomb.bombPosition.Y);
-            bomb.bombPosition = new PointF(position.X * MapConstants.tileSize + MapConstants.tileSize / 2,
+            var position = mapService.GetTilePosition(bomb.Position.X, bomb.Position.Y);
+            bomb.Position = new PointF(position.X * MapConstants.tileSize + MapConstants.tileSize / 2,
                                        position.Y * MapConstants.tileSize + MapConstants.tileSize / 2);
             bombs.Add(bomb);
             SetBombExplosionTimer(bomb);
-            Console.WriteLine($"Bomb at: {bomb.bombPosition.X} {bomb.bombPosition.Y}");
+            Console.WriteLine($"Bomb at: {bomb.Position.X} {bomb.Position.Y}");
         }
 
         public List<BombDTO> GetBombs()
@@ -64,10 +64,9 @@ namespace BombermanServer.Services
 
         public void ExplodeBomb(BombDTO bomb)
         {
-            BombExplosion bombExplosion = new BombExplosion();
-            bombExplosion.OwnerId = bomb.OwnerId;
+            BombExplosion bombExplosion = new BombExplosion {OwnerId = bomb.OwnerId};
             var map = mapService.GetMapMatrix();
-            var pos = mapService.GetTilePosition(bomb.bombPosition.X, bomb.bombPosition.Y);
+            var pos = mapService.GetTilePosition(bomb.Position.X, bomb.Position.Y);
 
             List<Point> tilesToRemove = new List<Point>();
             for (int i = 0; i < directions.GetLength(0); i++)

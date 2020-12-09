@@ -2,7 +2,7 @@
 
 namespace BombermanServer.Models
 {
-    public class Player
+    public class PlayerDTO
     {
         public int Id { get; set; }
         public string ConnectionId { get; set; }
@@ -11,12 +11,11 @@ namespace BombermanServer.Models
         public PlayerSprite Sprite { get; set; }
         public bool IsDead { get; set; }
 
-        public Player()
+        public PlayerDTO()
         {
-            SpeedMultiplier = 1;
         }
         
-        public Player(string connectionId) : this()
+        public PlayerDTO(string connectionId) : this()
         {
             ConnectionId = connectionId;
         }
