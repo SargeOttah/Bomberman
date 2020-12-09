@@ -1,19 +1,18 @@
-﻿using Bomberman.Dto;
-using Bomberman.Spawnables.Weapons;
-using Bomberman.GUI;
-using Bomberman.Spawnables.Obstacles;
+﻿using Bomberman.Command;
+using Bomberman.Dto;
 using Bomberman.Global;
+using Bomberman.GUI;
+using Bomberman.Map;
+using Bomberman.Spawnables.Obstacles;
+using Bomberman.Spawnables.Weapons;
 using Microsoft.AspNetCore.SignalR.Client;
-using System.Net.Http;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bomberman.Map;
-using Bomberman.Command;
-using System.Drawing;
+using System.Net.Http;
 
 namespace Bomberman
 {
@@ -93,11 +92,6 @@ namespace Bomberman
                 }
             });
 
-            _userHubConnection.On("PlayerDied", (string connectionId) =>
-            {
-                Console.WriteLine($"GOT IT! Id: {connectionId}");
-                Console.WriteLine($"My id: {mainPlayer.connectionId}");
-            });
             _userHubConnection.StartAsync().Wait();
         }
 
@@ -155,13 +149,19 @@ namespace Bomberman
 
                 foreach (Player p in otherPlayers)
                 {
-                    _renderWindow.Draw(p);
+                    if (!p.IsDead)
+                    {
+                        _renderWindow.Draw(p);
+                    }
                 }
 
-                _renderWindow.Draw(mainPlayer);
+                if (!mainPlayer.IsDead)
+                {
+                    _renderWindow.Draw(mainPlayer);
 
-                //DEBUG - RED FRAME
-                _renderWindow.Draw(mainPlayer.DrawFrame());
+                    //DEBUG - RED FRAME
+                    _renderWindow.Draw(mainPlayer.DrawFrame());
+                }
 
                 // Update drawable destructor timers
                 UpdateLoop(deltaTime);
