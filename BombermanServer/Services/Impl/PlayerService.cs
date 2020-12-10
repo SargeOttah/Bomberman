@@ -49,11 +49,11 @@ namespace BombermanServer.Services.Impl
 
         public void KillPlayer(int id)
         {
-            var playerIndex = players.FindIndex(p => p.Id == id);
+            var playerIndex = _players.FindIndex(p => p.Id == id);
 
             if (playerIndex >= 0)
             {
-                players[playerIndex].IsDead = true;
+                _players[playerIndex].IsDead = true;
             }
         }
     }

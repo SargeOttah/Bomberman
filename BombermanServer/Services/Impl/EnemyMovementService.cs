@@ -1,6 +1,8 @@
 ﻿using BombermanServer.Constants;
 using BombermanServer.Hubs;
 using BombermanServer.Mediator;
+using BombermanServer.Models;
+using BombermanServer.Models.States.ConcreteStates;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -17,10 +19,7 @@ namespace BombermanServer.Services.Impl
         private readonly IMapService _mapService;
         private readonly IPlayerDeathMediator _playerDeathMediator;
 
-        private float X = 6.5f * MapConstants.tileSize; // Starting position (center of the board).
-        private float Y = 5.5f * MapConstants.tileSize;
-
-        private bool isDead = false;
+        private Ghost Ghost;
 
         public EnemyMovementService(
             IHubContext<UserHub> hubContext,
@@ -36,100 +35,44 @@ namespace BombermanServer.Services.Impl
             _mapService.LoadMap();
 
             UpdateGhostMovement();
+
+            Ghost = new Ghost { Position = new PointF(6.5f * MapConstants.tileSize, 5.5f * MapConstants.tileSize) };
+            var ghostState = new InactiveGhostState(Ghost);
+            Ghost.State = ghostState;
         }
 
         public void UpdateGhostMovement()
         {
-            int? lastTurnIndex = null; // Direction we moved last turn.
+            const int period = 300;
 
-            var rnd = new Random(); // RNG library for random movement.
-
-            const int period = 300; // Time in ms between each recalculation.
-
-            new Timer(async _ => // Infinite loop
+            new Timer(async _ =>
             {
                 var players = _playerService.GetPlayers();
-                if (players.Any() && !isDead) // Only do the calculations if we have any clients connected and the ghost is alive.
+                if (players.Any() && Ghost.State is InactiveGhostState) Ghost.State = new ActiveGhostState(Ghost);
+                else if (!players.Any() && Ghost.State is ActiveGhostState) Ghost.State = new InactiveGhostState(Ghost);
+                
+                var allTurns = new List<bool> 
                 {
-                    var allTurns = new List<bool> // Check legality of each direction (false if the move is illegal, true if legal).
-                    {
-                        !_mapService.IsObstacle(X - MapConstants.tileSize, Y), // Indexes matter - from 0 to 3 accordingly: left / up / right / down direction.
-                        !_mapService.IsObstacle(X, Y - MapConstants.tileSize),
-                        !_mapService.IsObstacle(X + MapConstants.tileSize, Y),
-                        !_mapService.IsObstacle(X, Y + MapConstants.tileSize)
-                    };
-
-                    var availableTurnIndexes = new List<int>(); // Indexes of LEGAL moves (if we can only go up or right, this list will contain numbers 1 and 2).
-                    for (var i = 0; i < allTurns.Count; i++)
-                    {
-                        if (allTurns[i]) availableTurnIndexes.Add(i);
-                    }
-
-                    if (lastTurnIndex is null || !allTurns[lastTurnIndex.Value]) // Critical need to recalculate new turn - either it's the first move of the ghost or our previous direction isn't legal anymore.
-                    {
-                        lastTurnIndex = availableTurnIndexes[rnd.Next(availableTurnIndexes.Count)];
-                    }
-                    else if (availableTurnIndexes.Count > 2) // If we recalculate only on the previous condition, we recalculate only in the corners of the border and ghost never enters the middle - this condition fixes that.
-                    {
-                        var newTurnIndex = availableTurnIndexes[rnd.Next(availableTurnIndexes.Count)];
-                        if (Math.Abs(lastTurnIndex.Value - newTurnIndex) != 2) // Unlike in previous condition, here we have the possibility to go back even though no obstacle was met - this could create wiggling and we never want that (this is why indexes of directions matter in allTurns!)
-                        {
-                            lastTurnIndex = newTurnIndex;
-                        }
-                    }
-
-                    switch (lastTurnIndex) // Choose the direction based on (possibly) recalculated index (this is also why indexes matter).
-                    {
-                        case 0:
-                            X -= MapConstants.tileSize;
-                            break;
-                        case 1: 
-                            Y -= MapConstants.tileSize;
-                            break;
-                        case 2: 
-                            X += MapConstants.tileSize;
-                            break;
-                        case 3:
-                            Y += MapConstants.tileSize;
-                            break;
-                    }
-
-                    await _hubContext.Clients.All.SendAsync("RefreshEnemies", X.ToString(), Y.ToString());
-
-                    foreach (var player in players)
-                    {
-                        if (
-                            Math.Abs(X - player.Position.X) < MapConstants.tileSize  // check if ghost touched each player
-                            && Math.Abs(Y - player.Position.Y) < MapConstants.tileSize
-                        )
-                        {
-                            _playerDeathMediator.Notify(player.Id);
-                        }
-                    }
-                }
-                else if (!players.Any()) // Reset everything after players disconnect in order to have a clean start on another connection.
+                    !_mapService.IsObstacle(Ghost.Position.X - MapConstants.tileSize, Ghost.Position.Y),
+                    !_mapService.IsObstacle(Ghost.Position.X, Ghost.Position.Y - MapConstants.tileSize),
+                    !_mapService.IsObstacle(Ghost.Position.X + MapConstants.tileSize, Ghost.Position.Y),
+                    !_mapService.IsObstacle(Ghost.Position.X, Ghost.Position.Y + MapConstants.tileSize)
+                };
+                Ghost.Move(allTurns);
+                Console.WriteLine(Ghost.Position.X);
+                await _hubContext.Clients.All.SendAsync("RefreshEnemies", Ghost.Position.X, Ghost.Position.Y); 
+                foreach (var player in players.Where(player => Math.Abs(Ghost.Position.X - player.Position.X) < MapConstants.tileSize && Math.Abs(Ghost.Position.Y - player.Position.Y) < MapConstants.tileSize))
                 {
-                    X = 6.5f * MapConstants.tileSize; 
-                    Y = 5.5f * MapConstants.tileSize;
-
-                    lastTurnIndex = null;
-                    isDead = false;
-                }
-                else
-                {
-                    await _hubContext.Clients.All.SendAsync("RefreshEnemies", null, null);
+                    _playerDeathMediator.Notify(player.Id);
                 }
             }, null, 0, period);
         }
 
-        public PointF GetGhostCoordinates()
-        {
-            return new PointF(X, Y);
-        }
+        public PointF GetGhostCoordinates() => Ghost.Position;
 
         public void KillGhost()
         {
-            isDead = true;
+            Ghost.State = new DeadGhostState(Ghost);
         }
     }
 }
