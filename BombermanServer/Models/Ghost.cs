@@ -1,17 +1,25 @@
-﻿using BombermanServer.Models.States;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using BombermanServer.Constants;
+using BombermanServer.Models.States;
 
 namespace BombermanServer.Models
 {
     public class Ghost
     {
-        public PointF Position { get; set; }
+        public static readonly float StartingX = 4.5f * MapConstants.tileSize;
+        public static readonly float StartingY = 5.5f * MapConstants.tileSize;
+
+        public float? X { get; set; }
+        public float? Y { get; set; }
         public GhostState State { get; set; }
 
-        public void Move(List<bool> allTurns = null)
+        public void Move()
         {
-            State.Move(allTurns);
+            State.Move();
+        }
+
+        public void UpdateState()
+        {
+            State.UpdateState();
         }
     }
 }

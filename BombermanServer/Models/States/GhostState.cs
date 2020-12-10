@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace BombermanServer.Models.States
 {
@@ -7,9 +6,10 @@ namespace BombermanServer.Models.States
     {
         protected Ghost GhostContext { get; set; }
         protected int? LastTurnIndex { get; set; }
-        protected Random randomGenerator { get; set; } = new Random();
+        protected Random RandomGenerator { get; set; } = new Random();
 
-        public abstract void Move(List<bool> allTurns = null);
+        public abstract void Move();
+        public abstract void UpdateState();
 
         protected GhostState(Ghost context)
         {

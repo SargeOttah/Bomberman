@@ -160,6 +160,7 @@ namespace Bomberman
                 {
                     foreach (var enemy in _boardBuilder._enemies)
                     {
+
                         var sprite = enemy.getSprite();
                         _renderWindow.Draw(sprite);
                     }

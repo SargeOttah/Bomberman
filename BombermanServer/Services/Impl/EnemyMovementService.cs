@@ -1,13 +1,10 @@
-﻿using BombermanServer.Constants;
+﻿using System;
 using BombermanServer.Hubs;
 using BombermanServer.Mediator;
 using BombermanServer.Models;
 using BombermanServer.Models.States.ConcreteStates;
 using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Threading;
 
 namespace BombermanServer.Services.Impl
@@ -15,11 +12,11 @@ namespace BombermanServer.Services.Impl
     public class EnemyMovementService : IEnemyMovementService
     {
         private readonly IPlayerService _playerService;
-        private readonly IHubContext<UserHub> _hubContext;
         private readonly IMapService _mapService;
+        private readonly IHubContext<UserHub> _hubContext;
         private readonly IPlayerDeathMediator _playerDeathMediator;
 
-        private Ghost Ghost;
+        private readonly Ghost _ghost;
 
         public EnemyMovementService(
             IHubContext<UserHub> hubContext,
@@ -29,50 +26,42 @@ namespace BombermanServer.Services.Impl
         {
             _hubContext = hubContext;
             _playerService = playerService;
-
             _mapService = mapService;
             _playerDeathMediator = playerDeathMediator;
-            _mapService.LoadMap();
+
+            _ghost = new Ghost { X = Ghost.StartingX, Y = Ghost.StartingY };
+            _ghost.State = new InactiveGhostState(_ghost, playerService, mapService, playerDeathMediator);
 
             UpdateGhostMovement();
 
-            Ghost = new Ghost { Position = new PointF(6.5f * MapConstants.tileSize, 5.5f * MapConstants.tileSize) };
-            var ghostState = new InactiveGhostState(Ghost);
-            Ghost.State = ghostState;
         }
 
         public void UpdateGhostMovement()
         {
             const int period = 300;
 
-            new Timer(async _ =>
+            var _ = new Timer(async _ =>
             {
-                var players = _playerService.GetPlayers();
-                if (players.Any() && Ghost.State is InactiveGhostState) Ghost.State = new ActiveGhostState(Ghost);
-                else if (!players.Any() && Ghost.State is ActiveGhostState) Ghost.State = new InactiveGhostState(Ghost);
-                
-                var allTurns = new List<bool> 
-                {
-                    !_mapService.IsObstacle(Ghost.Position.X - MapConstants.tileSize, Ghost.Position.Y),
-                    !_mapService.IsObstacle(Ghost.Position.X, Ghost.Position.Y - MapConstants.tileSize),
-                    !_mapService.IsObstacle(Ghost.Position.X + MapConstants.tileSize, Ghost.Position.Y),
-                    !_mapService.IsObstacle(Ghost.Position.X, Ghost.Position.Y + MapConstants.tileSize)
-                };
-                Ghost.Move(allTurns);
-                Console.WriteLine(Ghost.Position.X);
-                await _hubContext.Clients.All.SendAsync("RefreshEnemies", Ghost.Position.X, Ghost.Position.Y); 
-                foreach (var player in players.Where(player => Math.Abs(Ghost.Position.X - player.Position.X) < MapConstants.tileSize && Math.Abs(Ghost.Position.Y - player.Position.Y) < MapConstants.tileSize))
-                {
-                    _playerDeathMediator.Notify(player.Id);
-                }
+                _ghost.UpdateState();
+                _ghost.Move();
+
+                var x = _ghost.X is null ? null : _ghost.X.ToString();
+                var y = _ghost.Y is null ? null : _ghost.Y.ToString();
+
+                await _hubContext.Clients.All.SendAsync("RefreshEnemies", x, y);
             }, null, 0, period);
         }
 
-        public PointF GetGhostCoordinates() => Ghost.Position;
+        public PointF GetGhostCoordinates()
+        {
+            if (_ghost.X is null || _ghost.Y is null) return new PointF(float.NaN, float.NaN);
+
+            return new PointF(_ghost.X.Value, _ghost.Y.Value);
+        }
 
         public void KillGhost()
         {
-            Ghost.State = new DeadGhostState(Ghost);
+            _ghost.State = new DeadGhostState(_ghost, _playerService, _mapService, _playerDeathMediator);
         }
     }
 }
