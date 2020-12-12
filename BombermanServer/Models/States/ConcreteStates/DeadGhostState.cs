@@ -1,6 +1,5 @@
 ﻿using BombermanServer.Mediator;
 using BombermanServer.Services;
-using System.Linq;
 
 namespace BombermanServer.Models.States.ConcreteStates
 {
@@ -25,9 +24,9 @@ namespace BombermanServer.Models.States.ConcreteStates
 
         public override void UpdateState()
         {
-            var players = _playerService.GetPlayers();
+            var playerIterator = _playerService.GetPlayerIterator();
 
-            if (!players.Any())
+            if (!playerIterator.HasNext())
             {
                 GhostContext.State = new InactiveGhostState(GhostContext, _playerService, _mapService, _playerDeathMediator);
             }

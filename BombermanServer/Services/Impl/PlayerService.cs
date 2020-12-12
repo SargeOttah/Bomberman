@@ -1,60 +1,58 @@
 ﻿using BombermanServer.Models;
-using System.Collections.Generic;
+using BombermanServer.Services.Iterator;
 
 namespace BombermanServer.Services.Impl
 {
     public class PlayerService : IPlayerService
     {
-        private readonly List<PlayerDTO> _players;
+        private readonly IPlayerContainer _playerContainer;
 
         public PlayerService()
         {
-            _players = new List<PlayerDTO>(4);
+            _playerContainer = new PlayerContainer();
         }
 
         public bool AddPlayer(PlayerDTO player)
         {
-            if (_players.Count >= 4) { return false; }
+            if (_playerContainer.GetCount() >= 4) { return false; }
 
-            _players.Add(player);
+            _playerContainer.AddPlayer(player);
             return true;
         }
 
         public PlayerDTO GetPlayer(string connectionId)
         {
-            return _players.Find(x => x.ConnectionId.Equals(connectionId));
+            var playerIterator = _playerContainer.GetIterator();
+
+            while (playerIterator.HasNext())
+            {
+                var player = playerIterator.GetNext();
+
+                if (player.ConnectionId.Equals(connectionId))
+                {
+                    return player;
+                }
+            }
+
+            return null;
         }
 
-        public int GetCount()
-        {
-            return _players.Count;
-        }
+        public int GetCount() => _playerContainer.GetCount();
 
-        public List<PlayerDTO> GetPlayers()
-        {
-            return _players;
-        }
+        public IIterator GetPlayerIterator() => _playerContainer.GetIterator();
 
-        public bool RemovePlayer(PlayerDTO player)
-        {
-            return _players.Remove(player);
-        }
+        public bool RemovePlayer(PlayerDTO player) => _playerContainer.RemovePlayer(player);
 
         public int GetEmptyId()
         {
             var playerEmptyIdStrategy = PlayerServiceHelper.GetPlayerIdStrategy();
 
-            return playerEmptyIdStrategy.GetEmptyId(_players);
+            return playerEmptyIdStrategy.GetEmptyId(_playerContainer.GetIterator());
         }
 
         public void KillPlayer(int id)
         {
-            var playerIndex = _players.FindIndex(p => p.Id == id);
-
-            if (playerIndex >= 0)
-            {
-                _players[playerIndex].IsDead = true;
-            }
+            _playerContainer.KillPlayer(id);
         }
     }
 }

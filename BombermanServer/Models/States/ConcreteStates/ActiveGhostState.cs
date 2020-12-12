@@ -3,7 +3,6 @@ using BombermanServer.Mediator;
 using BombermanServer.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BombermanServer.Models.States.ConcreteStates
 {
@@ -50,9 +49,9 @@ namespace BombermanServer.Models.States.ConcreteStates
 
         public override void UpdateState()
         {
-            var players = _playerService.GetPlayers();
+            var playerIterator = _playerService.GetPlayerIterator();
 
-            if (!players.Any())
+            if (!playerIterator.HasNext())
             {
                 GhostContext.State = new InactiveGhostState(GhostContext, _playerService, _mapService, _playerDeathMediator);
             }
@@ -61,11 +60,18 @@ namespace BombermanServer.Models.States.ConcreteStates
         private void KillPlayers()
         {
             if (GhostContext.X is null || GhostContext.Y is null) return;
-            var players = _playerService.GetPlayers();
+            var playerIterator = _playerService.GetPlayerIterator();
 
-            foreach (var player in players.Where(player => Math.Abs(GhostContext.X.Value - player.Position.X) < MapConstants.tileSize && Math.Abs(GhostContext.Y.Value - player.Position.Y) < MapConstants.tileSize))
+            while (playerIterator.HasNext())
             {
-                _playerDeathMediator.Notify(player.Id);
+                var player = playerIterator.GetNext();
+
+                if (
+                    Math.Abs(GhostContext.X.Value - player.Position.X) < MapConstants.tileSize
+                    && Math.Abs(GhostContext.Y.Value - player.Position.Y) < MapConstants.tileSize)
+                {
+                    _playerDeathMediator.Notify(player.Id);
+                }
             }
         }
 

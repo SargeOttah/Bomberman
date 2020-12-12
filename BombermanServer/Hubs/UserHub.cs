@@ -93,7 +93,13 @@ namespace BombermanServer.Hubs
         public async Task RefreshPlayer(PointF playerPosition)
         {
             _playerService.GetPlayer(this.Context.ConnectionId).Position = playerPosition;
-            List<PlayerDTO> players = _playerService.GetPlayers();
+            var players = new List<PlayerDTO>();
+            var playerIterator = _playerService.GetPlayerIterator();
+
+            while (playerIterator.HasNext())
+            {
+                players.Add(playerIterator.GetNext());
+            }
 
             await Clients.Caller.SendAsync("RefreshPlayers", players);
         }

@@ -1,9 +1,10 @@
-﻿namespace BombermanServer.Services.Iterator
+﻿using BombermanServer.Models;
+
+namespace BombermanServer.Services.Iterator
 {
     public interface IIterator
     {
-        string GetNext();
+        PlayerDTO GetNext();
         bool HasNext();
-        void Reset();
     }
 }
