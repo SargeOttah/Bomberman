@@ -4,7 +4,10 @@ using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
+using Bomberman.Spawnables.Tiles;
+
 //https://github.com/SFML/SFML/wiki/Source:-TileMap-Render
 
 namespace Bomberman.Map
@@ -17,10 +20,11 @@ namespace Bomberman.Map
         private string[,] map;
 
         private Vector2i offset;
-        private List<Tile> tiles;
+        private List<Ground> tiles;
         private List<Obstacle> obstacles;
+        private CompoundTile _compoundTile;
 
-        private Texture spriteSheet;
+        private static Texture _spriteSheet;
 
         private int height;
         private int width;
@@ -29,11 +33,17 @@ namespace Bomberman.Map
         /// <param name="spriteSize">Pixel size of the sprite sizes in sprite sheet</param>
         public TileMap(Texture spriteSheet, string[] map, int tileSize = 64, int spriteSize = 32)
         {
-            this.tiles = new List<Tile>();
-            this.spriteSheet = spriteSheet;
+            TileMap._spriteSheet = spriteSheet;
+            this.tiles = new List<Ground>();
+            this._compoundTile = new CompoundTile();
             this.tileSize = tileSize;
             this.spriteSize = spriteSize;
             ParseMap(map);
+        }
+
+        public static Texture GetSpriteSheet()
+        {
+            return _spriteSheet;
         }
 
         public void ParseMap(string[] map)
@@ -99,6 +109,7 @@ namespace Bomberman.Map
         {
             var w = (int)(v.X / tileSize);
             var h = (int)(v.Y / tileSize);
+            _compoundTile = new CompoundTile();
             //Console.WriteLine($"screen Width: {v.X}, Height: {v.Y}");
 
             if (w == width && h == height) return;
@@ -107,7 +118,7 @@ namespace Bomberman.Map
             width = w;
             height = h;
 
-            tiles = new List<Tile>(width * height);
+            tiles = new List<Ground>(width * height);
             obstacles = new List<Obstacle>(width * height);
 
             LoadTiles(0, 0);
@@ -116,9 +127,9 @@ namespace Bomberman.Map
 
         private void LoadTiles(int x, int y)
         {
-            Console.WriteLine("loading tiles");
             ObstacleFactory destroyableFactory = FactoryPicker.GetFactory("Destroyable");
             ObstacleFactory undestroyableFactory = FactoryPicker.GetFactory("Undestroyable");
+            var index = 0;
 
             for (int i = y; i < height; i++)
             {
@@ -155,7 +166,9 @@ namespace Bomberman.Map
                     }
                     // We add a ground tile every time
 
-                    tiles.Add(new Tile(texture));
+                    tiles.Add(new Ground(texture));
+
+                    //_compoundTile.Add(obstacles[index] == null ? tiles[index] : obstacles[index]);
                 }
             }
         }
@@ -179,7 +192,7 @@ namespace Bomberman.Map
 
             if (Math.Abs(dif.X) > width / 4 || Math.Abs(dif.Y) > height / 4)
             {
-                //Refresh everyting if difference is too big
+                //Refresh everything if difference is too big
                 Refresh();
                 return;
             }
@@ -225,9 +238,9 @@ namespace Bomberman.Map
             var index = vx + vy * width;
             var rec = new FloatRect(x * tileSize, y * tileSize, tileSize, tileSize);
 
-            int textureIdx = isObstacle ? obstacles[index].tileIndex : tiles[index].tileIndex;
-            var textureX = (textureIdx * spriteSize) % unchecked((int)spriteSheet.Size.X); // unsafe, but who cares right?
-            var textureY = textureIdx / (unchecked((int)spriteSheet.Size.X) / spriteSize) * spriteSize;
+            int textureIdx = isObstacle ? obstacles[index].TileIndex : tiles[index].TileIndex;
+            var textureX = (textureIdx * spriteSize) % unchecked((int)_spriteSheet.Size.X);
+            var textureY = textureIdx / (unchecked((int)_spriteSheet.Size.X) / spriteSize) * spriteSize;
             //Console.WriteLine($"texturing {x} {y} {textureIdx} {textureX} {textureY} {spriteSize}");
             IntRect src = new IntRect(textureX, textureY, spriteSize, spriteSize);
 
@@ -244,7 +257,19 @@ namespace Bomberman.Map
             }
 
             //Console.WriteLine($"vx {vx} {vy} {width}");
+        }
 
+        private void FillCompoundTile()
+        {
+            foreach (var tile in tiles)
+            {
+                _compoundTile.Add(tile);
+            }
+
+            foreach (var obstacle in obstacles.Where(obstacle => obstacle != null))
+            {
+                _compoundTile.Add(obstacle);
+            }
         }
 
 
@@ -253,26 +278,32 @@ namespace Bomberman.Map
         /// </summary>
         public void Draw(RenderTarget rt, RenderStates states)
         {
+            
             var view = rt.GetView();
-            states.Texture = spriteSheet;
+            states.Texture = _spriteSheet;
 
             SetSize(view.Size);
             SetCorner(rt.MapPixelToCoords(new Vector2i()));
+            FillCompoundTile();
 
-            foreach (Tile tile in tiles)
+            var vertices = _compoundTile.GetVertices();
+            for (int i = 0; i < vertices.Length; i += 4)
             {
-                rt.Draw(tile.vertices, PrimitiveType.Quads, states);
+                rt.Draw(GetRange(vertices, i, 4), PrimitiveType.Quads, states);
+            }
+        }
+
+        public Vertex[] GetRange(Vertex[] array, int index, int count)
+        {
+            var newArray = new Vertex[count];
+            if (array == null || array.Length < index + count) return newArray;
+
+            for (var i = index; i < index + count; i++)
+            {
+                newArray[i - index] = array[i];
             }
 
-            // Drawing obstacles on top of ground
-            foreach (Obstacle obstacle in obstacles)
-            {
-                if (obstacle != null)
-                {
-                    rt.Draw(obstacle.vertices, PrimitiveType.Quads, states);
-                }
-            }
-
+            return newArray;
         }
     }
 }
