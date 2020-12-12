@@ -12,7 +12,7 @@ namespace BombermanServer.Services.Impl
             _playerContainer = new PlayerContainer();
         }
 
-        public bool AddPlayer(PlayerDTO player)
+        public bool AddPlayer(Player player)
         {
             if (_playerContainer.GetCount() >= 4) { return false; }
 
@@ -20,7 +20,7 @@ namespace BombermanServer.Services.Impl
             return true;
         }
 
-        public PlayerDTO GetPlayer(string connectionId)
+        public Player GetPlayer(string connectionId)
         {
             var playerIterator = _playerContainer.GetIterator();
 
@@ -41,7 +41,7 @@ namespace BombermanServer.Services.Impl
 
         public IIterator GetPlayerIterator() => _playerContainer.GetIterator();
 
-        public bool RemovePlayer(PlayerDTO player) => _playerContainer.RemovePlayer(player);
+        public bool RemovePlayer(Player player) => _playerContainer.RemovePlayer(player);
 
         public int GetEmptyId()
         {

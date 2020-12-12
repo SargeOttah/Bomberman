@@ -4,7 +4,7 @@ namespace BombermanServer.Services.Iterator
 {
     public interface IIterator
     {
-        PlayerDTO GetNext();
+        Player GetNext();
         bool HasNext();
     }
 }
