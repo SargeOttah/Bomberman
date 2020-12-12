@@ -1,11 +1,11 @@
 ﻿using BombermanServer.Models;
-using System.Collections.Generic;
+using BombermanServer.Services.Iterator;
 
 namespace BombermanServer.Services
 {
     public interface IPlayerService
     {
-        public List<PlayerDTO> GetPlayers();
+        public IIterator GetPlayerIterator();
 
         public PlayerDTO GetPlayer(string connectionId);
 

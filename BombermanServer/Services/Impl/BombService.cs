@@ -1,12 +1,12 @@
+using BombermanServer.Constants;
+using BombermanServer.Hubs;
+using BombermanServer.Mediator;
+using BombermanServer.Models;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
-using BombermanServer.Constants;
-using BombermanServer.Hubs;
-using BombermanServer.Models;
-using Microsoft.AspNetCore.SignalR;
-using BombermanServer.Mediator;
 
 namespace BombermanServer.Services.Impl
 {
@@ -97,9 +97,10 @@ namespace BombermanServer.Services.Impl
                         break;
                     }
 
-                    var players = _playerService.GetPlayers();
-                    foreach (var player in players)
+                    var playerIterator = _playerService.GetPlayerIterator();
+                    while (playerIterator.HasNext())
                     {
+                        var player = playerIterator.GetNext();
                         if (
                             Math.Abs(x - Math.Floor(player.Position.X / MapConstants.tileSize)) == 0
                             && Math.Abs(y - Math.Floor(player.Position.Y / MapConstants.tileSize)) == 0)
