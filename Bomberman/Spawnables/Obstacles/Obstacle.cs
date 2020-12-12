@@ -2,10 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Bomberman.Spawnables.Tiles;
 
 namespace Bomberman.Spawnables.Obstacles
 {
-    public class Obstacle : Tile
+    public class Obstacle : Ground
     {
         public Obstacle(int textureIdx) : base(textureIdx)
         {

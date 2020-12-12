@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using static Bomberman.Collisions.OrientedBoundingBox;
 using Bomberman.Map;
+using Bomberman.Spawnables.Tiles;
 
 namespace Bomberman.Collisions
 {
@@ -87,7 +88,7 @@ namespace Bomberman.Collisions
             return (distance.X * distance.X + distance.Y * distance.Y) <= ((firstRadius + secondRadius) * (firstRadius + secondRadius));
         }
 
-        public static bool TileBoundingBoxTest(Sprite firstObj, Tile secondObj) {
+        public static bool TileBoundingBoxTest(Sprite firstObj, Ground secondObj) {
             OrientedBoundingBox firstObb = new OrientedBoundingBox(firstObj);
             OrientedBoundingBox secondObb = new OrientedBoundingBox(secondObj);
 

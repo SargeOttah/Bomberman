@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Bomberman.Map;
+using Bomberman.Spawnables.Tiles;
 using SFML.Graphics;
 using SFML.System;
 
@@ -31,9 +32,9 @@ namespace Bomberman.Collisions
                       };
         }
 
-        public OrientedBoundingBox(Tile obj)
+        public OrientedBoundingBox(Ground obj)
         {
-            Vertex[] vertices = obj.vertices;
+            Vertex[] vertices = obj.GetVertices();
 
             Points = new Vector2f[4]
             {
