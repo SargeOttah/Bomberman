@@ -9,7 +9,7 @@ namespace BombermanServer.Services.Strategies
     {
         public int GetEmptyId(IIterator playerIterator)
         {
-            var players = new List<PlayerDTO>();
+            var players = new List<Player>();
             while (playerIterator.HasNext())
             {
                 players.Add(playerIterator.GetNext());

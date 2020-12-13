@@ -148,7 +148,7 @@ namespace Bomberman
                 Time deltaTime = FrameClock.Restart();
 
                 // Requesting refresh data from server at every new frame
-                _userHubConnection.InvokeAsync("RefreshPlayer", mainPlayer.GetPointPosition()).Wait();
+                _userHubConnection.InvokeAsync("RefreshPlayer", new PlayerDTO(){ connectionId = mainPlayer.connectionId, position = mainPlayer.GetPointPosition(), IsDead = mainPlayer.IsDead}).Wait();
 
                 _renderWindow.DispatchEvents(); // event handler to processes keystrokes/mouse movements
                 _renderWindow.Clear();
@@ -191,14 +191,14 @@ namespace Bomberman
 
 
                 // RESPAWN ROUTINE
-                if(RespawnPause > 0)
-                    RespawnPause -= deltaTime.AsSeconds();
+                /*if(RespawnPause > 0)
+                    RespawnPause -= deltaTime.AsSeconds();*/
 
-                if (mainPlayer.CheckDeathCollisions() && RespawnPause <= 0f) // if collided with flames?
+                /*if (mainPlayer.CheckDeathCollisions() && RespawnPause <= 0f) // if collided with flames?
                 {
                     RespawnPause = 2f;
                     scoreBoard.UpdateScore("P1");
-                }
+                }*/
 
                 // Print player coordinates left, top (x, y)
                 coordText.DisplayedString = $"x {mainPlayer.Position.X} y {mainPlayer.Position.Y}";
@@ -216,6 +216,7 @@ namespace Bomberman
 
         public void InputControl()
         { // invoker
+            if (mainPlayer.IsDead) return;
             float movementSpeed = 5;
             float moveDistance = movementSpeed;
             float movementX = 0;

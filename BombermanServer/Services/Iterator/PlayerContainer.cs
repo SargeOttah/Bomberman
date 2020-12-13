@@ -6,23 +6,23 @@ namespace BombermanServer.Services.Iterator
 {
     public class PlayerContainer : IPlayerContainer
     {
-        private List<PlayerDTO> _players;
+        private List<Player> _players;
 
         public PlayerContainer()
         {
-            _players = new List<PlayerDTO>();
+            _players = new List<Player>();
         }
 
         public IIterator GetIterator() => new PlayerIterator(_players);
 
-        public void AddPlayer(PlayerDTO player)
+        public void AddPlayer(Player player)
         { 
             _players.Add(player);
         }
 
         public int GetCount() => _players.Count;
 
-        public bool RemovePlayer(PlayerDTO player)
+        public bool RemovePlayer(Player player)
         {
             return _players.Remove(player);
         }
