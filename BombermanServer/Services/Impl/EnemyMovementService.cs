@@ -1,5 +1,4 @@
-﻿using System;
-using BombermanServer.Hubs;
+﻿using BombermanServer.Hubs;
 using BombermanServer.Mediator;
 using BombermanServer.Models;
 using BombermanServer.Models.States.ConcreteStates;
