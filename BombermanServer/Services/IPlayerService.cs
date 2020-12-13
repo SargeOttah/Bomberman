@@ -9,6 +9,8 @@ namespace BombermanServer.Services
 
         public Player GetPlayer(string connectionId);
 
+        public Player GetPlayer(int id);
+
         public int GetCount();
 
         public bool AddPlayer(Player player);
@@ -16,6 +18,7 @@ namespace BombermanServer.Services
         public bool RemovePlayer(Player player);
 
         public int GetEmptyId();
+
         public void KillPlayer(int id);
     }
 }

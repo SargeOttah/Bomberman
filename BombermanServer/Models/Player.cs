@@ -13,7 +13,7 @@ namespace BombermanServer.Models
         public PlayerFlyweight Flyweight { get; set; }
         public bool IsDead { get; set; }
 
-        private PlayerSnapshot _snapshot;
+        public PlayerSnapshot _snapshot { get; private set; }
 
         private Player()
         {
@@ -27,7 +27,7 @@ namespace BombermanServer.Models
 
         public void MakeSnapshot()
         {
-            _snapshot = new PlayerSnapshot(Id, ConnectionId, Position, SpeedMultiplier, Sprite, this);
+            _snapshot = new PlayerSnapshot(Id, ConnectionId, Position, SpeedMultiplier, Flyweight, this);
         }
 
         public override string ToString() => $"{Id} {ConnectionId} {Position.X} {Position.Y} {Flyweight.Sprite}";

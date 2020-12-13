@@ -37,6 +37,23 @@ namespace BombermanServer.Services.Impl
             return null;
         }
 
+        public Player GetPlayer(int id)
+        {
+            var playerIterator = _playerContainer.GetIterator();
+
+            while (playerIterator.HasNext())
+            {
+                var player = playerIterator.GetNext();
+
+                if (player.Id == id)
+                {
+                    return player;
+                }
+            }
+
+            return null;
+        }
+
         public int GetCount() => _playerContainer.GetCount();
 
         public IIterator GetPlayerIterator() => _playerContainer.GetIterator();
