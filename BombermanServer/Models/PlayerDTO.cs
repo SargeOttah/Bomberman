@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using BombermanServer.Models.Flyweight;
+using System.Drawing;
 
 namespace BombermanServer.Models
 {
@@ -8,7 +9,7 @@ namespace BombermanServer.Models
         public string ConnectionId { get; set; }
         public PointF Position { get; set; }
         public int SpeedMultiplier { get; set; }
-        public PlayerSprite Sprite { get; set; }
+        public PlayerFlyweight Flyweight { get; set; }
         public bool IsDead { get; set; }
 
         public PlayerDTO()
@@ -20,13 +21,6 @@ namespace BombermanServer.Models
             ConnectionId = connectionId;
         }
 
-        public override string ToString() => $"{Id} {ConnectionId} {Position.X} {Position.Y} {Sprite}";
-    }
-
-    public enum PlayerSprite
-    {
-        Blue = 0,
-        Green = 1,
-        Red = 2
+        public override string ToString() => $"{Id} {ConnectionId} {Position.X} {Position.Y} {Flyweight.Sprite}";
     }
 }
