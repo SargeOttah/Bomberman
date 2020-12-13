@@ -37,8 +37,6 @@ namespace BombermanServer.Models.Snapshots
             _player.SpeedMultiplier = SpeedMultiplier;
             _player.Flyweight = Flyweight;
             _player.IsDead = false;
-            Console.WriteLine($"Respawning player at: {Position.X} {Position.Y}");
-            Console.WriteLine($"player is at: {_player.Position.X} {_player.Position.Y}");
         }
 
         public int GetRespawnTime()
