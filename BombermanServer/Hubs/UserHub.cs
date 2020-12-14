@@ -97,5 +97,13 @@ namespace BombermanServer.Hubs
 
             await Clients.Caller.SendAsync("RefreshPlayers", players);
         }
+
+        public async Task RefreshScore(List<Tuple<string, int>> score)
+        {
+            int id = _playerService.GetPlayer(this.Context.ConnectionId).Id;
+            Console.WriteLine("id" + id);
+            //score[id] = Tuple.Create(id, score[id].Item2 + 10);
+            //await Clients.Caller.SendAsync("RefreshPlayers", );
+        }
     }
 }

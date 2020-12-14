@@ -72,7 +72,8 @@ namespace Bomberman
 
             _userHubConnection.On<PlayerDTO>("ReceiveNewClient", OnNewClientConnect); // Listens for new clients that connect to the server
             _userHubConnection.On<List<PlayerDTO>>("RefreshPlayers", RefreshPlayers); // Refreshes data for all players connected to the server ( currenty only position )
-            
+            //_userHubConnection.On<>("RefreshScoreClient", RefreshScore);
+
             // bombs
             _userHubConnection.On<BombDTO>("ReceiveNewBomb", OnNewBomb);
             _userHubConnection.On<BombExplosionDTO>("ReceiveNewExplosion", OnBombExplosion);
@@ -120,7 +121,7 @@ namespace Bomberman
             _renderWindow = CreateRenderWindow(Styles.Default);
             _renderWindow.SetFramerateLimit(60);
             _renderWindow.SetActive();
-            scoreBoard = new GameScore(_renderWindow);
+            scoreBoard = new GameScore(_renderWindow, otherPlayers, mainPlayer.connectionId);
 
             // Player postion from left, top (x, y)
             var coordText = new Text("", new Font(Properties.Resources.arial));
@@ -178,7 +179,8 @@ namespace Bomberman
                 if (mainPlayer.CheckDeathCollisions() && RespawnPause <= 0f) // if collided with flames?
                 {
                     RespawnPause = 2f;
-                    scoreBoard.UpdateScore("P1");
+                    _userHubConnection.InvokeAsync("RefreshScore", scoreBoard.score).Wait();
+                    //scoreBoard.UpdateScore("P1");
                 }
 
                 // Print player coordinates left, top (x, y)
