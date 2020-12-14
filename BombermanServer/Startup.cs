@@ -1,7 +1,7 @@
 using BombermanServer.Configurations;
+using BombermanServer.Mediator;
 using BombermanServer.Services;
 using BombermanServer.Services.Impl;
-using BombermanServer.Services.Impl.Adapter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -33,6 +33,8 @@ namespace BombermanServer
             services.AddSingleton<IMapService, MapService>();
             // services.AddSingleton<IMapService, MapGeneratorAdapter>();
             services.AddSingleton<IEnemyMovementService, EnemyMovementService>();
+            services.AddSingleton<IPlayerDeathMediator, PlayerDeathMediator>();
+            services.AddSingleton<IRespawnService, RespawnService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

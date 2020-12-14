@@ -1,50 +1,75 @@
 ﻿using BombermanServer.Models;
-using System.Collections.Generic;
+using BombermanServer.Services.Iterator;
 
 namespace BombermanServer.Services.Impl
 {
     public class PlayerService : IPlayerService
     {
-        List<Player> players;
+        private readonly IPlayerContainer _playerContainer;
 
         public PlayerService()
         {
-            players = new List<Player>(4);
+            _playerContainer = new PlayerContainer();
         }
 
         public bool AddPlayer(Player player)
         {
-            if (players.Count >= 4) { return false; }
+            if (_playerContainer.GetCount() >= 4) { return false; }
 
-            players.Add(player);
+            _playerContainer.AddPlayer(player);
             return true;
         }
 
         public Player GetPlayer(string connectionId)
         {
-            return players.Find(x => x.ConnectionId.Equals(connectionId));
+            var playerIterator = _playerContainer.GetIterator();
+
+            while (playerIterator.HasNext())
+            {
+                var player = playerIterator.GetNext();
+
+                if (player.ConnectionId.Equals(connectionId))
+                {
+                    return player;
+                }
+            }
+
+            return null;
         }
 
-        public int GetCount()
+        public Player GetPlayer(int id)
         {
-            return players.Count;
+            var playerIterator = _playerContainer.GetIterator();
+
+            while (playerIterator.HasNext())
+            {
+                var player = playerIterator.GetNext();
+
+                if (player.Id == id)
+                {
+                    return player;
+                }
+            }
+
+            return null;
         }
 
-        public List<Player> GetPlayers()
-        {
-            return players;
-        }
+        public int GetCount() => _playerContainer.GetCount();
 
-        public bool RemovePlayer(Player player)
-        {
-            return players.Remove(player);
-        }
-       
+        public IIterator GetPlayerIterator() => _playerContainer.GetIterator();
+
+        public bool RemovePlayer(Player player) => _playerContainer.RemovePlayer(player);
+
         public int GetEmptyId()
         {
             var playerEmptyIdStrategy = PlayerServiceHelper.GetPlayerIdStrategy();
 
-            return playerEmptyIdStrategy.GetEmptyId(players);
+            return playerEmptyIdStrategy.GetEmptyId(_playerContainer.GetIterator());
+        }
+
+        public void KillPlayer(int id)
+        {
+            _playerContainer.KillPlayer(id);
         }
     }
 }

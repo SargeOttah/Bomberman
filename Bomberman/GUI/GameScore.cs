@@ -8,7 +8,7 @@ using System.Drawing;
 
 namespace Bomberman.GUI
 {
-    class GameScore : Drawable
+    public class GameScore : Drawable
     {
         public Text scoreText = new Text("", new Font(Properties.Resources.arial), 30);
         public List<Tuple<string, int>> score; // id | score 

@@ -14,5 +14,10 @@ namespace BombermanServer.Builders.PlayerBuilder
         public abstract void BuildId();
         public abstract void BuildPosition();
         public abstract void BuildSprite();
+
+        public void BuildSnapshot()
+        {
+            Player.MakeSnapshot();
+        }
     }
 }

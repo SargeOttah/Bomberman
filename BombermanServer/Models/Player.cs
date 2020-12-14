@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using BombermanServer.Models.Flyweight;
+using System.Drawing;
+using BombermanServer.Models.Snapshots;
 
 namespace BombermanServer.Models
 {
@@ -8,11 +10,14 @@ namespace BombermanServer.Models
         public string ConnectionId { get; set; }
         public PointF Position { get; set; }
         public int SpeedMultiplier { get; set; }
-        public PlayerSprite Sprite { get; set; }
+        public PlayerFlyweight Flyweight { get; set; }
+        public bool IsDead { get; set; }
 
-        public Player()
+        public PlayerSnapshot _snapshot { get; private set; }
+
+        private Player()
         {
-            SpeedMultiplier = 1;
+
         }
         
         public Player(string connectionId) : this()
@@ -20,13 +25,12 @@ namespace BombermanServer.Models
             ConnectionId = connectionId;
         }
 
-        public override string ToString() => $"{Id} {ConnectionId} {Position.X} {Position.Y} {Sprite}";
+        public void MakeSnapshot()
+        {
+            _snapshot = new PlayerSnapshot(Id, ConnectionId, Position, SpeedMultiplier, Flyweight, this);
+        }
+
+        public override string ToString() => $"{Id} {ConnectionId} {Position.X} {Position.Y} {Flyweight.Sprite}";
     }
 
-    public enum PlayerSprite
-    {
-        Blue = 0,
-        Green = 1,
-        Red = 2
-    }
 }

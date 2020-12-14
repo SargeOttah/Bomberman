@@ -79,7 +79,7 @@ namespace BombermanServer.Services.Impl
             return currentName;
         }
 
-        private string[] ConvertMap(string[,] map)
+        private static string[] ConvertMap(string[,] map)
         {
             string[] convertedMap = new string[MapConstants.mapHeight];
             for (int i = 0; i < MapConstants.mapHeight; i++)

@@ -1,14 +1,15 @@
 ﻿using BombermanServer.Models;
-using System;
-using System.Collections.Generic;
+using BombermanServer.Services.Iterator;
 
 namespace BombermanServer.Services
 {
     public interface IPlayerService
     {
-        public List<Player> GetPlayers();
+        public IIterator GetPlayerIterator();
 
-        public Player GetPlayer(String connectionId);
+        public Player GetPlayer(string connectionId);
+
+        public Player GetPlayer(int id);
 
         public int GetCount();
 
@@ -17,5 +18,7 @@ namespace BombermanServer.Services
         public bool RemovePlayer(Player player);
 
         public int GetEmptyId();
+
+        public void KillPlayer(int id);
     }
 }

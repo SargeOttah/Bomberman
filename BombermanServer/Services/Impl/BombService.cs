@@ -1,13 +1,14 @@
-using BombermanServer.Hubs;
-using BombermanServer.Models;
 using BombermanServer.Constants;
+using BombermanServer.Hubs;
+using BombermanServer.Mediator;
+using BombermanServer.Models;
 using Microsoft.AspNetCore.SignalR;
 using System;
-using System.Drawing;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Threading.Tasks;
 
-namespace BombermanServer.Services
+namespace BombermanServer.Services.Impl
 {
     public class BombService : IBombService
     {
@@ -22,22 +23,28 @@ namespace BombermanServer.Services
         private List<string> destructableObstacles;
         private readonly IHubContext<UserHub> _hubContext;
         private IMapService mapService;
-        public BombService(IHubContext<UserHub> hubContext, IMapService mapService)
+        private IPlayerService _playerService;
+        private IPlayerDeathMediator _playerDeathMediator;
+        private readonly IEnemyMovementService _enemyMovementService;
+        public BombService(IHubContext<UserHub> hubContext, IMapService mapService, IPlayerService playerService, IPlayerDeathMediator playerDeathMediator, IEnemyMovementService enemyMovementService)
         {
             bombs = new List<BombDTO>();
             destructableObstacles = MapConstants.GetDestructableObstacles();
             _hubContext = hubContext;
             this.mapService = mapService;
+            _playerService = playerService;
+            _playerDeathMediator = playerDeathMediator;
+            _enemyMovementService = enemyMovementService;
         }
 
         public void Add(BombDTO bomb) // TODO: maybe check if there already is a bomb on the tile?
         {
-            var position = mapService.GetTilePosition(bomb.bombPosition.X, bomb.bombPosition.Y);
-            bomb.bombPosition = new PointF(position.X * MapConstants.tileSize + MapConstants.tileSize / 2,
+            var position = mapService.GetTilePosition(bomb.Position.X, bomb.Position.Y);
+            bomb.Position = new PointF(position.X * MapConstants.tileSize + MapConstants.tileSize / 2,
                                        position.Y * MapConstants.tileSize + MapConstants.tileSize / 2);
             bombs.Add(bomb);
             SetBombExplosionTimer(bomb);
-            Console.WriteLine($"Bomb at: {bomb.bombPosition.X} {bomb.bombPosition.Y}");
+            Console.WriteLine($"Bomb at: {bomb.Position.X} {bomb.Position.Y}");
         }
 
         public List<BombDTO> GetBombs()
@@ -59,10 +66,9 @@ namespace BombermanServer.Services
 
         public void ExplodeBomb(BombDTO bomb)
         {
-            BombExplosion bombExplosion = new BombExplosion();
-            bombExplosion.OwnerId = bomb.OwnerId;
+            BombExplosion bombExplosion = new BombExplosion {OwnerId = bomb.OwnerId};
             var map = mapService.GetMapMatrix();
-            var pos = mapService.GetTilePosition(bomb.bombPosition.X, bomb.bombPosition.Y);
+            var pos = mapService.GetTilePosition(bomb.Position.X, bomb.Position.Y);
 
             List<Point> tilesToRemove = new List<Point>();
             for (int i = 0; i < directions.GetLength(0); i++)
@@ -73,6 +79,7 @@ namespace BombermanServer.Services
                 {
                     x = pos.X + (directions[i, 0] * j);
                     y = pos.Y + (directions[i, 1] * j);
+
                     if (x > MapConstants.mapWidth || x < 0)
                     {
                         break;
@@ -88,6 +95,26 @@ namespace BombermanServer.Services
                             tilesToRemove.Add(new Point(x, y));
                         }
                         break;
+                    }
+
+                    var playerIterator = _playerService.GetPlayerIterator();
+                    while (playerIterator.HasNext())
+                    {
+                        var player = playerIterator.GetNext();
+                        if (
+                            Math.Abs(x - Math.Floor(player.Position.X / MapConstants.tileSize)) == 0
+                            && Math.Abs(y - Math.Floor(player.Position.Y / MapConstants.tileSize)) == 0)
+                        {
+                            _playerDeathMediator.Notify(player.Id);
+                        }
+                    }
+
+                    var ghostCoordinates = _enemyMovementService.GetGhostCoordinates();
+                    if (
+                        Math.Abs(x - Math.Floor(ghostCoordinates.X / MapConstants.tileSize)) == 0
+                        && Math.Abs(y - Math.Floor(ghostCoordinates.Y / MapConstants.tileSize)) == 0)
+                    {
+                        _enemyMovementService.KillGhost();
                     }
                 }
                 bombExplosion.ExplosionCoords[i] = new Point(x, y);

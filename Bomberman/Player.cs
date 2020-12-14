@@ -1,19 +1,19 @@
-﻿using Bomberman.Collisions;
+﻿using System;
+using Bomberman.Collisions;
 using Bomberman.Dto;
 using Bomberman.Map;
 using Bomberman.Spawnables;
-using Bomberman.Spawnables.Weapons;
 using Bomberman.Spawnables.Obstacles;
+using Bomberman.Spawnables.Weapons;
 using SFML.Graphics;
 using SFML.System;
-using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Bomberman
 {
-    class Player : Sprite
+    public class Player : Sprite
     {
         //private readonly int[,] directions = new int[4, 2]{
         //    { -1, 0 }, // left
@@ -40,7 +40,7 @@ namespace Bomberman
         public Bomb Bomb { get; set; }
 
         public int Level = 0;
-        public bool IsDead { get; private set; } = false;
+        public bool IsDead { get; set; }
 
         //Debug
         private RectangleShape debugShape { get; set; }
@@ -64,6 +64,7 @@ namespace Bomberman
             this.Texture = playerDTO.GetTexture();
             this.connectionId = playerDTO.connectionId;
             this.Origin = GetSpriteCenter(this);
+            IsDead = playerDTO.IsDead;
 
             this.playerSpawn = new Vector2f(playerDTO.position.X, playerDTO.position.Y);
 
@@ -131,9 +132,13 @@ namespace Bomberman
         public void CreateExplosion(BombExplosionDTO bombExplosionDTO)
         {
             var explosionCoords = bombExplosionDTO.ExplosionCoords;
-            Spawnable explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation);
-            explosion.ProjectileSprite.Position = CalculateMapPos(explosionCoords[1].X, explosionCoords[0].Y); // set flame position to bomb
-            explosion.DespawnDrawableAfter = .5f; // despawn flame after
+            Spawnable explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation)
+            {
+                ProjectileSprite = {Position = CalculateMapPos(explosionCoords[1].X, explosionCoords[0].Y)},
+                DespawnDrawableAfter = .5f
+            };
+            // set flame position to bomb
+            // despawn flame after
             BombTriggers.Add(explosion);
             for (int i = 0; i < directions.GetLength(0); i++)
             {
@@ -141,9 +146,13 @@ namespace Bomberman
                 int y = explosionCoords[0].Y + directions[i][1];
                 while (x != explosionCoords[i].X || y != explosionCoords[i].Y)
                 {
-                    explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation);
-                    explosion.ProjectileSprite.Position = CalculateMapPos(x, y); // set flame position to bomb
-                    explosion.DespawnDrawableAfter = .5f; // despawn flame after
+                    explosion = new Spawnable(Bomb.ExplosionSprite, this.Position, this.Rotation)
+                    {
+                        ProjectileSprite = {Position = CalculateMapPos(x, y)},
+                        DespawnDrawableAfter = .5f
+                    };
+                    // set flame position to bomb
+                    // despawn flame after
                     BombTriggers.Add(explosion);
                     x += directions[i][0];
                     y += directions[i][1];
@@ -191,7 +200,7 @@ namespace Bomberman
                 tmpBomb = new SuperBomb();
             }
 
-            Spawnable spawnable = new Spawnable(tmpBomb.ProjectileSprite, new Vector2f(bomb.bombPosition.X, bomb.bombPosition.Y), this.Rotation);
+            Spawnable spawnable = new Spawnable(tmpBomb.ProjectileSprite, new Vector2f(bomb.Position.X, bomb.Position.Y), this.Rotation);
             spawnable.DespawnDrawableAfter = tmpBomb.IgnitionDuration; // set type specific speed
 
             Spawnables.Add(spawnable);
@@ -219,6 +228,7 @@ namespace Bomberman
         public void UpdateStats(PlayerDTO playerDTO)
         {
             this.Position = new Vector2f(playerDTO.position.X, playerDTO.position.Y);
+            IsDead = playerDTO.IsDead;
         }
 
         public void Translate(float xOffset, float yOffset)

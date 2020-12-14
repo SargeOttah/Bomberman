@@ -1,10 +1,9 @@
-﻿using BombermanServer.Models;
-using System.Collections.Generic;
+﻿using BombermanServer.Services.Iterator;
 
 namespace BombermanServer.Services.Strategies
 {
     public interface IPlayerEmptyIdStrategy
     {
-        int GetEmptyId(IEnumerable<Player> players);
+        int GetEmptyId(IIterator playerIterator);
     }
 }

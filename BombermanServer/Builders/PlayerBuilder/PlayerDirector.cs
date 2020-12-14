@@ -12,6 +12,7 @@ namespace BombermanServer.Builders.PlayerBuilder
             builder.BuildId();
             builder.BuildPosition();
             builder.BuildSprite();
+            builder.BuildSnapshot();
 
             return builder.Player;
         }

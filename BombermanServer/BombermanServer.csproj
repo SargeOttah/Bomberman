@@ -5,7 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Command\" />
+    <Compile Remove="Services\Command\**" />
+    <Content Remove="Services\Command\**" />
+    <EmbeddedResource Remove="Services\Command\**" />
+    <None Remove="Services\Command\**" />
   </ItemGroup>
 
   <ItemGroup>

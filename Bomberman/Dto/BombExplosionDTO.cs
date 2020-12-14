@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Text;
 
 namespace Bomberman.Dto
 {
@@ -14,6 +15,16 @@ namespace Bomberman.Dto
         public BombExplosionDTO()
         {
             ExplosionCoords = new Point[4];
+        }
+
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (var point in ExplosionCoords)
+            {
+                stringBuilder.Append($"X = {point.X} Y = {point.Y} | ");
+            }
+            return $"{OwnerId} {stringBuilder.ToString()}";
         }
     }
 }
