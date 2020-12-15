@@ -128,7 +128,7 @@ namespace Bomberman
             _renderWindow = CreateRenderWindow(Styles.Default);
             _renderWindow.SetFramerateLimit(60);
             _renderWindow.SetActive();
-            scoreBoard = new GameScore(_renderWindow);
+            scoreBoard = new GameScore(_renderWindow, otherPlayers, mainPlayer.connectionId);
 
             // Player postion from left, top (x, y)
             var coordText = new Text("", new Font(Properties.Resources.arial));
