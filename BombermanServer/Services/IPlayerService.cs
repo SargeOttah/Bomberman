@@ -7,18 +7,15 @@ namespace BombermanServer.Services
     {
         public IIterator GetPlayerIterator();
 
-        public Player GetPlayer(string connectionId);
-
-        public Player GetPlayer(int id);
+        public PlayerDTO GetPlayer(string connectionId);
 
         public int GetCount();
 
-        public bool AddPlayer(Player player);
+        public bool AddPlayer(PlayerDTO player);
 
-        public bool RemovePlayer(Player player);
+        public bool RemovePlayer(PlayerDTO player);
 
         public int GetEmptyId();
-
         public void KillPlayer(int id);
     }
 }

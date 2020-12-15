@@ -5,10 +5,12 @@ using SFML.System;
 using Bomberman.Dto;
 using System.Drawing;
 using System;
+using Bomberman.GUI;
+using Bomberman.GUI.Visitor;
 
 namespace Bomberman.Spawnables.Weapons
 {
-    public class Bomb : Sprite
+    public class Bomb : Sprite, Visitable
     {
         public enum BombType : int // gimmick
         {
@@ -63,6 +65,11 @@ namespace Bomberman.Spawnables.Weapons
 
             return bombDTO;
 
+        }
+
+        public void accept(IVisitor visitor)
+        {
+            visitor.visit(this);
         }
     }
 }

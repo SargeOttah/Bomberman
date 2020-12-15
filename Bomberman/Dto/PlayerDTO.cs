@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 
 namespace Bomberman.Dto
 {
@@ -10,7 +11,7 @@ namespace Bomberman.Dto
         public int id { get; set; }
         public string connectionId { get; set; }
         public PointF position { get; set; }
-        public PlayerFlyweight Flyweight { get; set; }
+        public PlayerSprite sprite { get; set; }
         public bool IsDead { get; set; }
 
         private static Dictionary<PlayerSprite, byte[]> spriteDict = new Dictionary<PlayerSprite, byte[]>
@@ -24,30 +25,37 @@ namespace Bomberman.Dto
         {
 
         }
-        public PlayerDTO(int id, PointF position, PlayerFlyweight flyweight)
+        public PlayerDTO(int id, PointF position, PlayerSprite sprite)
         {
             this.id = id;
             this.position = position;
-            this.Flyweight = flyweight;
+            this.sprite = sprite;
         }
 
 
-        public PlayerDTO(int id, String connectionId, PointF position, PlayerFlyweight flyweight)
+        public PlayerDTO(int id, String connectionId, PointF position, PlayerSprite sprite)
         {
             this.id = id;
             this.connectionId = connectionId;
             this.position = position;
-            this.Flyweight = flyweight;
+            this.sprite = sprite;
         }
 
         public Texture GetTexture()
         {
-            return new Texture(spriteDict[this.Flyweight.Sprite]);
+            return new Texture(spriteDict[this.sprite]);
         }
 
         public override string ToString()
         {
-            return id.ToString() + " " + connectionId + " " + position.X + "|" + position.Y + " " + this.Flyweight.Sprite;
+            return id.ToString() + " " + connectionId + " " + position.X + "|" + position.Y + " " + this.sprite;
         }
+    }
+
+    public enum PlayerSprite
+    {
+        BLUE,
+        GREEN,
+        RED
     }
 }

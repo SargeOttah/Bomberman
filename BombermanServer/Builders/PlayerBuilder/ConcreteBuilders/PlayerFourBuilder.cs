@@ -1,5 +1,5 @@
 ﻿using BombermanServer.Constants;
-using BombermanServer.Models.Flyweight;
+using BombermanServer.Models;
 using System.Drawing;
 
 namespace BombermanServer.Builders.PlayerBuilder.ConcreteBuilders
@@ -21,7 +21,7 @@ namespace BombermanServer.Builders.PlayerBuilder.ConcreteBuilders
 
         public override void BuildSprite()
         {
-            Player.Flyweight = PlayerFlyweightFactory.GetPlayerFlyweight(PlayerSprite.Blue);
+            Player.Sprite = PlayerSprite.Blue; // NEED NEW SPRITE - this one is same as Player One!!!
         }
     }
 }
