@@ -6,16 +6,16 @@ namespace BombermanServer.Services.Iterator
 {
     public class PlayerIterator : IIterator
     {
-        private readonly List<PlayerDTO> _players;
+        private readonly List<Player> _players;
 
         private int _index;
 
-        public PlayerIterator(IEnumerable<PlayerDTO> players)
+        public PlayerIterator(IEnumerable<Player> players)
         {
             _players = players.ToList();
         }
 
-        public PlayerDTO GetNext()
+        public Player GetNext()
         {
             _index++;
 

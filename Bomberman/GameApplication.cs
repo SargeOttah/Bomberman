@@ -2,7 +2,6 @@
 using Bomberman.Dto;
 using Bomberman.Global;
 using Bomberman.GUI;
-using Bomberman.GUI.Visitor;
 using Bomberman.Map;
 using Bomberman.Spawnables.Obstacles;
 using Bomberman.Spawnables.Weapons;
@@ -16,7 +15,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http;
 using Bomberman.HubHandler;
-using Bomberman.GUI.Logger;
 
 namespace Bomberman
 {
@@ -51,14 +49,8 @@ namespace Bomberman
 
         private static IMovement buttonW, buttonS, buttonA, buttonD;
 
-        private bool ghostDead = true;
-        //private bool ghostDead = true;
+        private bool ghostDead = false;
 
-        //GUi -----------------------------------
-        //PlayerList pList;
-
-        public DebugGUI _debugGui;
-        Logger myLog;
         public static GameApplication GetInstance()
         {
             return Instance;
@@ -136,9 +128,6 @@ namespace Bomberman
             _renderWindow = CreateRenderWindow(Styles.Default);
             _renderWindow.SetFramerateLimit(60);
             _renderWindow.SetActive();
-
-            _debugGui = new DebugGUI(_renderWindow);
-            execRTCounter(); // sync with server
             scoreBoard = new GameScore(_renderWindow);
 
             // Player postion from left, top (x, y)
@@ -152,17 +141,6 @@ namespace Bomberman
             // damage - placeDelay - bombTimer
             mainPlayer.Bomb = new Bomb(20, 2500, 0);
 
-
-            // Chain object init
-            Logger chainLogger = new ErrorLogger();
-            Logger chainLogger2 = new DebugLogger();
-            Logger chainLogger3 = new DefaultLogger();
-
-            // connecting chains
-            chainLogger.setNextLogger(chainLogger2);
-            chainLogger2.setNextLogger(chainLogger3);
-            
-
             float RespawnPause = 0f;
 
             while (_renderWindow.IsOpen)
@@ -170,7 +148,7 @@ namespace Bomberman
                 Time deltaTime = FrameClock.Restart();
 
                 // Requesting refresh data from server at every new frame
-                _userHubConnection.InvokeAsync("RefreshPlayer", mainPlayer.GetPointPosition()).Wait();
+                _userHubConnection.InvokeAsync("RefreshPlayer", new PlayerDTO(){ connectionId = mainPlayer.connectionId, position = mainPlayer.GetPointPosition(), IsDead = mainPlayer.IsDead}).Wait();
 
                 _renderWindow.DispatchEvents(); // event handler to processes keystrokes/mouse movements
                 _renderWindow.Clear();
@@ -213,22 +191,19 @@ namespace Bomberman
 
 
                 // RESPAWN ROUTINE
-                if(RespawnPause > 0)
-                    RespawnPause -= deltaTime.AsSeconds();
+                /*if(RespawnPause > 0)
+                    RespawnPause -= deltaTime.AsSeconds();*/
 
-                if (mainPlayer.CheckDeathCollisions() && RespawnPause <= 0f) // if collided with flames?
+                /*if (mainPlayer.CheckDeathCollisions() && RespawnPause <= 0f) // if collided with flames?
                 {
                     RespawnPause = 2f;
                     scoreBoard.UpdateScore("P1");
-
-                    chainLogger.logMessage(new Message(2, $"**\nPlayer [{mainPlayer.connectionId.Substring(0, 8)}] died\n**"));
-                }
+                }*/
 
                 // Print player coordinates left, top (x, y)
                 coordText.DisplayedString = $"x {mainPlayer.Position.X} y {mainPlayer.Position.Y}";
                 _renderWindow.Draw(coordText);
                 _renderWindow.Draw(scoreBoard);
-                _renderWindow.Draw(_debugGui);
 
                 if (_renderWindow.HasFocus()) // if window is focused
                 {
@@ -241,6 +216,7 @@ namespace Bomberman
 
         public void InputControl()
         { // invoker
+            if (mainPlayer.IsDead) return;
             float movementSpeed = 5;
             float moveDistance = movementSpeed;
             float movementX = 0;
@@ -349,18 +325,7 @@ namespace Bomberman
             mainPlayer.DrawSpawnables(_renderWindow); // Draw bomb as spawnable
             mainPlayer.DrawExplosions(_renderWindow); // Draw explosion spawnable after bomb
         }
-        public void execRTCounter()
-        {
-            _debugGui.pVisitor.ResetData();
 
-            foreach (Player p in otherPlayers)
-            {
-                if (!p.IsDead)
-                {
-                    p.accept(_debugGui.pVisitor); // player count
-                }
-            }
-        }
         private static void OnClose(object sender, EventArgs e)
         {
             var renderWindow = (RenderWindow)sender;

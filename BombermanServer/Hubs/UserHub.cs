@@ -34,8 +34,6 @@ namespace BombermanServer.Hubs
 
         public async Task OnBombPlace(BombDTO bomb) // creating a new bomb
         {
-            Console.WriteLine("WE ARE HERE");
-
             Console.WriteLine(bomb.ToString());
             _bombService.Add(bomb);
             await Clients.All.SendAsync("ReceiveNewBomb", bomb);
@@ -76,7 +74,7 @@ namespace BombermanServer.Hubs
         public override Task OnDisconnectedAsync(Exception exception)
         {
             // remove player
-            PlayerDTO player = _playerService.GetPlayer(this.Context.ConnectionId);
+            Player player = _playerService.GetPlayer(this.Context.ConnectionId);
             if (_playerService.RemovePlayer(player))
             {
                 Console.WriteLine($"Client {this.Context.ConnectionId} has disconnected.");
@@ -90,10 +88,16 @@ namespace BombermanServer.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        public async Task RefreshPlayer(PointF playerPosition)
+        public async Task RefreshPlayer(Player player)
         {
-            _playerService.GetPlayer(this.Context.ConnectionId).Position = playerPosition;
-            var players = new List<PlayerDTO>();
+            var thisPlayer =_playerService.GetPlayer(this.Context.ConnectionId);
+
+            if (!(player.IsDead && !thisPlayer.IsDead))
+            {
+                thisPlayer.Position = player.Position;
+            }
+
+            var players = new List<Player>();
             var playerIterator = _playerService.GetPlayerIterator();
 
             while (playerIterator.HasNext())

@@ -5,9 +5,9 @@ namespace BombermanServer.Services.Iterator
     public interface IPlayerContainer
     {
         IIterator GetIterator();
-        void AddPlayer(PlayerDTO player);
+        void AddPlayer(Player player);
         int GetCount();
-        bool RemovePlayer(PlayerDTO player);
+        bool RemovePlayer(Player player);
         void KillPlayer(int id);
     }
 }

@@ -34,6 +34,7 @@ namespace BombermanServer
             // services.AddSingleton<IMapService, MapGeneratorAdapter>();
             services.AddSingleton<IEnemyMovementService, EnemyMovementService>();
             services.AddSingleton<IPlayerDeathMediator, PlayerDeathMediator>();
+            services.AddSingleton<IRespawnService, RespawnService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
