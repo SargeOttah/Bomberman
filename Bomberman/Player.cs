@@ -10,24 +10,19 @@ using SFML.System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
+using Bomberman.GUI;
+using Bomberman.GUI.Visitor;
 
 namespace Bomberman
 {
-    public class Player : Sprite
+    public class Player : Sprite, Visitable
     {
-        //private readonly int[,] directions = new int[4, 2]{
-        //    { -1, 0 }, // left
-        //    { 0, 1 }, // down
-        //    { 1, 0 }, // right
-        //    { 0, -1 }, // up
-        //};
         private readonly int[][] directions = new int[][]{
             new int[] { -1, 0  },
             new int[] {  0, 1  },
             new int[] {  1, 0  },
             new int[] {  0, -1 }
         };
-
 
         public float Health { get; private set; } = 100;
         public Vector2f Speed { get; set; } = new Vector2f(0.0f, 0.0f);
@@ -53,7 +48,10 @@ namespace Bomberman
         public List<Spawnable> BombTriggers = new List<Spawnable>();
 
 
-        public Player() { }
+        public Player() {
+            this.connectionId = RandID();
+            this.IsDead = false;
+        }
 
         public Player(PlayerDTO playerDTO)
         {
@@ -72,7 +70,19 @@ namespace Bomberman
 
             InitDebug();
         }
+        
+        public void accept(IVisitor visitor)
+        {
+            visitor.visit(this);
+        }
 
+        public string RandID()
+        {
+            Random rnd = new Random();
+            string id = (rnd.Next(1000000, 9999999)).ToString();
+
+            return id;
+        }
 
         // BOMBS
         // -----------------

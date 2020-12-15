@@ -24,6 +24,7 @@ namespace Bomberman.HubHandler
                 Console.WriteLine("Invalid map");
             }
             _game.mainPlayer = new Player(playerDTO);
+            //_game.execRTCounter();
         }
 
         // Called when a new client (except the current one) connects to the server, receives the other players information
@@ -31,13 +32,17 @@ namespace Bomberman.HubHandler
         {
             var newPlayer = new Player(playerDTO);
             _game.otherPlayers.Add(newPlayer);
+            //_game.execRTCounter();
         }
 
         // Called to refresh information about the current players on the server
         public void RefreshPlayers(List<PlayerDTO> players)
         {
+
             PlayerDTO main = players.First(p => p.connectionId.Equals(_game.mainPlayer.connectionId, StringComparison.Ordinal));
             List<PlayerDTO> others = players.Where(p => !p.connectionId.Equals(_game.mainPlayer.connectionId, StringComparison.Ordinal)).ToList();
+
+            if (others.Count > 0 && _game._debugGui.pVisitor.GetAmount() != others.Count + 1) { _game.execRTCounter(); }
 
             _game.mainPlayer.UpdateStats(main);
             foreach (PlayerDTO pNew in others)
@@ -58,6 +63,7 @@ namespace Bomberman.HubHandler
         public void OnNewBomb(BombDTO bombDTO)
         {
             _game.mainPlayer.AddBomb(bombDTO);
+            _game.mainPlayer.Bomb.accept(_game._debugGui.pVisitor);
         }
 
         // Called when a bomb explosion event is sent
