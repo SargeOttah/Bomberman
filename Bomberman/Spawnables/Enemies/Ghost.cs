@@ -5,7 +5,7 @@ using SFML.Graphics;
 
 namespace Bomberman.Spawnables.Enemies
 {
-    class Ghost : Enemy
+    public class Ghost : Enemy
     {
         public Ghost ()
         {
@@ -28,5 +28,6 @@ namespace Bomberman.Spawnables.Enemies
         {
             return this.MemberwiseClone() as Enemy;
         }
+
     }
 }

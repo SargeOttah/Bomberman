@@ -5,7 +5,7 @@ using SFML.Graphics;
 
 namespace Bomberman.Spawnables.Enemies
 {
-    class Skeleton : Enemy
+    public class Skeleton : Enemy
     {
         public Skeleton()
         {

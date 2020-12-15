@@ -3,10 +3,12 @@ using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Bomberman.GUI.Visitor;
+using Bomberman.GUI;
 
 namespace Bomberman.Spawnables.Enemies
 {
-    abstract class Enemy
+    public abstract class Enemy
     {
         private string name { get; set; }
         private int damage { get; set; }
@@ -33,8 +35,6 @@ namespace Bomberman.Spawnables.Enemies
             this.sprite.Scale = new Vector2f(x, x);
         }
 
-        //public abstract void attack();
-        //public abstract void move();
 
         // Enemy type prototype method
         public abstract Enemy Clone();

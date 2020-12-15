@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using SFML.Graphics;
+using Bomberman.GUI.Visitor;
+using Bomberman.GUI;
 
 namespace Bomberman.Spawnables.Enemies
 {
-    class Zombie : Enemy
+    public class Zombie : Enemy
     {
         public Zombie()
         {
