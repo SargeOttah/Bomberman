@@ -50,7 +50,7 @@ namespace Bomberman
 
         private static IMovement buttonW, buttonS, buttonA, buttonD;
 
-        private bool ghostDead = true;
+        private bool ghostDead = false;
         public DebugGUI _debugGui;
         Logger myLog;
 
